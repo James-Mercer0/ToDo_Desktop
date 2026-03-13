@@ -415,6 +415,7 @@ public class ToDoPage implements ActionListener {
                 prepTextField(addNameField);
                 addNameField.setEditable(true);
                 addNameField.setFocusable(true);
+                addNameField.setCaretPosition(0);
 
                 JLabel infoLabel = new JLabel("Info:");
                 prepLabel(infoLabel);
@@ -462,6 +463,7 @@ public class ToDoPage implements ActionListener {
                 addSaveBtn.setBorder(BorderFactory.createLineBorder((new Color(50,50,50)),1));
                 addSaveBtn.setBorderPainted(true);
 
+                // add new Task to list
                 addSaveBtn.addActionListener(new ActionListener(){
                     public void actionPerformed(ActionEvent e){
                         if(!(addPrioField.getText().length()>1 || intIsValid(addPrioField.getText()))){
@@ -479,8 +481,13 @@ public class ToDoPage implements ActionListener {
                         nli.saveListItem();
                         addFrame.dispose();
                         toDoFrame.dispose();
-                        new ToDoPage();
-                        toDoFrame.repaint();
+                        ToDoPage tdp = new ToDoPage();
+                        //Ensure all updated list items are shown from left-most character
+                        for(int i=0;i<ListItem.numOfListItems()-1;i++){
+                            JTextField nameField;
+                            nameField = (JTextField) tdp.listPanel.getComponent(2+(5*i));
+                            nameField.setCaretPosition(0);
+                        }
                     }
                 });
 
