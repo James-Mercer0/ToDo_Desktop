@@ -5,6 +5,8 @@ public class ListItem {
     int itemNumber;
     int itemPriority;
     String itemInfo;
+    static final String internalSeparator = "❒";
+    static final String itemSeparator = "❂";
 
     public ListItem(int number, int priority, String name, String info) {
         this.itemNumber = number;
@@ -58,9 +60,10 @@ public class ListItem {
             throw new RuntimeException(e + "\nUnable to Read from File!");
         }
 
+
         if (contents.isEmpty()) {
             try (BufferedWriter bw = new BufferedWriter(new FileWriter("./listStorage/List01.tdli"))) {
-                String itemInfo = this.itemNumber + "," + this.itemPriority + "," + this.itemName + "," + this.itemInfo + "|";
+                String itemInfo = this.itemNumber + internalSeparator + this.itemPriority + internalSeparator + this.itemName + internalSeparator + this.itemInfo + itemSeparator;
                 bw.write(itemInfo);
                 return;
             } catch (IOException e) {
@@ -74,7 +77,7 @@ public class ListItem {
             while ((line = br.readLine()) != null) {
                 sb.append(line);
             }
-            String itemInfo = this.itemNumber + "," + this.itemPriority + "," + this.itemName + "," + this.itemInfo + "|";
+            String itemInfo = this.itemNumber + internalSeparator + this.itemPriority + internalSeparator + this.itemName + internalSeparator + this.itemInfo + itemSeparator;
             if (sb.toString().contains(itemInfo)) {
                 return;
             }
@@ -99,11 +102,10 @@ public class ListItem {
             }
             String contents = sb.toString();
 
-//            String firstNum = contents.substring(0, contents.indexOf(","));
             int entries = 0;
             for (int i = 0; i < contents.length(); i++) {
                 String currentChar = contents.charAt(i) + "";
-                if (currentChar.equals("|")) {
+                if (currentChar.equals(itemSeparator)) {
                     entries++;
                 }
             }
@@ -129,7 +131,7 @@ public class ListItem {
 
             for (int i = 0; i < contents.length(); i++) {
                 String currentChar = contents.charAt(i)+"";
-                if (currentChar.equals("|")&& instances < listItemNum) {
+                if (currentChar.equals(itemSeparator)&& instances < listItemNum) {
                     instances++;
                     startingIndex = i+1;
                 }
@@ -137,7 +139,7 @@ public class ListItem {
 
 
             String postIndex = contents.substring(startingIndex);
-            String itemInfo = postIndex.substring(0,postIndex.indexOf("|"));
+            String itemInfo = postIndex.substring(0,postIndex.indexOf(itemSeparator));
 
             return itemInfo;
 
@@ -156,18 +158,18 @@ public class ListItem {
             String fullList = sb.toString();
             String contents = sb.toString();
 
-            String currentListItem = contents.substring(0,contents.indexOf("|"));
-            if(Integer.parseInt(String.valueOf(currentListItem.substring(0,currentListItem.indexOf(","))))==listItemNum){
-                String itemRemoved = fullList.replace(currentListItem+"|","");
+            String currentListItem = contents.substring(0,contents.indexOf(itemSeparator));
+            if(Integer.parseInt(String.valueOf(currentListItem.substring(0,currentListItem.indexOf(internalSeparator))))==listItemNum){
+                String itemRemoved = fullList.replace(currentListItem+itemSeparator,"");
                 try(BufferedWriter bw = new BufferedWriter(new FileWriter("./listStorage/List01.tdli"))) {
                 bw.write(itemRemoved);
                 }
             } else {
                 for(int i=0;i<listItemNum;i++){
-                    contents = contents.substring(contents.indexOf("|") +1);
-                    currentListItem = contents.substring(0,contents.indexOf("|"));
-                    if(Integer.parseInt(String.valueOf(currentListItem.substring(0,currentListItem.indexOf(","))))==listItemNum){
-                        String itemRemoved = fullList.replace(currentListItem+"|","");
+                    contents = contents.substring(contents.indexOf(itemSeparator) +1);
+                    currentListItem = contents.substring(0,contents.indexOf(itemSeparator));
+                    if(Integer.parseInt(String.valueOf(currentListItem.substring(0,currentListItem.indexOf(internalSeparator))))==listItemNum){
+                        String itemRemoved = fullList.replace(currentListItem+itemSeparator,"");
                         try(BufferedWriter bw = new BufferedWriter(new FileWriter("./listStorage/List01.tdli"))) {
                             bw.write(itemRemoved);
                         }
@@ -196,11 +198,11 @@ public class ListItem {
             int entryNum = 0;
             for(int i=0;i<numOfListItems();i++){
                 entryNum++;
-                currentItem = contents.substring(0,contents.indexOf("|")+1);
-                String toBeReplaced = currentItem.substring(0,currentItem.indexOf(","));
+                currentItem = contents.substring(0,contents.indexOf(itemSeparator)+1);
+                String toBeReplaced = currentItem.substring(0,currentItem.indexOf(internalSeparator));
                 currentItem = currentItem.replaceFirst(toBeReplaced,String.valueOf(entryNum));
                 sb.append(currentItem);
-                contents = contents.substring(contents.indexOf("|")+1);
+                contents = contents.substring(contents.indexOf(itemSeparator)+1);
             }
             updatedList = sb.toString();
 
@@ -228,13 +230,13 @@ public class ListItem {
 
             for(int i=0;i<numOfListItems();i++) {
 
-                currentItemInfo = remainingItems.substring(0, remainingItems.indexOf("|"));
-                remainingItems = remainingItems.substring(remainingItems.indexOf("|")+1);
+                currentItemInfo = remainingItems.substring(0, remainingItems.indexOf(itemSeparator));
+                remainingItems = remainingItems.substring(remainingItems.indexOf(itemSeparator)+1);
 
-                if (Integer.parseInt(currentItemInfo.substring(0,currentItemInfo.indexOf(",")))==Integer.parseInt(itemInformation.substring(0,itemInformation.indexOf(",")))) {
-                    sb.append(itemInformation+"|");
+                if (Integer.parseInt(currentItemInfo.substring(0,currentItemInfo.indexOf(internalSeparator)))==Integer.parseInt(itemInformation.substring(0,itemInformation.indexOf(internalSeparator)))) {
+                    sb.append(itemInformation+itemSeparator);
                 } else {
-                    sb.append(currentItemInfo+"|");
+                    sb.append(currentItemInfo+itemSeparator);
                 }
             }
 

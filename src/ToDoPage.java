@@ -75,12 +75,13 @@ public class ToDoPage implements ActionListener {
         for(int i=0;i<ListItem.numOfListItems();i++){
             String itemI = ListItem.getListItemInfo(i);
 
-            int iNum = Integer.valueOf(itemI.substring(0,itemI.indexOf(",")));
-            String forNextItem = itemI.substring(itemI.indexOf(",")+1);
-            int iPrio = Integer.valueOf(forNextItem.substring(0,forNextItem.indexOf(",")));
-            forNextItem = forNextItem.substring(forNextItem.indexOf(",")+1);
-            String iName = forNextItem.substring(0,forNextItem.indexOf(","));
-            forNextItem = forNextItem.substring(forNextItem.indexOf(",")+1);
+            String internalSeparator = "❒";
+            int iNum = Integer.valueOf(itemI.substring(0,itemI.indexOf(internalSeparator)));
+            String forNextItem = itemI.substring(itemI.indexOf(internalSeparator)+1);
+            int iPrio = Integer.valueOf(forNextItem.substring(0,forNextItem.indexOf(internalSeparator)));
+            forNextItem = forNextItem.substring(forNextItem.indexOf(internalSeparator)+1);
+            String iName = forNextItem.substring(0,forNextItem.indexOf(internalSeparator));
+            forNextItem = forNextItem.substring(forNextItem.indexOf(internalSeparator)+1);
             String iInfo = forNextItem;
 
             ListItem lIi = new ListItem(iNum,iPrio,iName,iInfo);
@@ -200,11 +201,11 @@ public class ToDoPage implements ActionListener {
 //                    int itemToEdit = Integer.parseInt(String.valueOf(editBtni.getToolTipText().charAt(editBtni.getToolTipText().length() - 1))) - 1;
                     int itemToEdit = Integer.parseInt(String.valueOf(editBtni.getToolTipText().substring(12)));
                     String listItemInfo = ListItem.getListItemInfo(itemToEdit-1);
-                    String infoForNextItem = listItemInfo.substring(listItemInfo.indexOf(",")+1);
-                    String itemPrio = infoForNextItem.substring(0,infoForNextItem.indexOf(","));
-                    infoForNextItem = infoForNextItem.substring(infoForNextItem.indexOf(",")+1);
-                    String itemName = infoForNextItem.substring(0,infoForNextItem.indexOf(","));
-                    infoForNextItem = infoForNextItem.substring(infoForNextItem.indexOf(",")+1);
+                    String infoForNextItem = listItemInfo.substring(listItemInfo.indexOf(internalSeparator)+1);
+                    String itemPrio = infoForNextItem.substring(0,infoForNextItem.indexOf(internalSeparator));
+                    infoForNextItem = infoForNextItem.substring(infoForNextItem.indexOf(internalSeparator)+1);
+                    String itemName = infoForNextItem.substring(0,infoForNextItem.indexOf(internalSeparator));
+                    infoForNextItem = infoForNextItem.substring(infoForNextItem.indexOf(internalSeparator)+1);
                     String itemInfo = infoForNextItem;
 
                     // add text fields - grab info from item
@@ -276,9 +277,10 @@ public class ToDoPage implements ActionListener {
 //                            String itemInformation = ListItem.getListItemInfo(itemToEdit-1);
                             int itemNumber = Integer.parseInt(String.valueOf(editBtni.getToolTipText().substring(12)));
                             String collatedItemInfo;
-                            collatedItemInfo = itemNumber+","+editPrioField.getText()+","+editNameField.getText()+","+editInfoField.getText();
+                            collatedItemInfo = itemNumber+ internalSeparator +editPrioField.getText()+ internalSeparator +editNameField.getText()+ internalSeparator +editInfoField.getText();
                             ListItem.saveUpdatedListItem(collatedItemInfo);
                             updateListNums();
+                            ListItem.updateListItems();
                             lIPrioi.setText(editPrioField.getText());
                             lINamei.setText(editNameField.getText());
                             editFrame.dispose();
