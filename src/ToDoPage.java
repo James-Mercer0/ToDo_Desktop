@@ -3,6 +3,7 @@ import javax.swing.border.Border;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
 
 import static javax.swing.BorderFactory.createEmptyBorder;
 
@@ -19,6 +20,14 @@ public class ToDoPage implements ActionListener {
     JPanel bottomBar;
     boolean mouseEntered;
 
+    //get the last main window location/size from settings
+    String settings = getSettings();
+    int x = Integer.parseInt(settings.substring(settings.indexOf(":")+2,settings.indexOf(",")));
+    int y = Integer.parseInt(settings.substring(settings.indexOf(",")+1,settings.indexOf("|")));
+    String sizeSettings = settings.substring(settings.indexOf("|")+1);
+    int width = Integer.parseInt(sizeSettings.substring(sizeSettings.indexOf(":")+2,sizeSettings.indexOf(",")));
+    int height = Integer.parseInt(sizeSettings.substring(sizeSettings.indexOf(",")+1));
+
     Point coords = GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint();
 
     public ToDoPage(){
@@ -26,9 +35,12 @@ public class ToDoPage implements ActionListener {
 //        ListItem.updateListItems();
 
         toDoFrame = new JFrame();
-        toDoFrame.setBounds(coords.x-300,coords.y-400,0,0);
+
+//        toDoFrame.setBounds(coords.x-300,coords.y-400,0,0);
+        toDoFrame.setBounds(x,y,0,0);
         toDoFrame.setName("To Do");
-        toDoFrame.setPreferredSize(new Dimension(600, 800));
+//        toDoFrame.setPreferredSize(new Dimension(600, 800));
+        toDoFrame.setPreferredSize(new Dimension(width, height));
         toDoFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         toDoFrame.setUndecorated(true);
 
@@ -165,7 +177,14 @@ public class ToDoPage implements ActionListener {
                     editFrame.addMouseMotionListener(frameDragListener);
                     editFrame.setLayout(new BorderLayout());
                     editFrame.setUndecorated(true);
-                    editFrame.setBounds(coords.x - 250, coords.y - 150, 0, 0);
+
+                    //update location of edit window to match the main window on open
+                    String settings = getSettings();
+                    x = Integer.parseInt(settings.substring(settings.indexOf(":")+2,settings.indexOf(",")));
+                    y = Integer.parseInt(settings.substring(settings.indexOf(",")+1,settings.indexOf("|")));
+
+//                    editFrame.setBounds(coords.x - 250, coords.y - 150, 0, 0);
+                    editFrame.setBounds(x+15, y+60, 0, 0);
                     editFrame.setAlwaysOnTop(true);
 
                     topBar = new JPanel();
@@ -639,12 +658,15 @@ public class ToDoPage implements ActionListener {
 
         private final JFrame frame;
         private Point mouseDownCompCoords = null;
+        private int newX;
+        private int newY;
 
         public FrameDragListener(JFrame frame){
             this.frame = frame;
         }
         public void mouseReleased(MouseEvent e){
             mouseDownCompCoords = null;
+            saveWindowStatus(newX, newY, 0, 0,true);
         }
         public void mousePressed(MouseEvent e){
             mouseDownCompCoords = e.getPoint();
@@ -652,6 +674,8 @@ public class ToDoPage implements ActionListener {
         public void mouseDragged(MouseEvent e){
             Point currCoords = e.getLocationOnScreen();
             frame.setLocation(currCoords.x - mouseDownCompCoords.x, currCoords.y - mouseDownCompCoords.y);
+            newX = currCoords.x-mouseDownCompCoords.x;
+            newY = currCoords.y - mouseDownCompCoords.y;
         }
     }
 
@@ -662,12 +686,15 @@ public class ToDoPage implements ActionListener {
         private Dimension updatedSize;
         int frameX;
         int frameY;
+        int sizeWidth;
+        int sizeHeight;
 
         public PanelResizeListener(JFrame frame){
             this.frame = frame;
         }
         public void mouseReleased(MouseEvent e){
             mouseDownCompCoords = null;
+            saveWindowStatus(0, 0, sizeWidth, sizeHeight, false);
         }
         public void mousePressed(MouseEvent e){
             mouseDownCompCoords = e.getPoint();
@@ -684,8 +711,47 @@ public class ToDoPage implements ActionListener {
             if(height<340){
                 height = 340;
             }
+            sizeWidth = width;
+            sizeHeight = height;
             frame.setBounds(frameX,frameY,width,height);
             frame.setPreferredSize(updatedSize);
+        }
+    }
+
+    private static void saveWindowStatus(int locationX, int locationY, int width, int height, boolean location){
+        String settings = getSettings();
+
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter("./settings/settings.txt"))){
+            if(location){
+                String settingsLocCoords = settings.substring(0,settings.indexOf("|"));
+                settings = settings.replace(settingsLocCoords,"Last Location: "+locationX+","+locationY);
+                bw.write(settings);
+            }
+            if(!location){
+                String settingsLocSize = settings.substring(settings.indexOf("|")+1);
+                settings = settings.replace(settingsLocSize," Last Size: "+width+","+height);
+                bw.write(settings);
+            }
+        } catch (IOException e){
+            throw new RuntimeException();
+        }
+
+
+    }
+
+    private static String getSettings(){
+        try(BufferedReader br = new BufferedReader(new FileReader("./settings/settings.txt"))){
+            StringBuilder sb = new StringBuilder();
+            String line;
+
+            while((line = br.readLine()) != null){
+                sb.append(line);
+            }
+            String contents = sb.toString();
+
+            return contents;
+        } catch (IOException e){
+            throw new RuntimeException(e);
         }
     }
 
