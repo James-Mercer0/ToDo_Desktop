@@ -90,7 +90,6 @@ public class ListItem {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     public static int numOfListItems() {

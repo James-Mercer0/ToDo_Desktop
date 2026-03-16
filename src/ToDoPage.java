@@ -33,14 +33,10 @@ public class ToDoPage implements ActionListener {
 
     public ToDoPage(){
 
-//        ListItem.updateListItems();
-
         toDoFrame = new JFrame();
 
-//        toDoFrame.setBounds(coords.x-300,coords.y-400,0,0);
         toDoFrame.setBounds(x,y,0,0);
         toDoFrame.setName("To Do");
-//        toDoFrame.setPreferredSize(new Dimension(600, 800));
         toDoFrame.setPreferredSize(new Dimension(width, height));
         toDoFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         toDoFrame.setUndecorated(true);
@@ -91,7 +87,6 @@ public class ToDoPage implements ActionListener {
 
         listPanel = new JPanel();
 
-
         listPanel.setBackground(new Color(20,20,20));
         listPanel.setForeground(new Color(222,222,222));
         listPanel.setLayout(new GridBagLayout());
@@ -103,9 +98,9 @@ public class ToDoPage implements ActionListener {
             String itemI = ListItem.getListItemInfo(i);
 
             String internalSeparator = "❒";
-            int iNum = Integer.valueOf(itemI.substring(0,itemI.indexOf(internalSeparator)));
+            int iNum = Integer.parseInt(itemI.substring(0,itemI.indexOf(internalSeparator)));
             String forNextItem = itemI.substring(itemI.indexOf(internalSeparator)+1);
-            int iPrio = Integer.valueOf(forNextItem.substring(0,forNextItem.indexOf(internalSeparator)));
+            int iPrio = Integer.parseInt(forNextItem.substring(0,forNextItem.indexOf(internalSeparator)));
             forNextItem = forNextItem.substring(forNextItem.indexOf(internalSeparator)+1);
             String iName = forNextItem.substring(0,forNextItem.indexOf(internalSeparator));
             forNextItem = forNextItem.substring(forNextItem.indexOf(internalSeparator)+1);
@@ -139,7 +134,6 @@ public class ToDoPage implements ActionListener {
             con.gridx = 2;
             con.weightx = 0.65;
 
-            JScrollPane jSi = new JScrollPane(lINamei);
             lINamei.setAutoscrolls(true);
             listPanel.add(lINamei, con);
 
@@ -155,7 +149,7 @@ public class ToDoPage implements ActionListener {
             binBtni.setToolTipText("Delete Button "+(i+1));
             binBtni.addActionListener( new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        String buttonNum = String.valueOf(binBtni.getToolTipText().substring(14));
+                        String buttonNum = binBtni.getToolTipText().substring(14);
                         ListItem.deleteItem(Integer.parseInt(buttonNum));
                         listPanel.remove(lINumi);
                         listPanel.remove(lIPrioi);
@@ -198,7 +192,6 @@ public class ToDoPage implements ActionListener {
                     x = Integer.parseInt(settings.substring(settings.indexOf(":")+2,settings.indexOf(",")));
                     y = Integer.parseInt(settings.substring(settings.indexOf(",")+1,settings.indexOf("|")));
 
-//                    editFrame.setBounds(coords.x - 250, coords.y - 150, 0, 0);
                     editFrame.setBounds(x+15, y+60, 0, 0);
                     editFrame.setAlwaysOnTop(true);
 
@@ -232,8 +225,7 @@ public class ToDoPage implements ActionListener {
 
                     JPanel editPanel = new JPanel();
 
-//                    int itemToEdit = Integer.parseInt(String.valueOf(editBtni.getToolTipText().charAt(editBtni.getToolTipText().length() - 1))) - 1;
-                    int itemToEdit = Integer.parseInt(String.valueOf(editBtni.getToolTipText().substring(12)));
+                    int itemToEdit = Integer.parseInt(editBtni.getToolTipText().substring(12));
                     String listItemInfo = ListItem.getListItemInfo(itemToEdit-1);
                     String infoForNextItem = listItemInfo.substring(listItemInfo.indexOf(internalSeparator)+1);
                     String itemPrio = infoForNextItem.substring(0,infoForNextItem.indexOf(internalSeparator));
@@ -308,8 +300,7 @@ public class ToDoPage implements ActionListener {
 
                     editSaveBtn.addActionListener(new ActionListener(){
                         public void actionPerformed(ActionEvent e){
-//                            String itemInformation = ListItem.getListItemInfo(itemToEdit-1);
-                            int itemNumber = Integer.parseInt(String.valueOf(editBtni.getToolTipText().substring(12)));
+                            int itemNumber = Integer.parseInt(editBtni.getToolTipText().substring(12));
                             String collatedItemInfo;
                             collatedItemInfo = itemNumber+ internalSeparator +editPrioField.getText()+ internalSeparator +editNameField.getText()+ internalSeparator +editInfoField.getText();
                             ListItem.saveUpdatedListItem(collatedItemInfo);
@@ -330,12 +321,10 @@ public class ToDoPage implements ActionListener {
                     bottomBar.setBorder(BorderFactory.createEmptyBorder(0,180,10,180));
 
                     editFrame.add(bottomBar, BorderLayout.SOUTH);
-
                     editFrame.add(topBar, BorderLayout.NORTH);
                     editFrame.add(editPanel);
                     editFrame.pack();
                     editFrame.setVisible(true);
-
                 }
             });
 
@@ -432,8 +421,6 @@ public class ToDoPage implements ActionListener {
                 prepBtn(addCloseBtn);
 
                 topBar.add(addCloseBtn, BorderLayout.EAST);
-
-                int itemToEdit = 0;
 
                 // add text fields - grab info from item
                 JLabel prioLabel = new JLabel("Priority:");
@@ -580,7 +567,7 @@ public class ToDoPage implements ActionListener {
                 example.setText(String.valueOf(i+1));
             } else {
                 JLabel example = (JLabel) listPanel.getComponent((5*i));
-                example.setText(String.valueOf(i+1)+"");
+                example.setText(i+1+"");
             }
 
         }
@@ -714,7 +701,6 @@ public class ToDoPage implements ActionListener {
 
         private final JFrame frame;
         private Point mouseDownCompCoords = null;
-        private Dimension updatedSize;
         int frameX;
         int frameY;
         int sizeWidth;
@@ -745,7 +731,6 @@ public class ToDoPage implements ActionListener {
             sizeWidth = width;
             sizeHeight = height;
             frame.setBounds(frameX,frameY,width,height);
-            frame.setPreferredSize(updatedSize);
         }
     }
 
@@ -778,9 +763,8 @@ public class ToDoPage implements ActionListener {
             while((line = br.readLine()) != null){
                 sb.append(line);
             }
-            String contents = sb.toString();
 
-            return contents;
+            return sb.toString();
         } catch (IOException e){
             throw new RuntimeException(e);
         }
