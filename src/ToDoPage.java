@@ -595,9 +595,10 @@ public class ToDoPage implements ActionListener {
                 JButton example = (JButton) listPanel.getComponent(4+(i*5));
                 example.setToolTipText("Delete Button "+(i+1));
             }
-
         }
     }
+
+    boolean minimized = false;
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -606,7 +607,17 @@ public class ToDoPage implements ActionListener {
         }
 
         if(e.getSource() == minimizeBtn){
-            toDoFrame.setState(Frame.ICONIFIED);
+            minimized = true;
+            ActionListener action = new ActionListener(){
+                public void actionPerformed(ActionEvent evt){
+                    minimizeBtn.setBackground(new Color(20,20,20));
+                    toDoFrame.setState(Frame.ICONIFIED);
+                }
+            };
+
+            Timer timer = new Timer(15,action);
+            timer.setRepeats(false);
+            timer.start();
         }
     }
 
@@ -640,7 +651,6 @@ public class ToDoPage implements ActionListener {
         btn.addActionListener(this);
 
         btn.addMouseListener(new MouseListener() {
-
             boolean pressed;
 
             @Override
@@ -656,7 +666,7 @@ public class ToDoPage implements ActionListener {
             @Override
             public void mouseReleased(MouseEvent e) {
                 pressed = true;
-                if(mouseEntered){
+                if(mouseEntered & !minimized){
                     btn.setBackground(new Color(10,10,10));
                 } else {
                     btn.setBackground(new Color(20,20,20));
