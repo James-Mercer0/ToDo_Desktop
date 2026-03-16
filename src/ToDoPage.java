@@ -41,7 +41,7 @@ public class ToDoPage implements ActionListener {
         toDoFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         toDoFrame.setUndecorated(true);
 
-        FrameDragListener frameDragListener = new FrameDragListener(toDoFrame);
+        FrameDragListener frameDragListener = new FrameDragListener(toDoFrame, true);
         toDoFrame.addMouseListener(frameDragListener);
         toDoFrame.addMouseMotionListener(frameDragListener);
         toDoFrame.setLayout(new BorderLayout());
@@ -98,15 +98,12 @@ public class ToDoPage implements ActionListener {
             String itemI = ListItem.getListItemInfo(i);
 
             String internalSeparator = "❒";
+
             int iNum = Integer.parseInt(itemI.substring(0,itemI.indexOf(internalSeparator)));
             String forNextItem = itemI.substring(itemI.indexOf(internalSeparator)+1);
             int iPrio = Integer.parseInt(forNextItem.substring(0,forNextItem.indexOf(internalSeparator)));
             forNextItem = forNextItem.substring(forNextItem.indexOf(internalSeparator)+1);
             String iName = forNextItem.substring(0,forNextItem.indexOf(internalSeparator));
-            forNextItem = forNextItem.substring(forNextItem.indexOf(internalSeparator)+1);
-            String iInfo = forNextItem;
-
-            ListItem lIi = new ListItem(iNum,iPrio,iName,iInfo);
 
             JLabel lINumi = new JLabel(String.valueOf(iNum));
             prepLabel(lINumi);
@@ -147,8 +144,7 @@ public class ToDoPage implements ActionListener {
             binBtni.setPreferredSize(new Dimension(30,18));
             binBtni.setHorizontalTextPosition(SwingConstants.CENTER);
             binBtni.setToolTipText("Delete Button "+(i+1));
-            binBtni.addActionListener( new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
+            binBtni.addActionListener( e -> {
                         String buttonNum = binBtni.getToolTipText().substring(14);
                         ListItem.deleteItem(Integer.parseInt(buttonNum));
                         listPanel.remove(lINumi);
@@ -161,13 +157,11 @@ public class ToDoPage implements ActionListener {
                         ListItem.updateListItems();
                         listPanel.repaint();
                         listPanel.updateUI();
-                    }
-                }
-            );
+
+            });
             con.gridy = i;
             con.gridx = 3;
             con.weightx = 0.05;
-
             listPanel.add(binBtni, con);
 
             prepBtn(editBtni);
@@ -181,7 +175,7 @@ public class ToDoPage implements ActionListener {
             editBtni.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     JFrame editFrame = new JFrame();
-                    FrameDragListener frameDragListener = new FrameDragListener(editFrame);
+                    FrameDragListener frameDragListener = new FrameDragListener(editFrame, false);
                     editFrame.addMouseListener(frameDragListener);
                     editFrame.addMouseMotionListener(frameDragListener);
                     editFrame.setLayout(new BorderLayout());
@@ -214,11 +208,8 @@ public class ToDoPage implements ActionListener {
                     editCloseBtn.setBorder(createEmptyBorder(0, 0, 6, 0));
                     editCloseBtn.setPreferredSize(new Dimension(50, 30));
                     editCloseBtn.setFont(new Font("Arial", Font.PLAIN, 38));
-                    editCloseBtn.addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            editFrame.dispose();
-                        }
-                    });
+                    editCloseBtn.addActionListener(e1 -> editFrame.dispose());
+
                     prepBtn(editCloseBtn);
 
                     topBar.add(editCloseBtn, BorderLayout.EAST);
@@ -298,19 +289,17 @@ public class ToDoPage implements ActionListener {
                     editSaveBtn.setBorder(BorderFactory.createLineBorder((new Color(50,50,50)),1));
                     editSaveBtn.setBorderPainted(true);
 
-                    editSaveBtn.addActionListener(new ActionListener(){
-                        public void actionPerformed(ActionEvent e){
-                            int itemNumber = Integer.parseInt(editBtni.getToolTipText().substring(12));
-                            String collatedItemInfo;
-                            collatedItemInfo = itemNumber+ internalSeparator +editPrioField.getText()+ internalSeparator +editNameField.getText()+ internalSeparator +editInfoField.getText();
-                            ListItem.saveUpdatedListItem(collatedItemInfo);
-                            updateListNums();
-                            ListItem.updateListItems();
-                            lIPrioi.setText(editPrioField.getText());
-                            lINamei.setText(editNameField.getText());
-                            editFrame.dispose();
-                            toDoFrame.repaint();
-                        }
+                    editSaveBtn.addActionListener(e2 ->{
+                        int itemNumber = Integer.parseInt(editBtni.getToolTipText().substring(12));
+                        String collatedItemInfo;
+                        collatedItemInfo = itemNumber+ internalSeparator +editPrioField.getText()+ internalSeparator +editNameField.getText()+ internalSeparator +editInfoField.getText();
+                        ListItem.saveUpdatedListItem(collatedItemInfo);
+                        updateListNums();
+                        ListItem.updateListItems();
+                        lIPrioi.setText(editPrioField.getText());
+                        lINamei.setText(editNameField.getText());
+                        editFrame.dispose();
+                        toDoFrame.repaint();
                     });
 
                     bottomBar = new JPanel();
@@ -386,12 +375,18 @@ public class ToDoPage implements ActionListener {
                 JPanel addPanel = new JPanel();
 
 
-                FrameDragListener frameDragListener = new FrameDragListener(addFrame);
+                FrameDragListener frameDragListener = new FrameDragListener(addFrame, false);
                 addFrame.addMouseListener(frameDragListener);
                 addFrame.addMouseMotionListener(frameDragListener);
                 addFrame.setLayout(new BorderLayout());
                 addFrame.setUndecorated(true);
-                addFrame.setBounds(coords.x - 250, coords.y - 150, 0, 0);
+
+                //update location of add window to match the main window on open
+                String settings = getSettings();
+                x = Integer.parseInt(settings.substring(settings.indexOf(":")+2,settings.indexOf(",")));
+                y = Integer.parseInt(settings.substring(settings.indexOf(",")+1,settings.indexOf("|")));
+
+                addFrame.setBounds(x+15, y+60, 0, 0);
                 addFrame.setAlwaysOnTop(false);
 
                 topBar = new JPanel();
@@ -413,11 +408,7 @@ public class ToDoPage implements ActionListener {
                 addCloseBtn.setBorder(createEmptyBorder(0, 0, 6, 0));
                 addCloseBtn.setPreferredSize(new Dimension(50, 30));
                 addCloseBtn.setFont(new Font("Arial", Font.PLAIN, 38));
-                addCloseBtn.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        addFrame.dispose();
-                    }
-                });
+                addCloseBtn.addActionListener(e3 -> addFrame.dispose());
                 prepBtn(addCloseBtn);
 
                 topBar.add(addCloseBtn, BorderLayout.EAST);
@@ -485,30 +476,28 @@ public class ToDoPage implements ActionListener {
                 addSaveBtn.setBorderPainted(true);
 
                 // add new Task to list
-                addSaveBtn.addActionListener(new ActionListener(){
-                    public void actionPerformed(ActionEvent e){
-                        if(!(addPrioField.getText().length()>1 || intIsValid(addPrioField.getText()))){
-                            JOptionPane.showMessageDialog(null, "Your priority number is invalid - please add a valid number.");
-                            return;
-                        }
+                addSaveBtn.addActionListener(e4 -> {
+                    if(!(addPrioField.getText().length()>1 || intIsValid(addPrioField.getText()))){
+                        JOptionPane.showMessageDialog(null, "Your priority number is invalid - please add a valid number.");
+                        return;
+                    }
 
-                        if(addNameField.getText().isEmpty()){
-                            JOptionPane.showMessageDialog(null, "Please add a task name.");
-                            return;
-                        }
+                    if(addNameField.getText().isEmpty()){
+                        JOptionPane.showMessageDialog(null, "Please add a task name.");
+                        return;
+                    }
 
-                        ListItem nli = new ListItem(ListItem.numOfListItems()+1,Integer.parseInt(addPrioField.getText()),addNameField.getText(),addInfoField.getText());
-                        updateListNums();
-                        nli.saveListItem();
-                        addFrame.dispose();
-                        toDoFrame.dispose();
-                        ToDoPage tdp = new ToDoPage();
-                        //Ensure all updated list items are shown from left-most character
-                        for(int i=0;i<ListItem.numOfListItems()-1;i++){
-                            JTextField nameField;
-                            nameField = (JTextField) tdp.listPanel.getComponent(2+(5*i));
-                            nameField.setCaretPosition(0);
-                        }
+                    ListItem nli = new ListItem(ListItem.numOfListItems()+1,Integer.parseInt(addPrioField.getText()),addNameField.getText(),addInfoField.getText());
+                    updateListNums();
+                    nli.saveListItem();
+                    addFrame.dispose();
+                    toDoFrame.dispose();
+                    ToDoPage tdp = new ToDoPage();
+                    //Ensure all updated list items are shown from left-most character
+                    for(int i=0;i<ListItem.numOfListItems()-1;i++){
+                        JTextField nameField;
+                        nameField = (JTextField) tdp.listPanel.getComponent(2+(5*i));
+                        nameField.setCaretPosition(0);
                     }
                 });
 
@@ -575,13 +564,9 @@ public class ToDoPage implements ActionListener {
 
     public void updateBtnNums(){
         for(int i=0;i<ListItem.numOfListItems();i++) {
-            if(i==0){
-                JButton example = (JButton) listPanel.getComponent(4);
-                example.setToolTipText("Delete Button "+(i+1));
-            } else {
-                JButton example = (JButton) listPanel.getComponent(4+(i*5));
-                example.setToolTipText("Delete Button "+(i+1));
-            }
+            JButton example;
+            example = (JButton) listPanel.getComponent(4 + (i * 5));
+            example.setToolTipText("Delete Button "+(i+1));
         }
     }
 
@@ -595,11 +580,9 @@ public class ToDoPage implements ActionListener {
 
         if(e.getSource() == minimizeBtn){
             minimized = true;
-            ActionListener action = new ActionListener(){
-                public void actionPerformed(ActionEvent evt){
-                    minimizeBtn.setBackground(new Color(20,20,20));
-                    toDoFrame.setState(Frame.ICONIFIED);
-                }
+            ActionListener action = evt -> {
+                minimizeBtn.setBackground(new Color(20,20,20));
+                toDoFrame.setState(Frame.ICONIFIED);
             };
 
             Timer timer = new Timer(15,action);
@@ -678,13 +661,14 @@ public class ToDoPage implements ActionListener {
         private Point mouseDownCompCoords = null;
         private int newX;
         private int newY;
+        private final boolean isMainFrame;
 
-        public FrameDragListener(JFrame frame){
-            this.frame = frame;
-        }
+        public FrameDragListener(JFrame frame, boolean mainFrame){this.frame = frame; isMainFrame = mainFrame;}
         public void mouseReleased(MouseEvent e){
             mouseDownCompCoords = null;
-            saveWindowStatus(newX, newY, 0, 0,true);
+            if(isMainFrame){
+                saveWindowStatus(newX, newY, 0, 0,true);
+            }
         }
         public void mousePressed(MouseEvent e){
             mouseDownCompCoords = e.getPoint();
@@ -751,8 +735,6 @@ public class ToDoPage implements ActionListener {
         } catch (IOException e){
             throw new RuntimeException();
         }
-
-
     }
 
     private static String getSettings(){
