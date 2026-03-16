@@ -16,6 +16,7 @@ public class ToDoPage implements ActionListener {
     JPanel bottomPanel;
     JPanel resizePanel;
     JButton closeBtn;
+    JButton minimizeBtn;
     JPanel topBar;
     JPanel bottomBar;
     boolean mouseEntered;
@@ -53,13 +54,27 @@ public class ToDoPage implements ActionListener {
         topBar.setBackground(new Color(30,30,30));
         topBar.setLayout(new BorderLayout());
 
+        JPanel topBarBtnPanel = new JPanel();
+        topBarBtnPanel.setBackground(new Color(30,30,30));
+        topBarBtnPanel.setLayout(new GridLayout());
+        topBarBtnPanel.setPreferredSize(new Dimension(100,30));
+
         closeBtn = new JButton("x");
         closeBtn.setBorder(createEmptyBorder(0,0,6,0));
         closeBtn.setPreferredSize(new Dimension(50,30));
         closeBtn.setFont(new Font("Arial", Font.PLAIN, 38));
         prepBtn(closeBtn);
 
-        topBar.add(closeBtn, BorderLayout.EAST);
+        minimizeBtn = new JButton("–");
+        minimizeBtn.setBorder(createEmptyBorder(0,0,6,0));
+        minimizeBtn.setPreferredSize(new Dimension(38,30));
+        minimizeBtn.setFont(new Font("Arial", Font.PLAIN, 36));
+        prepBtn(minimizeBtn);
+
+        topBarBtnPanel.add(minimizeBtn);
+        topBarBtnPanel.add(closeBtn);
+
+        topBar.add(topBarBtnPanel, BorderLayout.EAST);
 
         toDoPanel = new JPanel();
         toDoPanel.setLayout(new BorderLayout());
@@ -590,6 +605,9 @@ public class ToDoPage implements ActionListener {
             System.exit(0);
         }
 
+        if(e.getSource() == minimizeBtn){
+            toDoFrame.setState(Frame.ICONIFIED);
+        }
     }
 
     public void prepLabel(JLabel label) {
@@ -623,22 +641,25 @@ public class ToDoPage implements ActionListener {
 
         btn.addMouseListener(new MouseListener() {
 
+            boolean pressed;
+
             @Override
             public void mouseClicked(MouseEvent e) {
             }
             @Override
             public void mousePressed(MouseEvent e) {
-                if(mouseEntered == true) {
+                pressed = true;
+                if(mouseEntered) {
                     btn.setBackground(new Color(100, 100, 100));
                 }
             }
             @Override
             public void mouseReleased(MouseEvent e) {
-                if(mouseEntered == true){
+                pressed = true;
+                if(mouseEntered){
                     btn.setBackground(new Color(10,10,10));
                 } else {
                     btn.setBackground(new Color(20,20,20));
-
                 }
             }
             @Override
