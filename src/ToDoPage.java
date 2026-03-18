@@ -300,6 +300,12 @@ public class ToDoPage implements ActionListener {
                         lINamei.setText(editNameField.getText());
                         editFrame.dispose();
                         toDoFrame.repaint();
+                        //Ensure updated list item is shown from left-most character
+                            for(int i=0;i<ListItem.numOfListItems()-1;i++){
+                                JTextField nameField;
+                                nameField = (JTextField) listPanel.getComponent(2+(5*i));
+                                nameField.setCaretPosition(0);
+                            }
                     });
 
                     bottomBar = new JPanel();
@@ -565,7 +571,7 @@ public class ToDoPage implements ActionListener {
     public void updateBtnNums(){
         for(int i=0;i<ListItem.numOfListItems();i++) {
             JButton example;
-            example = (JButton) listPanel.getComponent(4 + (i * 5));
+            example = (JButton) listPanel.getComponent(3 + (i * 5));
             example.setToolTipText("Delete Button "+(i+1));
         }
     }
