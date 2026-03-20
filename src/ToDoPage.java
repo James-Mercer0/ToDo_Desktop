@@ -537,6 +537,7 @@ public class ToDoPage implements ActionListener {
 
         JScrollPane listSp = new JScrollPane(listPanel);
         listSp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        listSp.getVerticalScrollBar().setUnitIncrement(4);
         listSp.setBorder(null);
 
         bottomPanel.add(blankPnl, BorderLayout.WEST);
