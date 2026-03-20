@@ -715,8 +715,8 @@ public class ToDoPage implements ActionListener {
         public void mouseDragged(MouseEvent e){
             Point currCoords = e.getLocationOnScreen();
             int width = currCoords.x-mouseDownCompCoords.x-frame.getX()+25;
-            if(width<380){
-                width = 380;
+            if(width<500){
+                width = 500;
             }
             int height = currCoords.y-mouseDownCompCoords.y-frameY+25;
             if(height<340){
