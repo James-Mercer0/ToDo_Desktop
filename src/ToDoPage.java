@@ -535,12 +535,16 @@ public class ToDoPage implements ActionListener {
 
         btnSpacing.add(newListItemBtn);
 
+        JScrollPane listSp = new JScrollPane(listPanel);
+        listSp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        listSp.setBorder(null);
+
         bottomPanel.add(blankPnl, BorderLayout.WEST);
         bottomPanel.add(btnSpacing, BorderLayout.CENTER);
 
         toDoFrame.add(topBar, BorderLayout.NORTH);
         toDoFrame.add(bottomPanel, BorderLayout.SOUTH);
-        toDoPanel.add(listPanel, BorderLayout.CENTER);
+        toDoPanel.add(listSp, BorderLayout.CENTER);
         toDoFrame.add(toDoPanel);
         toDoFrame.pack();
         toDoFrame.setVisible(true);
