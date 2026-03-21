@@ -94,6 +94,7 @@ public class ToDoPage implements ActionListener {
 
         int loops=0;
 
+        //for each task in the list, create the task and buttons for each task
         for(int i=0;i<ListItem.numOfListItems();i++){
             String itemI = ListItem.getListItemInfo(i);
 
@@ -172,6 +173,7 @@ public class ToDoPage implements ActionListener {
             editBtni.setHorizontalTextPosition(SwingConstants.CENTER);
             editBtni.setToolTipText("Edit Button "+(i+1));
 
+            //Edit button action - creates edit window
             editBtni.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     JFrame editFrame = new JFrame();
@@ -288,6 +290,7 @@ public class ToDoPage implements ActionListener {
                         }
                     });
 
+                    //Edit window - add elements with appropriate spacing + layout
                     GridBagConstraints gbc = new GridBagConstraints();
                     editPanel.setLayout(new GridBagLayout());
 
@@ -319,7 +322,19 @@ public class ToDoPage implements ActionListener {
                     editSaveBtn.setBorder(BorderFactory.createLineBorder((new Color(50,50,50)),1));
                     editSaveBtn.setBorderPainted(true);
 
+                    //Edit window save button actions --
                     editSaveBtn.addActionListener(e2 ->{
+                        // Check if updated priority is a valid number
+                        if(!(editPrioField.getText().length()>1 || intIsValid(editPrioField.getText()))){
+                            JOptionPane.showMessageDialog(null, "Your priority number is invalid - please add a valid number.");
+                            return;
+                        }
+                        //check if updated task has a name
+                        if(editNameField.getText().isEmpty()){
+                            JOptionPane.showMessageDialog(null, "Please add a task name.");
+                            return;
+                        }
+
                         int itemNumber = Integer.parseInt(editBtni.getToolTipText().substring(12));
                         String collatedItemInfo;
                         collatedItemInfo = itemNumber+ internalSeparator +editPrioField.getText()+ internalSeparator +editNameField.getText()+ internalSeparator +editInfoField.getText();
@@ -511,7 +526,7 @@ public class ToDoPage implements ActionListener {
                     }
                 });
 
-
+                //Add new task window - add elements with appropriate spacing + layout
                 GridBagConstraints gbc = new GridBagConstraints();
                 addPanel.setLayout(new GridBagLayout());
 
@@ -545,11 +560,12 @@ public class ToDoPage implements ActionListener {
 
                 // add new Task to list
                 addSaveBtn.addActionListener(e4 -> {
+                    //ensure that the priority number is valid
                     if(!(addPrioField.getText().length()>1 || intIsValid(addPrioField.getText()))){
                         JOptionPane.showMessageDialog(null, "Your priority number is invalid - please add a valid number.");
                         return;
                     }
-
+                    //ensure that the task has a title
                     if(addNameField.getText().isEmpty()){
                         JOptionPane.showMessageDialog(null, "Please add a task name.");
                         return;
