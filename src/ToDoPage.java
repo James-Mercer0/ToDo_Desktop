@@ -236,6 +236,9 @@ public class ToDoPage implements ActionListener {
 
                     JLabel nameLabel = new JLabel("Name:");
                     prepLabel(nameLabel);
+                    Border blankBorder = BorderFactory.createEmptyBorder(15,0,0,0);
+                    Border lineBorder = BorderFactory.createLineBorder((new Color(50,50,50)),1);
+                    nameLabel.setBorder(BorderFactory.createCompoundBorder(blankBorder,lineBorder));
                     JTextField editNameField = new JTextField();
                     prepTextField(editNameField);
                     editNameField.setEditable(true);
@@ -244,7 +247,8 @@ public class ToDoPage implements ActionListener {
 
                     JLabel infoLabel = new JLabel("Info:");
                     prepLabel(infoLabel);
-                    JTextArea editInfoField = new JTextArea(4, 0);
+                    infoLabel.setBorder(BorderFactory.createCompoundBorder(blankBorder,lineBorder));
+                    JTextArea editInfoField = new JTextArea(3, 0);
                     editInfoField.setBackground(new Color(20, 20, 20));
                     editInfoField.setForeground(new Color(220, 220, 220));
                     editInfoField.setBorder(BorderFactory.createLineBorder(new Color(50, 50, 50)));
@@ -253,35 +257,61 @@ public class ToDoPage implements ActionListener {
                     editInfoField.setText(itemInfo);
 
                     JScrollPane sp = new JScrollPane(editInfoField);
-                    Border lineBorder = BorderFactory.createLineBorder(new Color(50, 50, 50));
                     Border emptyBorder = BorderFactory.createEmptyBorder(5, 5, 5, 5);
                     editInfoField.setBorder(emptyBorder);
                     sp.setBorder(lineBorder);
-                    sp.getVerticalScrollBar().setUnitIncrement(2);
+                    sp.getVerticalScrollBar().setUnitIncrement(3);
                     sp.getVerticalScrollBar().setBackground(new Color(20, 20, 20));
                     sp.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
                         @Override
                         protected void configureScrollBarColors() {
                             this.thumbColor = new Color(50, 50, 50);
                         }
-
                         public Dimension getPreferredSize(JComponent c) {
                             return new Dimension(12, 12);
                         }
+                        @Override
+                        protected JButton createDecreaseButton(int orientation) {
+                            return createZeroButton();
+                        }
+                        @Override
+                        protected JButton createIncreaseButton(int orientation) {
+                            return createZeroButton();
+                        }
+                        private JButton createZeroButton() {
+                            JButton jbutton = new JButton();
+                            Dimension zero = new Dimension(0,0);
+                            jbutton.setPreferredSize(zero);
+                            jbutton.setMinimumSize(zero);
+                            jbutton.setMaximumSize(zero);
+                            return jbutton;
+                        }
                     });
 
-                    editPanel.add(prioLabel);
-                    editPanel.add(editPrioField);
-                    editPanel.add(nameLabel);
-                    editPanel.add(editNameField);
-                    editPanel.add(infoLabel);
-                    editPanel.add(sp);
+                    GridBagConstraints gbc = new GridBagConstraints();
+                    editPanel.setLayout(new GridBagLayout());
 
-                    editPanel.setLayout(new GridLayout(0, 1));
-                    editPanel.setBorder(createEmptyBorder(50, 50, 50, 50));
+                    gbc.fill = GridBagConstraints.BOTH;
+                    gbc.weightx = 1;
+                    gbc.gridwidth = 1;
+                    gbc.gridheight = 1;
+                    gbc.gridy = 1;
+                    editPanel.add(prioLabel, gbc);
+                    gbc.gridy = 2;
+                    editPanel.add(editPrioField, gbc);
+                    gbc.gridy = 3;
+                    editPanel.add(nameLabel, gbc);
+                    gbc.gridy = 4;
+                    editPanel.add(editNameField, gbc);
+                    gbc.gridy = 5;
+                    editPanel.add(infoLabel, gbc);
+                    gbc.gridy = 6;
+                    editPanel.add(sp, gbc);
+
+                    editPanel.setBorder(createEmptyBorder(0, 50, 0, 50));
 
                     editPanel.setBackground(new Color(20, 20, 20));
-                    editFrame.setPreferredSize(new Dimension(500, 300));
+                    editFrame.setPreferredSize(new Dimension(500, 350));
 
                     JButton editSaveBtn = new JButton("Update");
                     prepBtn(editSaveBtn);
@@ -429,6 +459,10 @@ public class ToDoPage implements ActionListener {
 
                 JLabel nameLabel = new JLabel("Name:");
                 prepLabel(nameLabel);
+                Border blankBorder = BorderFactory.createEmptyBorder(15,0,0,0);
+                Border lineBorder = BorderFactory.createLineBorder((new Color(50,50,50)),1);
+                nameLabel.setBorder(BorderFactory.createCompoundBorder(blankBorder,lineBorder));
+
                 JTextField addNameField = new JTextField();
                 prepTextField(addNameField);
                 addNameField.setEditable(true);
@@ -437,7 +471,8 @@ public class ToDoPage implements ActionListener {
 
                 JLabel infoLabel = new JLabel("Info:");
                 prepLabel(infoLabel);
-                JTextArea addInfoField = new JTextArea(4, 0);
+                infoLabel.setBorder(BorderFactory.createCompoundBorder(blankBorder,lineBorder));
+                JTextArea addInfoField = new JTextArea(3, 0);
                 addInfoField.setBackground(new Color(20, 20, 20));
                 addInfoField.setForeground(new Color(220, 220, 220));
                 addInfoField.setBorder(BorderFactory.createLineBorder(new Color(50, 50, 50)));
@@ -445,37 +480,64 @@ public class ToDoPage implements ActionListener {
                 addInfoField.setLineWrap(true);
 
                 JScrollPane sp = new JScrollPane(addInfoField);
-                Border lineBorder = BorderFactory.createLineBorder(new Color(50, 50, 50));
                 Border emptyBorder = BorderFactory.createEmptyBorder(5, 5, 5, 5);
                 addInfoField.setBorder(emptyBorder);
                 sp.setBorder(lineBorder);
-                sp.getVerticalScrollBar().setUnitIncrement(2);
+                sp.getVerticalScrollBar().setUnitIncrement(3);
                 sp.getVerticalScrollBar().setBackground(new Color(20, 20, 20));
                 sp.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
                     @Override
                     protected void configureScrollBarColors() {
                         this.thumbColor = new Color(50, 50, 50);
                     }
-
                     public Dimension getPreferredSize(JComponent c) {
                         return new Dimension(12, 12);
                     }
+                    @Override
+                    protected JButton createDecreaseButton(int orientation) {
+                        return createZeroButton();
+                    }
+                    @Override
+                    protected JButton createIncreaseButton(int orientation) {
+                        return createZeroButton();
+                    }
+                    private JButton createZeroButton() {
+                        JButton jbutton = new JButton();
+                        Dimension zero = new Dimension(0,0);
+                        jbutton.setPreferredSize(zero);
+                        jbutton.setMinimumSize(zero);
+                        jbutton.setMaximumSize(zero);
+                        return jbutton;
+                    }
                 });
 
-                addPanel.add(prioLabel);
-                addPanel.add(addPrioField);
-                addPanel.add(nameLabel);
-                addPanel.add(addNameField);
-                addPanel.add(infoLabel);
-                addPanel.add(sp);
 
-                addPanel.setLayout(new GridLayout(0, 1));
-                addPanel.setBorder(createEmptyBorder(50, 50, 50, 50));
+                GridBagConstraints gbc = new GridBagConstraints();
+                addPanel.setLayout(new GridBagLayout());
+
+                gbc.fill = GridBagConstraints.BOTH;
+                gbc.weightx = 1;
+                gbc.gridwidth = 1;
+                gbc.gridheight = 1;
+                gbc.gridy = 1;
+                addPanel.add(prioLabel, gbc);
+                gbc.gridy = 2;
+                addPanel.add(addPrioField, gbc);
+                gbc.gridy = 3;
+                addPanel.add(nameLabel, gbc);
+                gbc.gridy = 4;
+                addPanel.add(addNameField, gbc);
+                gbc.gridy = 5;
+                addPanel.add(infoLabel, gbc);
+                gbc.gridy = 6;
+                addPanel.add(sp, gbc);
+
+                addPanel.setBorder(createEmptyBorder(0, 50, 0, 50));
 
                 addPanel.setBackground(new Color(20, 20, 20));
-                addPanel.setPreferredSize(new Dimension(500, 300));
+                addPanel.setPreferredSize(new Dimension(500, 258));
 
-                JButton addSaveBtn = new JButton("Update");
+                JButton addSaveBtn = new JButton("Add Task");
                 prepBtn(addSaveBtn);
                 addSaveBtn.setPreferredSize(new Dimension(40,80));
                 addSaveBtn.setBorder(BorderFactory.createLineBorder((new Color(50,50,50)),1));
@@ -537,8 +599,34 @@ public class ToDoPage implements ActionListener {
 
         JScrollPane listSp = new JScrollPane(listPanel);
         listSp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        listSp.getVerticalScrollBar().setUnitIncrement(4);
+        listSp.getVerticalScrollBar().setUnitIncrement(3);
         listSp.setBorder(null);
+        listSp.getVerticalScrollBar().setBackground(new Color(20,20,20));
+        listSp.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
+            @Override
+            protected void configureScrollBarColors() {
+                this.thumbColor = new Color(50, 50, 50);
+            }
+            public Dimension getPreferredSize(JComponent c) {
+                return new Dimension(12, 12);
+            }
+            @Override
+            protected JButton createDecreaseButton(int orientation) {
+                return createZeroButton();
+            }
+            @Override
+            protected JButton createIncreaseButton(int orientation) {
+                return createZeroButton();
+            }
+            private JButton createZeroButton() {
+                JButton jbutton = new JButton();
+                Dimension zero = new Dimension(0,0);
+                jbutton.setPreferredSize(zero);
+                jbutton.setMinimumSize(zero);
+                jbutton.setMaximumSize(zero);
+                return jbutton;
+            }
+        });
 
         bottomPanel.add(blankPnl, BorderLayout.WEST);
         bottomPanel.add(btnSpacing, BorderLayout.CENTER);
