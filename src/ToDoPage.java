@@ -331,7 +331,7 @@ public class ToDoPage implements ActionListener {
                         editFrame.dispose();
                         toDoFrame.repaint();
                         //Ensure updated list item is shown from left-most character
-                            for(int i=0;i<ListItem.numOfListItems()-1;i++){
+                            for(int i=0;i<ListItem.numOfListItems();i++){
                                 JTextField nameField;
                                 nameField = (JTextField) listPanel.getComponent(2+(5*i));
                                 nameField.setCaretPosition(0);
@@ -562,7 +562,7 @@ public class ToDoPage implements ActionListener {
                     toDoFrame.dispose();
                     ToDoPage tdp = new ToDoPage();
                     //Ensure all updated list items are shown from left-most character
-                    for(int i=0;i<ListItem.numOfListItems()-1;i++){
+                    for(int i=0;i<ListItem.numOfListItems();i++){
                         JTextField nameField;
                         nameField = (JTextField) tdp.listPanel.getComponent(2+(5*i));
                         nameField.setCaretPosition(0);
