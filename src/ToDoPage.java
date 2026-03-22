@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
 
+import static java.lang.Integer.parseInt;
 import static javax.swing.BorderFactory.createEmptyBorder;
 
 public class ToDoPage implements ActionListener {
@@ -26,11 +27,11 @@ public class ToDoPage implements ActionListener {
 
     //get the last main window location/size from settings
     String settings = getSettings();
-    int x = Integer.parseInt(settings.substring(settings.indexOf(":")+2,settings.indexOf(",")));
-    int y = Integer.parseInt(settings.substring(settings.indexOf(",")+1,settings.indexOf("|")));
+    int x = parseInt(settings.substring(settings.indexOf(":")+2,settings.indexOf(",")));
+    int y = parseInt(settings.substring(settings.indexOf(",")+1,settings.indexOf("|")));
     String sizeSettings = settings.substring(settings.indexOf("|")+1);
-    int width = Integer.parseInt(sizeSettings.substring(sizeSettings.indexOf(":")+2,sizeSettings.indexOf(",")));
-    int height = Integer.parseInt(sizeSettings.substring(sizeSettings.indexOf(",")+1));
+    int width = parseInt(sizeSettings.substring(sizeSettings.indexOf(":")+2,sizeSettings.indexOf(",")));
+    int height = parseInt(sizeSettings.substring(sizeSettings.indexOf(",")+1));
 
     Point coords = GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint();
 
@@ -94,11 +95,9 @@ public class ToDoPage implements ActionListener {
         orderBtn.addActionListener(e -> {
           if(ascending[0]){
               ascending[0] = false;
-//              System.out.println(ascending[0]);
               sortList(ascending[0],orderBtn);
           } else {
               ascending[0] = true;
-//              System.out.println(ascending[0]);
               sortList(ascending[0],orderBtn);
           }
         });
@@ -133,9 +132,9 @@ public class ToDoPage implements ActionListener {
 
             String internalSeparator = "❒";
 
-            int iNum = Integer.parseInt(itemI.substring(0,itemI.indexOf(internalSeparator)));
+            int iNum = parseInt(itemI.substring(0,itemI.indexOf(internalSeparator)));
             String forNextItem = itemI.substring(itemI.indexOf(internalSeparator)+1);
-            int iPrio = Integer.parseInt(forNextItem.substring(0,forNextItem.indexOf(internalSeparator)));
+            int iPrio = parseInt(forNextItem.substring(0,forNextItem.indexOf(internalSeparator)));
             forNextItem = forNextItem.substring(forNextItem.indexOf(internalSeparator)+1);
             String iName = forNextItem.substring(0,forNextItem.indexOf(internalSeparator));
 
@@ -180,7 +179,7 @@ public class ToDoPage implements ActionListener {
             binBtni.setToolTipText("Delete Button "+(i+1));
             binBtni.addActionListener( e -> {
                         String buttonNum = binBtni.getToolTipText().substring(14);
-                        ListItem.deleteItem(Integer.parseInt(buttonNum));
+                        ListItem.deleteItem(parseInt(buttonNum));
                         listPanel.remove(lINumi);
                         listPanel.remove(lIPrioi);
                         listPanel.remove(lINamei);
@@ -218,8 +217,8 @@ public class ToDoPage implements ActionListener {
 
                     //update location of edit window to match the main window on open
                     String settings = getSettings();
-                    x = Integer.parseInt(settings.substring(settings.indexOf(":")+2,settings.indexOf(",")));
-                    y = Integer.parseInt(settings.substring(settings.indexOf(",")+1,settings.indexOf("|")));
+                    x = parseInt(settings.substring(settings.indexOf(":")+2,settings.indexOf(",")));
+                    y = parseInt(settings.substring(settings.indexOf(",")+1,settings.indexOf("|")));
 
                     editFrame.setBounds(x+15, y+60, 0, 0);
                     editFrame.setAlwaysOnTop(true);
@@ -251,7 +250,7 @@ public class ToDoPage implements ActionListener {
 
                     JPanel editPanel = new JPanel();
 
-                    int itemToEdit = Integer.parseInt(editBtni.getToolTipText().substring(12));
+                    int itemToEdit = parseInt(editBtni.getToolTipText().substring(12));
                     String listItemInfo = ListItem.getListItemInfo(itemToEdit-1);
                     String infoForNextItem = listItemInfo.substring(listItemInfo.indexOf(internalSeparator)+1);
                     String itemPrio = infoForNextItem.substring(0,infoForNextItem.indexOf(internalSeparator));
@@ -358,8 +357,8 @@ public class ToDoPage implements ActionListener {
                     //Edit window save button actions --
                     editSaveBtn.addActionListener(e2 ->{
                         // Check if updated priority is a valid number
-                        if(!(editPrioField.getText().length()>1 || intIsValid(editPrioField.getText()))){
-                            JOptionPane.showMessageDialog(null, "Your priority number is invalid - please add a valid number.");
+                        if((editPrioField.getText().isEmpty() || !intIsValid(editPrioField.getText()))){
+                            JOptionPane.showMessageDialog(null, "Your priority number is invalid - please add a valid whole number.");
                             return;
                         }
                         //check if updated task has a name
@@ -368,7 +367,7 @@ public class ToDoPage implements ActionListener {
                             return;
                         }
 
-                        int itemNumber = Integer.parseInt(editBtni.getToolTipText().substring(12));
+                        int itemNumber = parseInt(editBtni.getToolTipText().substring(12),10);
                         String collatedItemInfo;
                         collatedItemInfo = itemNumber+ internalSeparator +editPrioField.getText()+ internalSeparator +editNameField.getText()+ internalSeparator +editInfoField.getText();
                         ListItem.saveUpdatedListItem(collatedItemInfo);
@@ -467,8 +466,8 @@ public class ToDoPage implements ActionListener {
 
                 //update location of add window to match the main window on open
                 String settings = getSettings();
-                x = Integer.parseInt(settings.substring(settings.indexOf(":")+2,settings.indexOf(",")));
-                y = Integer.parseInt(settings.substring(settings.indexOf(",")+1,settings.indexOf("|")));
+                x = parseInt(settings.substring(settings.indexOf(":")+2,settings.indexOf(",")));
+                y = parseInt(settings.substring(settings.indexOf(",")+1,settings.indexOf("|")));
 
                 addFrame.setBounds(x+15, y+60, 0, 0);
                 addFrame.setAlwaysOnTop(false);
@@ -594,8 +593,8 @@ public class ToDoPage implements ActionListener {
                 // add new Task to list
                 addSaveBtn.addActionListener(e4 -> {
                     //ensure that the priority number is valid
-                    if(!(addPrioField.getText().length()>1 || intIsValid(addPrioField.getText()))){
-                        JOptionPane.showMessageDialog(null, "Your priority number is invalid - please add a valid number.");
+                    if((addPrioField.getText().isEmpty() || !intIsValid(addPrioField.getText()))){
+                        JOptionPane.showMessageDialog(null, "Your priority number is invalid - please add a valid whole number.");
                         return;
                     }
                     //ensure that the task has a title
@@ -604,7 +603,7 @@ public class ToDoPage implements ActionListener {
                         return;
                     }
 
-                    ListItem nli = new ListItem(ListItem.numOfListItems()+1,Integer.parseInt(addPrioField.getText()),addNameField.getText(),addInfoField.getText());
+                    ListItem nli = new ListItem(ListItem.numOfListItems()+1, parseInt(addPrioField.getText(),10),addNameField.getText(),addInfoField.getText());
                     updateListNums();
                     nli.saveListItem();
                     addFrame.dispose();
@@ -703,16 +702,16 @@ public class ToDoPage implements ActionListener {
             for(int h=0;h<ListItem.numOfListItems();h++) {
                 String original = orderedList.firstKey();
                 if(orderedList.size()>1) {
-                    int lowest = Integer.parseInt(original);
-                    int current = Integer.parseInt(orderedList.higherKey(original));
+                    int lowest = parseInt(original);
+                    int current = parseInt(orderedList.higherKey(original));
                     for (int i = 1; i < orderedList.size() + 1; i++) {
-                        int lowestValue = Integer.parseInt(orderedList.get(String.valueOf(lowest)));
-                        int currentValue = Integer.parseInt(orderedList.get(String.valueOf(current)));
+                        int lowestValue = parseInt(orderedList.get(String.valueOf(lowest)));
+                        int currentValue = parseInt(orderedList.get(String.valueOf(current)));
                         if (lowestValue > currentValue) {
                             lowest = current;
                         }
                         if (i < orderedList.size() - 1) {
-                            current = Integer.parseInt(orderedList.higherKey(String.valueOf(current)));
+                            current = parseInt(orderedList.higherKey(String.valueOf(current)));
                         }
                     }
                     String currentLowest = String.valueOf(lowest);
@@ -732,7 +731,7 @@ public class ToDoPage implements ActionListener {
             for(int i=0;i<reOrderedList.size();i++){
                 ArrayList<String> returnedArray = reOrderedList.get(String.valueOf(i));
                 String orderedListItemNumber = returnedArray.get(0);
-                String currentItem = ListItem.getListItemInfo(Integer.parseInt(orderedListItemNumber)-1);
+                String currentItem = ListItem.getListItemInfo(parseInt(orderedListItemNumber)-1);
                 String toReplace = currentItem.substring(0,currentItem.indexOf("❒"));
                 String updatedItem = currentItem.replaceFirst(toReplace,String.valueOf(i+1));
                 sb.append(updatedItem+"❂");
@@ -747,16 +746,16 @@ public class ToDoPage implements ActionListener {
             for(int h=0;h<ListItem.numOfListItems();h++) {
                 String original = orderedList.firstKey();
                 if(orderedList.size()>1) {
-                    int highest = Integer.parseInt(original);
-                    int current = Integer.parseInt(orderedList.higherKey(original));
+                    int highest = parseInt(original);
+                    int current = parseInt(orderedList.higherKey(original));
                     for (int i = 1; i < orderedList.size() + 1; i++) {
-                        int highestValue = Integer.parseInt(orderedList.get(String.valueOf(highest)));
-                        int currentValue = Integer.parseInt(orderedList.get(String.valueOf(current)));
+                        int highestValue = parseInt(orderedList.get(String.valueOf(highest)));
+                        int currentValue = parseInt(orderedList.get(String.valueOf(current)));
                         if (highestValue < currentValue) {
                             highest = current;
                         }
                         if (i < orderedList.size() - 1) {
-                            current = Integer.parseInt(orderedList.higherKey(String.valueOf(current)));
+                            current = parseInt(orderedList.higherKey(String.valueOf(current)));
                         }
                     }
                     String currentLowest = String.valueOf(highest);
@@ -776,7 +775,7 @@ public class ToDoPage implements ActionListener {
             for(int i=0;i<reOrderedList.size();i++){
                 ArrayList<String> returnedArray = reOrderedList.get(String.valueOf(i));
                 String orderedListItemNumber = returnedArray.get(0);
-                String currentItem = ListItem.getListItemInfo(Integer.parseInt(orderedListItemNumber)-1);
+                String currentItem = ListItem.getListItemInfo(parseInt(orderedListItemNumber)-1);
                 String toReplace = currentItem.substring(0,currentItem.indexOf("❒"));
                 String updatedItem = currentItem.replaceFirst(toReplace,String.valueOf(i+1));
                 sb.append(updatedItem+"❂");
@@ -796,9 +795,9 @@ public class ToDoPage implements ActionListener {
 
             String internalSeparator = "❒";
 
-            int iNum = Integer.parseInt(itemI.substring(0, itemI.indexOf(internalSeparator)));
+            int iNum = parseInt(itemI.substring(0, itemI.indexOf(internalSeparator)));
             String forNextItem = itemI.substring(itemI.indexOf(internalSeparator) + 1);
-            int iPrio = Integer.parseInt(forNextItem.substring(0, forNextItem.indexOf(internalSeparator)));
+            int iPrio = parseInt(forNextItem.substring(0, forNextItem.indexOf(internalSeparator)));
             forNextItem = forNextItem.substring(forNextItem.indexOf(internalSeparator) + 1);
             String iName = forNextItem.substring(0, forNextItem.indexOf(internalSeparator));
 
@@ -815,10 +814,9 @@ public class ToDoPage implements ActionListener {
     }
 
     public boolean intIsValid(String string){
-
-        try{ Integer.parseInt(string);
+        try{ parseInt(string);
             return true;
-        } catch (NumberFormatException e) {
+        } catch (Exception e) {
             return false;
         }
     }
