@@ -4,6 +4,9 @@ import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.TreeMap;
 
 import static javax.swing.BorderFactory.createEmptyBorder;
 
@@ -83,7 +86,37 @@ public class ToDoPage implements ActionListener {
         toDoName.setBorder(createEmptyBorder(10,0,40,0));
         toDoName.setHorizontalAlignment(SwingConstants.CENTER);
 
-        toDoPanel.add(toDoName, BorderLayout.NORTH);
+        JButton orderBtn = new JButton("Order Tasks");
+        prepBtn(orderBtn);
+
+        final boolean[] ascending = {false};
+
+        orderBtn.addActionListener(e -> {
+          if(ascending[0]){
+              ascending[0] = false;
+//              System.out.println(ascending[0]);
+              sortList(ascending[0],orderBtn);
+          } else {
+              ascending[0] = true;
+//              System.out.println(ascending[0]);
+              sortList(ascending[0],orderBtn);
+          }
+        });
+
+        JPanel aboveList = new JPanel();
+        aboveList.setBackground(new Color(24,24,24));
+        aboveList.setLayout(new BorderLayout());
+
+        aboveList.add(toDoName, BorderLayout.CENTER);
+
+        JPanel aboveListBtnPnl = new JPanel();
+        aboveListBtnPnl.setBackground(new Color(24,24,24));
+        aboveListBtnPnl.setLayout(new BorderLayout());
+
+        aboveListBtnPnl.add(orderBtn, BorderLayout.WEST);
+
+        aboveList.add(aboveListBtnPnl, BorderLayout.SOUTH);
+        toDoPanel.add(aboveList, BorderLayout.NORTH);
 
         listPanel = new JPanel();
 
@@ -653,6 +686,132 @@ public class ToDoPage implements ActionListener {
         toDoFrame.add(toDoPanel);
         toDoFrame.pack();
         toDoFrame.setVisible(true);
+    }
+
+    private void sortList(boolean ascending,JButton orderBtn) {
+        TreeMap<String,String> orderedList = new TreeMap<>();
+        for(int i=0;i<ListItem.numOfListItems();i++){
+            JLabel numLabel = (JLabel) listPanel.getComponent(i*5);
+            String itemNum = numLabel.getText();
+            JLabel prioLabel = (JLabel) listPanel.getComponent(1+(i*5));
+            String itemPrio = prioLabel.getText();
+            orderedList.put(itemNum,itemPrio);
+        }
+        HashMap<String, ArrayList<String>> reOrderedList = new HashMap<>();
+        if(ascending){
+            orderBtn.setText("OrderTasks ▼");
+            for(int h=0;h<ListItem.numOfListItems();h++) {
+                String original = orderedList.firstKey();
+                if(orderedList.size()>1) {
+                    int lowest = Integer.parseInt(original);
+                    int current = Integer.parseInt(orderedList.higherKey(original));
+                    for (int i = 1; i < orderedList.size() + 1; i++) {
+                        int lowestValue = Integer.parseInt(orderedList.get(String.valueOf(lowest)));
+                        int currentValue = Integer.parseInt(orderedList.get(String.valueOf(current)));
+                        if (lowestValue > currentValue) {
+                            lowest = current;
+                        }
+                        if (i < orderedList.size() - 1) {
+                            current = Integer.parseInt(orderedList.higherKey(String.valueOf(current)));
+                        }
+                    }
+                    String currentLowest = String.valueOf(lowest);
+                    ArrayList<String> ar = new ArrayList<>(2);
+                    ar.add(currentLowest);
+                    ar.add(orderedList.get(currentLowest));
+                    reOrderedList.put(String.valueOf(h), ar);
+                    orderedList.remove(currentLowest);
+                } else {
+                    ArrayList<String> ar = new ArrayList<>(2);
+                    ar.add(orderedList.firstKey());
+                    ar.add(orderedList.get(orderedList.firstKey()));
+                    reOrderedList.put(String.valueOf(h), ar);
+                }
+            }
+            StringBuilder sb = new StringBuilder();
+            for(int i=0;i<reOrderedList.size();i++){
+                ArrayList<String> returnedArray = reOrderedList.get(String.valueOf(i));
+                String orderedListItemNumber = returnedArray.get(0);
+                String currentItem = ListItem.getListItemInfo(Integer.parseInt(orderedListItemNumber)-1);
+                String toReplace = currentItem.substring(0,currentItem.indexOf("❒"));
+                String updatedItem = currentItem.replaceFirst(toReplace,String.valueOf(i+1));
+                sb.append(updatedItem+"❂");
+            }
+            ListItem.saveUpdatedItemList(sb.toString());
+            updateList();
+            orderedList.clear();
+            reOrderedList.clear();
+        }
+        if(!ascending){
+            orderBtn.setText("OrderTasks ▲");
+            for(int h=0;h<ListItem.numOfListItems();h++) {
+                String original = orderedList.firstKey();
+                if(orderedList.size()>1) {
+                    int highest = Integer.parseInt(original);
+                    int current = Integer.parseInt(orderedList.higherKey(original));
+                    for (int i = 1; i < orderedList.size() + 1; i++) {
+                        int highestValue = Integer.parseInt(orderedList.get(String.valueOf(highest)));
+                        int currentValue = Integer.parseInt(orderedList.get(String.valueOf(current)));
+                        if (highestValue < currentValue) {
+                            highest = current;
+                        }
+                        if (i < orderedList.size() - 1) {
+                            current = Integer.parseInt(orderedList.higherKey(String.valueOf(current)));
+                        }
+                    }
+                    String currentLowest = String.valueOf(highest);
+                    ArrayList<String> ar = new ArrayList<>(2);
+                    ar.add(currentLowest);
+                    ar.add(orderedList.get(currentLowest));
+                    reOrderedList.put(String.valueOf(h), ar);
+                    orderedList.remove(currentLowest);
+                } else {
+                    ArrayList<String> ar = new ArrayList<>(2);
+                    ar.add(orderedList.firstKey());
+                    ar.add(orderedList.get(orderedList.firstKey()));
+                    reOrderedList.put(String.valueOf(h), ar);
+                }
+            }
+            StringBuilder sb = new StringBuilder();
+            for(int i=0;i<reOrderedList.size();i++){
+                ArrayList<String> returnedArray = reOrderedList.get(String.valueOf(i));
+                String orderedListItemNumber = returnedArray.get(0);
+                String currentItem = ListItem.getListItemInfo(Integer.parseInt(orderedListItemNumber)-1);
+                String toReplace = currentItem.substring(0,currentItem.indexOf("❒"));
+                String updatedItem = currentItem.replaceFirst(toReplace,String.valueOf(i+1));
+                sb.append(updatedItem+"❂");
+            }
+            ListItem.saveUpdatedItemList(sb.toString());
+            updateList();
+            orderedList.clear();
+            reOrderedList.clear();
+        }
+
+    }
+
+    private void updateList() {
+
+        for(int i=0;i<ListItem.numOfListItems();i++) {
+            String itemI = ListItem.getListItemInfo(i);
+
+            String internalSeparator = "❒";
+
+            int iNum = Integer.parseInt(itemI.substring(0, itemI.indexOf(internalSeparator)));
+            String forNextItem = itemI.substring(itemI.indexOf(internalSeparator) + 1);
+            int iPrio = Integer.parseInt(forNextItem.substring(0, forNextItem.indexOf(internalSeparator)));
+            forNextItem = forNextItem.substring(forNextItem.indexOf(internalSeparator) + 1);
+            String iName = forNextItem.substring(0, forNextItem.indexOf(internalSeparator));
+
+            JLabel itemNameLabel = (JLabel)listPanel.getComponent(i*5);
+            itemNameLabel.setText(String.valueOf(iNum));
+
+            JLabel itemPrioLabel = (JLabel)listPanel.getComponent(1+(i*5));
+            itemPrioLabel.setText(String.valueOf(iPrio));
+
+            JTextField itemName = (JTextField)listPanel.getComponent(2+(i*5));
+            itemName.setText(iName);
+            itemName.setCaretPosition(0);
+        }
     }
 
     public boolean intIsValid(String string){

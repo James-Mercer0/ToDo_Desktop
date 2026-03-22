@@ -92,6 +92,14 @@ public class ListItem {
         }
     }
 
+    public static void saveUpdatedItemList(String allListItems) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("./listStorage/List01.tdli"))) {
+            bw.write(allListItems);
+        }catch (IOException e) {
+        throw new RuntimeException(e);
+        }
+    }
+
     public static int numOfListItems() {
         try (BufferedReader br = new BufferedReader(new FileReader("./listStorage/List01.tdli"))) {
             String line;
