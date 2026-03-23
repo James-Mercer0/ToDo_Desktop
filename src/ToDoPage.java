@@ -11,6 +11,8 @@ import java.util.TreeMap;
 import static java.lang.Integer.parseInt;
 import static javax.swing.BorderFactory.createEmptyBorder;
 
+//Yay, move task works!
+
 public class ToDoPage implements ActionListener {
 
     JFrame toDoFrame;
@@ -169,6 +171,10 @@ public class ToDoPage implements ActionListener {
 
             JButton editBtni = new JButton("Edit");
 
+            JPanel moveBtnsPaneli = new JPanel();
+            JButton moveUpi = new JButton("△");
+            JButton moveDowni = new JButton("▽");
+
             JButton binBtni = new JButton("Del");
             prepBtn(binBtni);
             binBtni.setFont(new Font("Arial",Font.PLAIN,12));
@@ -185,9 +191,10 @@ public class ToDoPage implements ActionListener {
                         listPanel.remove(lINamei);
                         listPanel.remove(binBtni);
                         listPanel.remove(editBtni);
+                        listPanel.remove(moveBtnsPaneli);
+                        ListItem.updateListItems();
                         updateListNums();
                         updateBtnNums();
-                        ListItem.updateListItems();
                         listPanel.repaint();
                         listPanel.updateUI();
 
@@ -205,7 +212,9 @@ public class ToDoPage implements ActionListener {
             editBtni.setHorizontalTextPosition(SwingConstants.CENTER);
             editBtni.setToolTipText("Edit Button "+(i+1));
 
-            //Edit button action - creates edit window
+            //
+            // == Edit button action - creates edit window ==
+            //
             editBtni.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     JFrame editFrame = new JFrame();
@@ -380,7 +389,7 @@ public class ToDoPage implements ActionListener {
                         //Ensure updated list item is shown from left-most character
                             for(int i=0;i<ListItem.numOfListItems();i++){
                                 JTextField nameField;
-                                nameField = (JTextField) listPanel.getComponent(2+(5*i));
+                                nameField = (JTextField) listPanel.getComponent(2+(6*i));
                                 nameField.setCaretPosition(0);
                             }
                     });
@@ -399,12 +408,56 @@ public class ToDoPage implements ActionListener {
                     editFrame.setVisible(true);
                 }
             });
+            //
+            // == END - edit window ==
+            //
 
             con.gridy = i;
             con.gridx = 4;
             con.weightx = 0.05;
 
             listPanel.add(editBtni, con);
+
+            moveBtnsPaneli.setBackground(new Color(20,20,20));
+            moveBtnsPaneli.setLayout(new GridLayout(1,2));
+
+
+            prepBtn(moveUpi);
+            moveUpi.setPreferredSize(new Dimension(30,18));
+            moveUpi.setFont(new Font("",Font.BOLD,12));
+            moveUpi.setBorder(BorderFactory.createLineBorder(new Color(50,50,50),1));
+            moveUpi.setBorderPainted(true);
+            moveUpi.setToolTipText("Move up button "+(i+1));
+            JButton currentUp = moveUpi;
+
+            moveUpi.addActionListener( e->{
+                String example = currentUp.getToolTipText();
+                moveTask(true,example);
+                updateListNums();
+            });
+
+            prepBtn(moveDowni);
+            moveDowni.setPreferredSize(new Dimension(30,18));
+            moveDowni.setFont(new Font("",Font.BOLD,12));
+            moveDowni.setBorder(BorderFactory.createLineBorder(new Color(50,50,50),1));
+            moveDowni.setBorderPainted(true);
+            moveDowni.setToolTipText("Move down button "+(i+1));
+            JButton currentDown = moveDowni;
+
+            moveDowni.addActionListener( e->{
+                String example = currentDown.getToolTipText();
+                moveTask(false, example);
+                updateListNums();
+            });
+
+            moveBtnsPaneli.add(moveUpi);
+            moveBtnsPaneli.add(moveDowni);
+
+            con.gridy = i;
+            con.gridx = 5;
+            con.weightx = 0.05;
+
+            listPanel.add(moveBtnsPaneli, con);
 
             loops++;
         }
@@ -612,7 +665,7 @@ public class ToDoPage implements ActionListener {
                     //Ensure all updated list items are shown from left-most character
                     for(int i=0;i<ListItem.numOfListItems();i++){
                         JTextField nameField;
-                        nameField = (JTextField) tdp.listPanel.getComponent(2+(5*i));
+                        nameField = (JTextField) tdp.listPanel.getComponent(2+(6*i));
                         nameField.setCaretPosition(0);
                     }
                 });
@@ -687,16 +740,86 @@ public class ToDoPage implements ActionListener {
         toDoFrame.setVisible(true);
     }
 
+    private void moveTask(boolean moveUp, String buttonToolTip) {
+
+        //Visually swap Tasks by replacing Priority and Name Text between them
+        int taskNum = 0;
+        int taskToSwapNum = 0;
+        if(moveUp){
+            taskNum = parseInt(buttonToolTip.substring(15));
+        } else {
+            taskNum = parseInt(buttonToolTip.substring(17));
+        }
+
+        JLabel currentPriority;
+        currentPriority = (JLabel) this.listPanel.getComponent(1+((taskNum-1)*6));
+
+        JTextField currentName;
+        currentName = (JTextField) this.listPanel.getComponent(2+((taskNum-1)*6));
+
+        JLabel toSwapPriority;
+        JTextField toSwapName;
+
+        if(moveUp){
+            if(taskNum==1){
+                return;
+            }
+            taskToSwapNum = taskNum-1;
+            toSwapPriority = (JLabel) this.listPanel.getComponent(1+((taskNum-2)*6));
+            toSwapName = (JTextField) this.listPanel.getComponent(2+((taskNum-2)*6));
+        } else {
+            System.out.println("Moving down - c:"+taskNum+" ts:"+taskToSwapNum);
+            taskToSwapNum = taskNum+1;
+            if(taskToSwapNum>ListItem.numOfListItems()){
+                return;
+            }
+            taskToSwapNum = taskNum+1;
+            toSwapPriority = (JLabel) this.listPanel.getComponent(1+((taskNum)*6));
+            toSwapName = (JTextField) this.listPanel.getComponent(2+((taskNum)*6));
+        }
+
+//        System.out.println(taskNum+", "+taskToSwapNum);
+
+        String holdingP = currentPriority.getText();
+        String holdingN = currentName.getText();
+
+        currentPriority.setText(toSwapPriority.getText());
+        currentName.setText(toSwapName.getText());
+
+        toSwapPriority.setText(holdingP);
+        toSwapName.setText(holdingN);
+
+        //Update Swapped tasks in the tasklist file
+        StringBuilder sb = new StringBuilder();
+        for(int i=0;i<ListItem.numOfListItems();i++){
+            if(i+1==taskNum){
+                String taskToSwapTo = ListItem.getListItemInfo(taskToSwapNum-1);
+                String taskToSwapToNum = taskToSwapTo.substring(0,taskToSwapTo.indexOf("❒"));
+                taskToSwapTo = taskToSwapTo.replaceFirst(taskToSwapToNum,String.valueOf(i+1));
+                sb.append(taskToSwapTo+"❂");
+            } else if (i+1==taskToSwapNum) {
+                String taskToSwap = ListItem.getListItemInfo(taskNum-1);
+                String toSwapNum = taskToSwap.substring(0,taskToSwap.indexOf("❒"));
+                taskToSwap = taskToSwap.replaceFirst(toSwapNum,String.valueOf(i+1));
+                sb.append(taskToSwap+"❂");
+            } else {
+                sb.append(ListItem.getListItemInfo(i)+"❂");
+            }
+        }
+        ListItem.saveUpdatedItemList(sb.toString());
+    }
+
     private void sortList(boolean ascending,JButton orderBtn) {
         TreeMap<String,String> orderedList = new TreeMap<>();
         for(int i=0;i<ListItem.numOfListItems();i++){
-            JLabel numLabel = (JLabel) listPanel.getComponent(i*5);
+            JLabel numLabel = (JLabel) listPanel.getComponent(i*6);
             String itemNum = numLabel.getText();
-            JLabel prioLabel = (JLabel) listPanel.getComponent(1+(i*5));
+            JLabel prioLabel = (JLabel) listPanel.getComponent(1+(i*6));
             String itemPrio = prioLabel.getText();
             orderedList.put(itemNum,itemPrio);
         }
         HashMap<String, ArrayList<String>> reOrderedList = new HashMap<>();
+
         if(ascending){
             orderBtn.setText("OrderTasks ▼");
             for(int h=0;h<ListItem.numOfListItems();h++) {
@@ -801,13 +924,13 @@ public class ToDoPage implements ActionListener {
             forNextItem = forNextItem.substring(forNextItem.indexOf(internalSeparator) + 1);
             String iName = forNextItem.substring(0, forNextItem.indexOf(internalSeparator));
 
-            JLabel itemNameLabel = (JLabel)listPanel.getComponent(i*5);
+            JLabel itemNameLabel = (JLabel)listPanel.getComponent(i*6);
             itemNameLabel.setText(String.valueOf(iNum));
 
-            JLabel itemPrioLabel = (JLabel)listPanel.getComponent(1+(i*5));
+            JLabel itemPrioLabel = (JLabel)listPanel.getComponent(1+(i*6));
             itemPrioLabel.setText(String.valueOf(iPrio));
 
-            JTextField itemName = (JTextField)listPanel.getComponent(2+(i*5));
+            JTextField itemName = (JTextField)listPanel.getComponent(2+(i*6));
             itemName.setText(iName);
             itemName.setCaretPosition(0);
         }
@@ -823,22 +946,31 @@ public class ToDoPage implements ActionListener {
 
     public void updateListNums(){
         for(int i=0;i<ListItem.numOfListItems();i++){
-            if(i==0){
-                JLabel example = (JLabel) listPanel.getComponent(0);
-                example.setText(String.valueOf(i+1));
-            } else {
-                JLabel example = (JLabel) listPanel.getComponent((5*i));
-                example.setText(i+1+"");
-            }
-
+            JLabel example = (JLabel) listPanel.getComponent((i*6));
+            example.setText(i+1+"");
         }
     }
 
     public void updateBtnNums(){
         for(int i=0;i<ListItem.numOfListItems();i++) {
             JButton example;
-            example = (JButton) listPanel.getComponent(3 + (i * 5));
+            example = (JButton) listPanel.getComponent(3 + (i*6));
             example.setToolTipText("Delete Button "+(i+1));
+
+            JButton editBtn;
+            editBtn = (JButton) listPanel.getComponent(4 + (i*6));
+            editBtn.setToolTipText("Edit Button "+(i+1));
+
+            JPanel movePnl;
+            movePnl = (JPanel) listPanel.getComponent(5 + (i*6));
+
+            JButton moveUpBtn;
+            moveUpBtn = (JButton) movePnl.getComponent(0);
+            moveUpBtn.setToolTipText("Move up button "+(i+1));
+
+            JButton moveDownBtn;
+            moveDownBtn = (JButton) movePnl.getComponent(1);
+            moveDownBtn.setToolTipText("Move down button "+(i+1));
         }
     }
 
