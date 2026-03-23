@@ -929,6 +929,7 @@ public class ToDoPage implements ActionListener {
 
             JTextField itemName = (JTextField)listPanel.getComponent(2+(i*6));
             itemName.setText(iName);
+            itemName.setToolTipText(iName);
             itemName.setCaretPosition(0);
         }
     }
