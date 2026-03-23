@@ -35,8 +35,6 @@ public class ToDoPage implements ActionListener {
     int width = parseInt(sizeSettings.substring(sizeSettings.indexOf(":")+2,sizeSettings.indexOf(",")));
     int height = parseInt(sizeSettings.substring(sizeSettings.indexOf(",")+1));
 
-    Point coords = GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint();
-
     public ToDoPage(){
 
         toDoFrame = new JFrame();
@@ -428,10 +426,10 @@ public class ToDoPage implements ActionListener {
             moveUpi.setBorder(BorderFactory.createLineBorder(new Color(50,50,50),1));
             moveUpi.setBorderPainted(true);
             moveUpi.setToolTipText("Move up button "+(i+1));
-            JButton currentUp = moveUpi;
+
 
             moveUpi.addActionListener( e->{
-                String example = currentUp.getToolTipText();
+                String example = moveUpi.getToolTipText();
                 moveTask(true,example);
                 updateListNums();
             });
@@ -442,10 +440,9 @@ public class ToDoPage implements ActionListener {
             moveDowni.setBorder(BorderFactory.createLineBorder(new Color(50,50,50),1));
             moveDowni.setBorderPainted(true);
             moveDowni.setToolTipText("Move down button "+(i+1));
-            JButton currentDown = moveDowni;
 
             moveDowni.addActionListener( e->{
-                String example = currentDown.getToolTipText();
+                String example = moveDowni.getToolTipText();
                 moveTask(false, example);
                 updateListNums();
             });
@@ -743,8 +740,8 @@ public class ToDoPage implements ActionListener {
     private void moveTask(boolean moveUp, String buttonToolTip) {
 
         //Visually swap Tasks by replacing Priority and Name Text between them
-        int taskNum = 0;
-        int taskToSwapNum = 0;
+        int taskNum;
+        int taskToSwapNum;
         if(moveUp){
             taskNum = parseInt(buttonToolTip.substring(15));
         } else {
@@ -768,7 +765,6 @@ public class ToDoPage implements ActionListener {
             toSwapPriority = (JLabel) this.listPanel.getComponent(1+((taskNum-2)*6));
             toSwapName = (JTextField) this.listPanel.getComponent(2+((taskNum-2)*6));
         } else {
-            System.out.println("Moving down - c:"+taskNum+" ts:"+taskToSwapNum);
             taskToSwapNum = taskNum+1;
             if(taskToSwapNum>ListItem.numOfListItems()){
                 return;
@@ -778,16 +774,17 @@ public class ToDoPage implements ActionListener {
             toSwapName = (JTextField) this.listPanel.getComponent(2+((taskNum)*6));
         }
 
-//        System.out.println(taskNum+", "+taskToSwapNum);
-
         String holdingP = currentPriority.getText();
         String holdingN = currentName.getText();
+        String holdingTT = currentName.getToolTipText();
 
         currentPriority.setText(toSwapPriority.getText());
         currentName.setText(toSwapName.getText());
+        currentName.setToolTipText(toSwapName.getToolTipText());
 
         toSwapPriority.setText(holdingP);
         toSwapName.setText(holdingN);
+        toSwapName.setToolTipText(holdingTT);
 
         //Update Swapped tasks in the tasklist file
         StringBuilder sb = new StringBuilder();
@@ -796,14 +793,14 @@ public class ToDoPage implements ActionListener {
                 String taskToSwapTo = ListItem.getListItemInfo(taskToSwapNum-1);
                 String taskToSwapToNum = taskToSwapTo.substring(0,taskToSwapTo.indexOf("❒"));
                 taskToSwapTo = taskToSwapTo.replaceFirst(taskToSwapToNum,String.valueOf(i+1));
-                sb.append(taskToSwapTo+"❂");
+                sb.append(taskToSwapTo).append("❂");
             } else if (i+1==taskToSwapNum) {
                 String taskToSwap = ListItem.getListItemInfo(taskNum-1);
                 String toSwapNum = taskToSwap.substring(0,taskToSwap.indexOf("❒"));
                 taskToSwap = taskToSwap.replaceFirst(toSwapNum,String.valueOf(i+1));
-                sb.append(taskToSwap+"❂");
+                sb.append(taskToSwap).append("❂");
             } else {
-                sb.append(ListItem.getListItemInfo(i)+"❂");
+                sb.append(ListItem.getListItemInfo(i)).append("❂");
             }
         }
         ListItem.saveUpdatedItemList(sb.toString());
@@ -857,7 +854,7 @@ public class ToDoPage implements ActionListener {
                 String currentItem = ListItem.getListItemInfo(parseInt(orderedListItemNumber)-1);
                 String toReplace = currentItem.substring(0,currentItem.indexOf("❒"));
                 String updatedItem = currentItem.replaceFirst(toReplace,String.valueOf(i+1));
-                sb.append(updatedItem+"❂");
+                sb.append(updatedItem).append("❂");
             }
             ListItem.saveUpdatedItemList(sb.toString());
             updateList();
@@ -901,7 +898,7 @@ public class ToDoPage implements ActionListener {
                 String currentItem = ListItem.getListItemInfo(parseInt(orderedListItemNumber)-1);
                 String toReplace = currentItem.substring(0,currentItem.indexOf("❒"));
                 String updatedItem = currentItem.replaceFirst(toReplace,String.valueOf(i+1));
-                sb.append(updatedItem+"❂");
+                sb.append(updatedItem).append("❂");
             }
             ListItem.saveUpdatedItemList(sb.toString());
             updateList();
