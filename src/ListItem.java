@@ -31,14 +31,14 @@ public class ListItem {
         return this.itemInfo;
     }
 
-    File dir = new File("./listStorage");
-    File savedList = new File("./listStorage/List01.tdli");
+    static File dir = new File("./listStorage");
+    static File savedList = new File("./listStorage/List01.tdli");
     String contents;
 
-    public void saveListItem() {
+    public static void checkForListFile() {
         if (!dir.exists()) {
             dir.mkdirs();
-            System.out.println("Dir created");
+            System.out.println("List Dir created");
         }
 
         if (!savedList.exists()) {
@@ -48,6 +48,34 @@ public class ListItem {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    static File settingsDir = new File("./settings");
+    static File settingsFile = new File("./settings/settings.txt");
+
+    public static void checkForSettings() {
+        if (!settingsDir.exists()) {
+            settingsDir.mkdirs();
+            System.out.println("Settings Directory created");
+        }
+
+        if (!settingsFile.exists()) {
+            try {
+                settingsFile.createNewFile();
+
+                try(BufferedWriter bw = new BufferedWriter(new FileWriter("./settings/settings.txt"));) {
+                    bw.write("Last Location: 0,0| Last Size: 612,468");
+                }
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public void saveListItem() {
+
+        checkForListFile();
 
         try (BufferedReader br = new BufferedReader(new FileReader("./listStorage/List01.tdli"))) {
             String line;
