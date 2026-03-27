@@ -180,12 +180,11 @@ public class ToDoPage implements ActionListener {
             binBtni.setHorizontalTextPosition(SwingConstants.CENTER);
             binBtni.setToolTipText("Delete Button "+(i+1));
             binBtni.addActionListener( e -> {
-                JOptionPane confirmationBox = new JOptionPane();
-
-                int confirmationResult = confirmationBox.showConfirmDialog(null,"Are you sure you want to delete this task?","Delete task?", JOptionPane.YES_NO_OPTION);
+                int confirmationResult = JOptionPane.showConfirmDialog(toDoFrame,"Are you sure you want to delete this task?","Delete task?", JOptionPane.YES_NO_OPTION);
                 if(confirmationResult == JOptionPane.NO_OPTION || confirmationResult == JOptionPane.CLOSED_OPTION ){
                     return;
                 }
+
                 String buttonNum = binBtni.getToolTipText().substring(14);
                 ListItem.deleteItem(parseInt(buttonNum));
                 listPanel.remove(lINumi);
@@ -368,12 +367,12 @@ public class ToDoPage implements ActionListener {
                     editSaveBtn.addActionListener(e2 ->{
                         // Check if updated priority is a valid number
                         if((editPrioField.getText().isEmpty() || !intIsValid(editPrioField.getText()))){
-                            JOptionPane.showMessageDialog(null, "Your priority number is invalid - please add a valid whole number.");
+                            JOptionPane.showMessageDialog(editFrame, "Your priority number is invalid - please add a valid whole number.");
                             return;
                         }
                         //check if updated task has a name
                         if(editNameField.getText().isEmpty()){
-                            JOptionPane.showMessageDialog(null, "Please add a task name.");
+                            JOptionPane.showMessageDialog(editFrame, "Please add a task name.");
                             return;
                         }
 
@@ -523,7 +522,7 @@ public class ToDoPage implements ActionListener {
                 y = parseInt(settings.substring(settings.indexOf(",")+1,settings.indexOf("|")));
 
                 addFrame.setBounds(x+15, y+60, 0, 0);
-                addFrame.setAlwaysOnTop(false);
+                addFrame.setAlwaysOnTop(true);
 
                 topBar = new JPanel();
                 topBar.setBackground(new Color(30, 30, 30));
@@ -647,12 +646,12 @@ public class ToDoPage implements ActionListener {
                 addSaveBtn.addActionListener(e4 -> {
                     //ensure that the priority number is valid
                     if((addPrioField.getText().isEmpty() || !intIsValid(addPrioField.getText()))){
-                        JOptionPane.showMessageDialog(null, "Your priority number is invalid - please add a valid whole number.");
+                        JOptionPane.showMessageDialog(addFrame, "Your priority number is invalid - please add a valid whole number.");
                         return;
                     }
                     //ensure that the task has a title
                     if(addNameField.getText().isEmpty()){
-                        JOptionPane.showMessageDialog(null, "Please add a task name.");
+                        JOptionPane.showMessageDialog(addFrame, "Please add a task name.");
                         return;
                     }
 
