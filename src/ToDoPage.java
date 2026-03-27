@@ -32,6 +32,8 @@ public class ToDoPage implements ActionListener {
     String sizeSettings = settings.substring(settings.indexOf("|")+1);
     int width = parseInt(sizeSettings.substring(sizeSettings.indexOf(":")+2,sizeSettings.indexOf(",")));
     int height = parseInt(sizeSettings.substring(sizeSettings.indexOf(",")+1));
+    final boolean[] editWindowAlreadyOpen = new boolean[1];
+    final boolean[] newItemWindowAlreadyOpen = new boolean[1];
 
     public ToDoPage(){
 
@@ -91,13 +93,16 @@ public class ToDoPage implements ActionListener {
         final boolean[] ascending = {false};
 
         orderBtn.addActionListener(e -> {
-          if(ascending[0]){
-              ascending[0] = false;
-              sortList(ascending[0],orderBtn);
-          } else {
-              ascending[0] = true;
-              sortList(ascending[0],orderBtn);
-          }
+            if(editWindowAlreadyOpen[0]){
+                return;
+            }
+            if(ascending[0]){
+                  ascending[0] = false;
+                 sortList(ascending[0],orderBtn);
+            } else {
+                ascending[0] = true;
+                sortList(ascending[0],orderBtn);
+            }
         });
 
         JPanel aboveList = new JPanel();
@@ -180,6 +185,10 @@ public class ToDoPage implements ActionListener {
             binBtni.setHorizontalTextPosition(SwingConstants.CENTER);
             binBtni.setToolTipText("Delete Button "+(i+1));
             binBtni.addActionListener( e -> {
+                if(editWindowAlreadyOpen[0]){
+                    return;
+                }
+
                 int confirmationResult = JOptionPane.showConfirmDialog(toDoFrame,"Are you sure you want to delete this task?","Delete task?", JOptionPane.YES_NO_OPTION);
                 if(confirmationResult == JOptionPane.NO_OPTION || confirmationResult == JOptionPane.CLOSED_OPTION ){
                     return;
@@ -217,7 +226,18 @@ public class ToDoPage implements ActionListener {
             //
             editBtni.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
+
+                    if(editWindowAlreadyOpen[0]){
+                        return;
+                    }
+                    if(newItemWindowAlreadyOpen[0]){
+                        return;
+                    }
+
                     JFrame editFrame = new JFrame();
+
+                    editWindowAlreadyOpen[0] = true;
+
                     FrameDragListener frameDragListener = new FrameDragListener(editFrame, false);
                     editFrame.addMouseListener(frameDragListener);
                     editFrame.addMouseMotionListener(frameDragListener);
@@ -251,7 +271,10 @@ public class ToDoPage implements ActionListener {
                     editCloseBtn.setBorder(createEmptyBorder(0, 0, 6, 0));
                     editCloseBtn.setPreferredSize(new Dimension(50, 30));
                     editCloseBtn.setFont(new Font("Arial", Font.PLAIN, 38));
-                    editCloseBtn.addActionListener(e1 -> editFrame.dispose());
+                    editCloseBtn.addActionListener(e1 -> {
+                        editFrame.dispose();
+                        editWindowAlreadyOpen[0] = false;
+                    });
 
                     prepBtn(editCloseBtn);
 
@@ -385,6 +408,7 @@ public class ToDoPage implements ActionListener {
                         lIPrioi.setText(editPrioField.getText());
                         lINamei.setText(editNameField.getText());
                         editFrame.dispose();
+                        editWindowAlreadyOpen[0] = false;
                         toDoFrame.repaint();
                         //Ensure updated list item is shown from left-most character
                             for(int i=0;i<ListItem.numOfListItems();i++){
@@ -431,6 +455,9 @@ public class ToDoPage implements ActionListener {
 
 
             moveUpi.addActionListener( e->{
+                if(editWindowAlreadyOpen[0]){
+                    return;
+                }
                 String example = moveUpi.getToolTipText();
                 moveTask(true,example);
                 updateListNums();
@@ -444,6 +471,9 @@ public class ToDoPage implements ActionListener {
             moveDowni.setToolTipText("Move down button "+(i+1));
 
             moveDowni.addActionListener( e->{
+                if(editWindowAlreadyOpen[0]){
+                    return;
+                }
                 String example = moveDowni.getToolTipText();
                 moveTask(false, example);
                 updateListNums();
@@ -500,15 +530,25 @@ public class ToDoPage implements ActionListener {
         prepBtn(newListItemBtn);
         newListItemBtn.setPreferredSize(new Dimension(50,30));
         newListItemBtn.setFont(new Font("Arial", Font.PLAIN, 20));
+
         newListItemBtn.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
+
+                if(newItemWindowAlreadyOpen[0]){
+                    return;
+                }
+
+                if(editWindowAlreadyOpen[0]){
+                    return;
+                }
 
                 //Popout for "Add list Item" window
 
                 JFrame addFrame = new JFrame();
                 JPanel addPanel = new JPanel();
 
+                newItemWindowAlreadyOpen[0] = true;
 
                 FrameDragListener frameDragListener = new FrameDragListener(addFrame, false);
                 addFrame.addMouseListener(frameDragListener);
@@ -543,7 +583,10 @@ public class ToDoPage implements ActionListener {
                 addCloseBtn.setBorder(createEmptyBorder(0, 0, 6, 0));
                 addCloseBtn.setPreferredSize(new Dimension(50, 30));
                 addCloseBtn.setFont(new Font("Arial", Font.PLAIN, 38));
-                addCloseBtn.addActionListener(e3 -> addFrame.dispose());
+                addCloseBtn.addActionListener(e3 -> {
+                    addFrame.dispose();
+                    newItemWindowAlreadyOpen[0] = false;
+                });
                 prepBtn(addCloseBtn);
 
                 topBar.add(addCloseBtn, BorderLayout.EAST);
