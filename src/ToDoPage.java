@@ -317,7 +317,6 @@ public class ToDoPage implements ActionListener {
                     JTextArea editInfoField = new JTextArea(3, 0);
                     editInfoField.setBackground(new Color(20, 20, 20));
                     editInfoField.setForeground(new Color(220, 220, 220));
-                    editInfoField.setBorder(BorderFactory.createLineBorder(new Color(50, 50, 50)));
                     editInfoField.setCaretColor(Color.WHITE);
                     editInfoField.setLineWrap(true);
                     editInfoField.setText(itemInfo);
@@ -326,6 +325,7 @@ public class ToDoPage implements ActionListener {
                     Border emptyBorder = BorderFactory.createEmptyBorder(5, 5, 5, 5);
                     editInfoField.setBorder(emptyBorder);
                     sp.setBorder(lineBorder);
+                    sp.setBackground(new Color(20,20,20));
                     sp.getVerticalScrollBar().setUnitIncrement(3);
                     sp.getVerticalScrollBar().setBackground(new Color(20, 20, 20));
                     sp.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
@@ -617,7 +617,6 @@ public class ToDoPage implements ActionListener {
                 JTextArea addInfoField = new JTextArea(3, 0);
                 addInfoField.setBackground(new Color(20, 20, 20));
                 addInfoField.setForeground(new Color(220, 220, 220));
-                addInfoField.setBorder(BorderFactory.createLineBorder(new Color(50, 50, 50)));
                 addInfoField.setCaretColor(Color.WHITE);
                 addInfoField.setLineWrap(true);
 
@@ -625,6 +624,7 @@ public class ToDoPage implements ActionListener {
                 Border emptyBorder = BorderFactory.createEmptyBorder(5, 5, 5, 5);
                 addInfoField.setBorder(emptyBorder);
                 sp.setBorder(lineBorder);
+                sp.setBackground(new Color(20,20,20));
                 sp.getVerticalScrollBar().setUnitIncrement(3);
                 sp.getVerticalScrollBar().setBackground(new Color(20, 20, 20));
                 sp.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
