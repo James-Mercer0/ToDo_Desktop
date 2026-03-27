@@ -11,8 +11,6 @@ import java.util.TreeMap;
 import static java.lang.Integer.parseInt;
 import static javax.swing.BorderFactory.createEmptyBorder;
 
-//Yay, move task works!
-
 public class ToDoPage implements ActionListener {
 
     JFrame toDoFrame;
@@ -182,20 +180,25 @@ public class ToDoPage implements ActionListener {
             binBtni.setHorizontalTextPosition(SwingConstants.CENTER);
             binBtni.setToolTipText("Delete Button "+(i+1));
             binBtni.addActionListener( e -> {
-                        String buttonNum = binBtni.getToolTipText().substring(14);
-                        ListItem.deleteItem(parseInt(buttonNum));
-                        listPanel.remove(lINumi);
-                        listPanel.remove(lIPrioi);
-                        listPanel.remove(lINamei);
-                        listPanel.remove(binBtni);
-                        listPanel.remove(editBtni);
-                        listPanel.remove(moveBtnsPaneli);
-                        ListItem.updateListItems();
-                        updateListNums();
-                        updateBtnNums();
-                        listPanel.repaint();
-                        listPanel.updateUI();
+                JOptionPane confirmationBox = new JOptionPane();
 
+                int confirmationResult = confirmationBox.showConfirmDialog(null,"Are you sure you want to delete this task?","Delete task?", JOptionPane.YES_NO_OPTION);
+                if(confirmationResult == JOptionPane.NO_OPTION || confirmationResult == JOptionPane.CLOSED_OPTION ){
+                    return;
+                }
+                String buttonNum = binBtni.getToolTipText().substring(14);
+                ListItem.deleteItem(parseInt(buttonNum));
+                listPanel.remove(lINumi);
+                listPanel.remove(lIPrioi);
+                listPanel.remove(lINamei);
+                listPanel.remove(binBtni);
+                listPanel.remove(editBtni);
+                listPanel.remove(moveBtnsPaneli);
+                ListItem.updateListItems();
+                updateListNums();
+                updateBtnNums();
+                listPanel.repaint();
+                listPanel.updateUI();
             });
             con.gridy = i;
             con.gridx = 3;
