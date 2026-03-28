@@ -305,7 +305,7 @@ public class ToDoPage implements ActionListener {
                     Border blankBorder = BorderFactory.createEmptyBorder(15,0,0,0);
                     Border lineBorder = BorderFactory.createLineBorder((new Color(50,50,50)),1);
                     nameLabel.setBorder(BorderFactory.createCompoundBorder(blankBorder,lineBorder));
-                    JTextField editNameField = new JTextField();
+                    JTextField editNameField = new JTextField(1);
                     prepTextField(editNameField);
                     editNameField.setEditable(true);
                     editNameField.setFocusable(true);
