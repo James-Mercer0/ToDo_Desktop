@@ -395,12 +395,12 @@ public class ToDoPage implements ActionListener {
                     editSaveBtn.addActionListener(e2 ->{
                         // Check if updated priority is a valid number
                         if((editPrioField.getText().isEmpty() || !intIsValid(editPrioField.getText()))){
-                            JOptionPane.showMessageDialog(editFrame, "<html><b style=\" color:#c8c8c8; font-size:12px;\">Your priority number is invalid - please add a valid whole number.</b></html>","Invalid Priority Number",JOptionPane.INFORMATION_MESSAGE);
+                            createDialogWindow("<html><b style=\" color:#c8c8c8; font-size:12px;\"> Your priority number is invalid - please add a valid whole number. </b></html>","Invalid Priority Number", false);
                             return;
                         }
                         //check if updated task has a name
                         if(editNameField.getText().isEmpty()){
-                            JOptionPane.showMessageDialog(editFrame, "<html><b style=\" color:#c8c8c8; font-size:12px;\">Please add a task name.</b></html>","Invalid Task Name",JOptionPane.INFORMATION_MESSAGE);
+                            createDialogWindow("<html><b style=\" color:#c8c8c8; font-size:12px;\">   Please add a task name.</b></html>","  Invalid Task Name  ", false);
                             return;
                         }
 
@@ -694,12 +694,12 @@ public class ToDoPage implements ActionListener {
                 addSaveBtn.addActionListener(e4 -> {
                     //ensure that the priority number is valid
                     if((addPrioField.getText().isEmpty() || !intIsValid(addPrioField.getText()))){
-                        JOptionPane.showMessageDialog(addFrame, "<html><b style=\"color:#c8c8c8; font-size:12px;\">Your priority number is invalid - please add a valid whole number.</b></html>","Invalid Priority Number",JOptionPane.INFORMATION_MESSAGE);
+                        createDialogWindow("<html><b style=\" color:#c8c8c8; font-size:12px;\"> Your priority number is invalid - please add a valid whole number. </b></html>","Invalid Priority Number", false);
                         return;
                     }
                     //ensure that the task has a title
                     if(addNameField.getText().isEmpty()){
-                        JOptionPane.showMessageDialog(addFrame, "<html><b style=\"color:#c8c8c8; font-size:12px;\">Please add a task name.</b></html>","Invalid Task Name",JOptionPane.INFORMATION_MESSAGE);
+                        createDialogWindow("<html><b style=\" color:#c8c8c8; font-size:12px;\">   Please add a task name.</b></html>","  Invalid Task Name  ", false);
                         return;
                     }
 
@@ -789,13 +789,20 @@ public class ToDoPage implements ActionListener {
 
     private Object createDialogWindow(String message, String title, Boolean question){
         JDialog dialog = new JDialog(toDoFrame,"");
+        dialog.setAlwaysOnTop(true);
         dialog.setModal(true);
         dialog.setUndecorated(true);
 
         JPanel optionPanePanel = new JPanel();
         optionPanePanel.setBackground(new Color(20,20,20));
 
-        JOptionPane confirmationPane = new JOptionPane(message,JOptionPane.PLAIN_MESSAGE,JOptionPane.YES_NO_OPTION);
+        JOptionPane confirmationPane;
+
+        if(question == true) {
+            confirmationPane = new JOptionPane(message, JOptionPane.PLAIN_MESSAGE, JOptionPane.YES_NO_OPTION);
+        } else {
+            confirmationPane = new JOptionPane(message, JOptionPane.PLAIN_MESSAGE);
+        }
 
         topBar = new JPanel();
         topBar.setBackground(new Color(30, 30, 30));
@@ -804,7 +811,7 @@ public class ToDoPage implements ActionListener {
         JLabel dialogLabel = new JLabel(title);
         prepLabel(dialogLabel);
         dialogLabel.setBorder(null);
-        dialogLabel.setFont(new Font("Arial", Font.BOLD, 26));
+        dialogLabel.setFont(new Font("Arial", Font.BOLD, 22));
         topBar.add(dialogLabel, BorderLayout.CENTER);
 
         JPanel blank = new JPanel();
