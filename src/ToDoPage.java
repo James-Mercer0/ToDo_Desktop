@@ -105,6 +105,10 @@ public class ToDoPage implements ActionListener {
             }
         });
 
+        //Customization for dialog boxes:
+        UIManager.put("OptionPane.background", new Color(24,24,24));
+        UIManager.put("Panel.background", new Color(24,24,24));
+
         JPanel aboveList = new JPanel();
         aboveList.setBackground(new Color(24,24,24));
         aboveList.setLayout(new BorderLayout());
@@ -189,8 +193,9 @@ public class ToDoPage implements ActionListener {
                     return;
                 }
 
-                int confirmationResult = JOptionPane.showConfirmDialog(toDoFrame,"Are you sure you want to delete this task?","Delete task?", JOptionPane.YES_NO_OPTION);
-                if(confirmationResult == JOptionPane.NO_OPTION || confirmationResult == JOptionPane.CLOSED_OPTION ){
+                Object confirmationResult = createDialogWindow("<html><b style=\"color:#c8c8c8; font-size: 12px;\">Are you sure you want to delete this task?</b></html>","Delete Task?", true);
+
+                if(!confirmationResult.equals(JOptionPane.YES_OPTION)){
                     return;
                 }
 
@@ -390,12 +395,12 @@ public class ToDoPage implements ActionListener {
                     editSaveBtn.addActionListener(e2 ->{
                         // Check if updated priority is a valid number
                         if((editPrioField.getText().isEmpty() || !intIsValid(editPrioField.getText()))){
-                            JOptionPane.showMessageDialog(editFrame, "Your priority number is invalid - please add a valid whole number.");
+                            JOptionPane.showMessageDialog(editFrame, "<html><b style=\" color:#c8c8c8; font-size:12px;\">Your priority number is invalid - please add a valid whole number.</b></html>","Invalid Priority Number",JOptionPane.INFORMATION_MESSAGE);
                             return;
                         }
                         //check if updated task has a name
                         if(editNameField.getText().isEmpty()){
-                            JOptionPane.showMessageDialog(editFrame, "Please add a task name.");
+                            JOptionPane.showMessageDialog(editFrame, "<html><b style=\" color:#c8c8c8; font-size:12px;\">Please add a task name.</b></html>","Invalid Task Name",JOptionPane.INFORMATION_MESSAGE);
                             return;
                         }
 
@@ -689,12 +694,12 @@ public class ToDoPage implements ActionListener {
                 addSaveBtn.addActionListener(e4 -> {
                     //ensure that the priority number is valid
                     if((addPrioField.getText().isEmpty() || !intIsValid(addPrioField.getText()))){
-                        JOptionPane.showMessageDialog(addFrame, "Your priority number is invalid - please add a valid whole number.");
+                        JOptionPane.showMessageDialog(addFrame, "<html><b style=\"color:#c8c8c8; font-size:12px;\">Your priority number is invalid - please add a valid whole number.</b></html>","Invalid Priority Number",JOptionPane.INFORMATION_MESSAGE);
                         return;
                     }
                     //ensure that the task has a title
                     if(addNameField.getText().isEmpty()){
-                        JOptionPane.showMessageDialog(addFrame, "Please add a task name.");
+                        JOptionPane.showMessageDialog(addFrame, "<html><b style=\"color:#c8c8c8; font-size:12px;\">Please add a task name.</b></html>","Invalid Task Name",JOptionPane.INFORMATION_MESSAGE);
                         return;
                     }
 
@@ -780,6 +785,84 @@ public class ToDoPage implements ActionListener {
         toDoFrame.add(toDoPanel);
         toDoFrame.pack();
         toDoFrame.setVisible(true);
+    }
+
+    private Object createDialogWindow(String message, String title, Boolean question){
+        JDialog dialog = new JDialog(toDoFrame,"");
+        dialog.setModal(true);
+        dialog.setUndecorated(true);
+
+        JPanel optionPanePanel = new JPanel();
+        optionPanePanel.setBackground(new Color(20,20,20));
+
+        JOptionPane confirmationPane = new JOptionPane(message,JOptionPane.PLAIN_MESSAGE,JOptionPane.YES_NO_OPTION);
+
+        topBar = new JPanel();
+        topBar.setBackground(new Color(30, 30, 30));
+        topBar.setLayout(new BorderLayout());
+
+        JLabel dialogLabel = new JLabel(title);
+        prepLabel(dialogLabel);
+        dialogLabel.setBorder(null);
+        dialogLabel.setFont(new Font("Arial", Font.BOLD, 26));
+        topBar.add(dialogLabel, BorderLayout.CENTER);
+
+        JPanel blank = new JPanel();
+        blank.setBackground(new Color(30, 30, 30));
+        blank.setPreferredSize(new Dimension(50, 0));
+        topBar.add(blank, BorderLayout.WEST);
+
+        JButton dialogCloseBtn = new JButton("x");
+        dialogCloseBtn.setBorder(createEmptyBorder(0, 0, 6, 0));
+        dialogCloseBtn.setPreferredSize(new Dimension(50, 30));
+        dialogCloseBtn.setFont(new Font("Arial", Font.PLAIN, 38));
+        dialogCloseBtn.addActionListener(e1 -> {
+            dialog.dispose();
+        });
+
+        topBar.add(dialogCloseBtn, BorderLayout.EAST);
+
+        optionPanePanel.setLayout(new BorderLayout());
+        optionPanePanel.add(confirmationPane, BorderLayout.CENTER);
+        optionPanePanel.add(topBar, BorderLayout.NORTH);
+
+        dialog.setContentPane(optionPanePanel);
+
+        applyPrepToButtons(dialog);
+        prepBtn(dialogCloseBtn);
+
+        FrameDragListener dialogFrameDragListener = new FrameDragListener(dialog, false);
+        dialog.addMouseListener(dialogFrameDragListener);
+        dialog.addMouseMotionListener(dialogFrameDragListener);
+
+        dialog.setLocation(toDoFrame.getX()+(toDoFrame.getWidth()/2)+(dialog.getWidth()/2),toDoFrame.getY()+(toDoFrame.getHeight()/2)+(dialog.getHeight()/2));
+
+        confirmationPane.addPropertyChangeListener( e -> {
+            String prop = e.getPropertyName();
+
+            if (dialog.isVisible() && JOptionPane.VALUE_PROPERTY.equals(prop)) {
+                dialog.dispose();
+            }
+        });
+
+        dialog.pack();
+        dialog.setVisible(true);
+
+        return confirmationPane.getValue();
+    }
+
+    private void applyPrepToButtons(Container container){
+        for (Component comp : container.getComponents()) {
+            if (comp instanceof JButton btn) {
+                prepBtn(btn);
+                Border padding = BorderFactory.createEmptyBorder(10,10,10,10);
+                Border line = BorderFactory.createLineBorder(new Color(50,50,50),1);
+                btn.setBorder(BorderFactory.createCompoundBorder(line,padding));
+                btn.setBorderPainted(true);
+            } else if (comp instanceof Container c) {
+                applyPrepToButtons(c);
+            }
+        }
     }
 
     private void moveTask(boolean moveUp, String buttonToolTip) {
@@ -1104,13 +1187,13 @@ public class ToDoPage implements ActionListener {
 
     public static class FrameDragListener extends MouseAdapter {
 
-        private final JFrame frame;
+        private final Container frame;
         private Point mouseDownCompCoords = null;
         private int newX;
         private int newY;
         private final boolean isMainFrame;
 
-        public FrameDragListener(JFrame frame, boolean mainFrame){this.frame = frame; isMainFrame = mainFrame;}
+        public FrameDragListener(Container frame, boolean mainFrame){this.frame = frame; isMainFrame = mainFrame;}
         public void mouseReleased(MouseEvent e){
             mouseDownCompCoords = null;
             if(isMainFrame){
