@@ -21,6 +21,7 @@ public class ToDoPage implements ActionListener {
     JPanel resizePanel;
     JButton closeBtn;
     JButton minimizeBtn;
+    JButton settingsBtn;
     JPanel topBar;
     JPanel bottomBar;
     boolean mouseEntered;
@@ -34,6 +35,7 @@ public class ToDoPage implements ActionListener {
     int height = parseInt(sizeSettings.substring(sizeSettings.indexOf(",")+1));
     final boolean[] editWindowAlreadyOpen = new boolean[1];
     final boolean[] newItemWindowAlreadyOpen = new boolean[1];
+    final boolean[] settingsWindowAlreadyOpen = new boolean[1];
 
     public ToDoPage(){
 
@@ -74,7 +76,14 @@ public class ToDoPage implements ActionListener {
         topBarBtnPanel.add(minimizeBtn);
         topBarBtnPanel.add(closeBtn);
 
+        settingsBtn = new JButton("≡");
+        settingsBtn.setBorder(createEmptyBorder(10,0,6,0));
+        settingsBtn.setPreferredSize(new Dimension(42,30));
+        settingsBtn.setFont(new Font("Arial", Font.PLAIN,34));
+        prepBtn(settingsBtn);
+
         topBar.add(topBarBtnPanel, BorderLayout.EAST);
+        topBar.add(settingsBtn, BorderLayout.WEST);
 
         toDoPanel = new JPanel();
         toDoPanel.setLayout(new BorderLayout());
@@ -93,7 +102,7 @@ public class ToDoPage implements ActionListener {
         final boolean[] ascending = {false};
 
         orderBtn.addActionListener(e -> {
-            if(editWindowAlreadyOpen[0]){
+            if(settingsWindowAlreadyOpen[0] || editWindowAlreadyOpen[0]){
                 return;
             }
             if(ascending[0]){
@@ -189,7 +198,7 @@ public class ToDoPage implements ActionListener {
             binBtni.setHorizontalTextPosition(SwingConstants.CENTER);
             binBtni.setToolTipText("Delete Button "+(i+1));
             binBtni.addActionListener( e -> {
-                if(editWindowAlreadyOpen[0]){
+                if(settingsWindowAlreadyOpen[0] || editWindowAlreadyOpen[0]){
                     return;
                 }
 
@@ -232,10 +241,7 @@ public class ToDoPage implements ActionListener {
             editBtni.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
 
-                    if(editWindowAlreadyOpen[0]){
-                        return;
-                    }
-                    if(newItemWindowAlreadyOpen[0]){
+                    if(settingsWindowAlreadyOpen[0] || editWindowAlreadyOpen[0] || newItemWindowAlreadyOpen[0]){
                         return;
                     }
 
@@ -460,7 +466,7 @@ public class ToDoPage implements ActionListener {
 
 
             moveUpi.addActionListener( e->{
-                if(editWindowAlreadyOpen[0]){
+                if(settingsWindowAlreadyOpen[0] || editWindowAlreadyOpen[0]){
                     return;
                 }
                 String example = moveUpi.getToolTipText();
@@ -476,7 +482,7 @@ public class ToDoPage implements ActionListener {
             moveDowni.setToolTipText("Move down button "+(i+1));
 
             moveDowni.addActionListener( e->{
-                if(editWindowAlreadyOpen[0]){
+                if(settingsWindowAlreadyOpen[0] || editWindowAlreadyOpen[0]){
                     return;
                 }
                 String example = moveDowni.getToolTipText();
@@ -540,11 +546,7 @@ public class ToDoPage implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                if(newItemWindowAlreadyOpen[0]){
-                    return;
-                }
-
-                if(editWindowAlreadyOpen[0]){
+                if(settingsWindowAlreadyOpen[0] || newItemWindowAlreadyOpen[0] || editWindowAlreadyOpen[0]){
                     return;
                 }
 
@@ -786,6 +788,74 @@ public class ToDoPage implements ActionListener {
         toDoFrame.pack();
         toDoFrame.setVisible(true);
     }
+
+
+
+    private void openSettingsWindow(){
+
+        if(settingsWindowAlreadyOpen[0] || editWindowAlreadyOpen[0] || newItemWindowAlreadyOpen[0]){
+            return;
+        }
+
+        settingsWindowAlreadyOpen[0] = true;
+
+        JFrame settingsFrame = new JFrame();
+        settingsFrame.setAlwaysOnTop(true);
+        settingsFrame.setUndecorated(true);
+        settingsFrame.setPreferredSize(new Dimension(450,500));
+        settingsFrame.setBounds((toDoFrame.getX()+(toDoFrame.getWidth()/2)-(settingsFrame.getWidth()/2)),(toDoFrame.getY()+(toDoFrame.getHeight()/2)-(settingsFrame.getHeight()/2)),0,0);
+
+        FrameDragListener dialogFrameDragListener = new FrameDragListener(settingsFrame, false);
+        settingsFrame.addMouseListener(dialogFrameDragListener);
+        settingsFrame.addMouseMotionListener(dialogFrameDragListener);
+
+        //Settings TopBar
+        topBar = new JPanel();
+        topBar.setBackground(new Color(30, 30, 30));
+        topBar.setLayout(new BorderLayout());
+
+        JLabel dialogLabel = new JLabel("Settings");
+        prepLabel(dialogLabel);
+        dialogLabel.setBorder(null);
+        dialogLabel.setFont(new Font("Arial", Font.BOLD, 22));
+        topBar.add(dialogLabel, BorderLayout.CENTER);
+
+        JPanel blank = new JPanel();
+        blank.setBackground(new Color(30, 30, 30));
+        blank.setPreferredSize(new Dimension(50, 0));
+        topBar.add(blank, BorderLayout.WEST);
+
+        JButton settingsCloseBtn = new JButton("x");
+        prepBtn(settingsCloseBtn);
+        settingsCloseBtn.setBorder(createEmptyBorder(0, 0, 6, 0));
+        settingsCloseBtn.setPreferredSize(new Dimension(50, 30));
+        settingsCloseBtn.setFont(new Font("Arial", Font.PLAIN, 38));
+        settingsCloseBtn.addActionListener(e1 -> {
+            settingsFrame.dispose();
+            settingsWindowAlreadyOpen[0] = false;
+        });
+
+        topBar.add(settingsCloseBtn, BorderLayout.EAST);
+
+        //Settings Main Panel
+        JPanel settingsPanel = new JPanel();
+        settingsPanel.setBackground(new Color(24,24,24));
+        settingsPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        settingsPanel.setLayout(new GridLayout());
+
+
+
+
+        //Settings Combine elements
+        settingsFrame.setLayout(new BorderLayout());
+        settingsFrame.add(settingsPanel, BorderLayout.CENTER);
+        settingsFrame.add(topBar, BorderLayout.NORTH);
+
+        settingsFrame.pack();
+        settingsFrame.setVisible(true);
+
+    }
+
 
     private Object createDialogWindow(String message, String title, Boolean question){
         JDialog dialog = new JDialog(toDoFrame,"");
@@ -1126,6 +1196,10 @@ public class ToDoPage implements ActionListener {
             timer.setRepeats(false);
             timer.start();
         }
+
+        if(e.getSource() == settingsBtn){
+            openSettingsWindow();
+        }
     }
 
     public void prepLabel(JLabel label) {
@@ -1133,7 +1207,6 @@ public class ToDoPage implements ActionListener {
         label.setHorizontalAlignment(SwingConstants.CENTER);
         label.setVerticalAlignment(SwingConstants.CENTER);
         label.setBorder(BorderFactory.createLineBorder(new Color(50,50,50)));
-//        label.addActionListener(this);
     }
 
     public void prepTextField(JTextField field) {
