@@ -25,6 +25,9 @@ public class ToDoPage implements ActionListener {
     JPanel topBar;
     JPanel bottomBar;
     boolean mouseEntered;
+    JFrame settingsFrame;
+    JCheckBox onTopCB;
+    boolean onTopBool;
 
     //get the last main window location/size from settings
     String settings = getSettings();
@@ -51,6 +54,10 @@ public class ToDoPage implements ActionListener {
         toDoFrame.addMouseListener(frameDragListener);
         toDoFrame.addMouseMotionListener(frameDragListener);
         toDoFrame.setLayout(new BorderLayout());
+
+        //Check settings to see if main window should be Always On Top.
+        confirmAlwaysOnTop();
+        toDoFrame.setAlwaysOnTop(onTopBool);
 
         topBar = new JPanel();
         topBar.setBackground(new Color(30,30,30));
@@ -799,7 +806,7 @@ public class ToDoPage implements ActionListener {
 
         settingsWindowAlreadyOpen[0] = true;
 
-        JFrame settingsFrame = new JFrame();
+        settingsFrame = new JFrame();
         settingsFrame.setAlwaysOnTop(true);
         settingsFrame.setUndecorated(true);
         settingsFrame.setPreferredSize(new Dimension(450,500));
@@ -840,7 +847,7 @@ public class ToDoPage implements ActionListener {
         //Settings Main Panel
         JPanel settingsPanel = new JPanel();
         settingsPanel.setBackground(new Color(24,24,24));
-        settingsPanel.setBorder(BorderFactory.createCompoundBorder((BorderFactory.createEmptyBorder(10,10,10,10)),(BorderFactory.createLineBorder(new Color(50,50,50),1))));
+        settingsPanel.setBorder(BorderFactory.createCompoundBorder((BorderFactory.createEmptyBorder(30,30,30,30)),(BorderFactory.createLineBorder(new Color(50,50,50),1))));
         settingsPanel.setLayout(new GridLayout(0,2));
 
         JLabel onTopLabel = new JLabel("Always On Top:");
@@ -848,10 +855,13 @@ public class ToDoPage implements ActionListener {
         onTopLabel.setBorder(BorderFactory.createMatteBorder(0,0,0,1,new Color(50,50,50)));
         settingsPanel.add(onTopLabel);
 
-        JCheckBox onTopCB = new JCheckBox();
-        onTopCB.setSelected(false);
+        confirmAlwaysOnTop();
+
+        onTopCB = new JCheckBox();
+        onTopCB.setSelected(onTopBool);
         onTopCB.setBackground(new Color(20,20,20));
         onTopCB.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        onTopCB.addActionListener(this);
 
         onTopCB.setBorder(BorderFactory.createEmptyBorder(20,100,20,20));
         settingsPanel.add(onTopCB);
@@ -866,6 +876,11 @@ public class ToDoPage implements ActionListener {
 
     }
 
+    private void confirmAlwaysOnTop(){
+        String onTopSetting = settings.substring(settings.indexOf("❂")+1);
+        onTopSetting = onTopSetting.substring(onTopSetting.indexOf(":")+2,onTopSetting.indexOf("❂")-1);
+        onTopBool = onTopSetting.equals("true");
+    }
 
     private Object createDialogWindow(String message, String title, Boolean question){
         JDialog dialog = new JDialog(toDoFrame,"");
@@ -1188,6 +1203,7 @@ public class ToDoPage implements ActionListener {
     }
 
     boolean minimized = false;
+    boolean alwaysOnTopEnabled;
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -1209,6 +1225,23 @@ public class ToDoPage implements ActionListener {
 
         if(e.getSource() == settingsBtn){
             openSettingsWindow();
+        }
+
+        if(e.getSource() == onTopCB){
+            alwaysOnTopEnabled = onTopCB.isSelected();
+            updateAlwaysOnTop(alwaysOnTopEnabled);
+        }
+    }
+
+    public void updateAlwaysOnTop(boolean enabled){
+        String currentSettings = getSettings();
+        currentSettings = currentSettings.replaceFirst("Always On Top: "+!enabled,"Always On Top: "+enabled);
+        toDoFrame.setAlwaysOnTop(enabled);
+        settingsFrame.toFront();
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter("settings/settings.txt"))){
+            bw.write(currentSettings);
+        } catch(IOException e){
+            throw new RuntimeException(e);
         }
     }
 
