@@ -32,7 +32,7 @@ public class ToDoPage implements ActionListener {
     int y = parseInt(settings.substring(settings.indexOf(",")+1,settings.indexOf("|")));
     String sizeSettings = settings.substring(settings.indexOf("|")+1);
     int width = parseInt(sizeSettings.substring(sizeSettings.indexOf(":")+2,sizeSettings.indexOf(",")));
-    int height = parseInt(sizeSettings.substring(sizeSettings.indexOf(",")+1));
+    int height = parseInt(sizeSettings.substring(sizeSettings.indexOf(",")+1,sizeSettings.indexOf("❂")-1));
     final boolean[] editWindowAlreadyOpen = new boolean[1];
     final boolean[] newItemWindowAlreadyOpen = new boolean[1];
     final boolean[] settingsWindowAlreadyOpen = new boolean[1];
@@ -840,11 +840,21 @@ public class ToDoPage implements ActionListener {
         //Settings Main Panel
         JPanel settingsPanel = new JPanel();
         settingsPanel.setBackground(new Color(24,24,24));
-        settingsPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
-        settingsPanel.setLayout(new GridLayout());
+        settingsPanel.setBorder(BorderFactory.createCompoundBorder((BorderFactory.createEmptyBorder(10,10,10,10)),(BorderFactory.createLineBorder(new Color(50,50,50),1))));
+        settingsPanel.setLayout(new GridLayout(0,2));
 
+        JLabel onTopLabel = new JLabel("Always On Top:");
+        prepLabel(onTopLabel);
+        onTopLabel.setBorder(BorderFactory.createMatteBorder(0,0,0,1,new Color(50,50,50)));
+        settingsPanel.add(onTopLabel);
 
+        JCheckBox onTopCB = new JCheckBox();
+        onTopCB.setSelected(false);
+        onTopCB.setBackground(new Color(20,20,20));
+        onTopCB.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
+        onTopCB.setBorder(BorderFactory.createEmptyBorder(20,100,20,20));
+        settingsPanel.add(onTopCB);
 
         //Settings Combine elements
         settingsFrame.setLayout(new BorderLayout());
@@ -1228,6 +1238,7 @@ public class ToDoPage implements ActionListener {
         btn.setForeground(new Color(220,220,220));
         btn.setBorderPainted(false);
         btn.setFocusPainted(false);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btn.addActionListener(this);
 
         btn.addMouseListener(new MouseListener() {
@@ -1338,7 +1349,7 @@ public class ToDoPage implements ActionListener {
                 bw.write(settings);
             }
             if(!location){
-                String settingsLocSize = settings.substring(settings.indexOf("|")+1);
+                String settingsLocSize = settings.substring(settings.indexOf("|")+1,settings.indexOf("❂")-1);
                 settings = settings.replace(settingsLocSize," Last Size: "+width+","+height);
                 bw.write(settings);
             }
@@ -1353,7 +1364,7 @@ public class ToDoPage implements ActionListener {
             String line;
 
             while((line = br.readLine()) != null){
-                sb.append(line);
+                sb.append(line).append("\n");
             }
 
             return sb.toString();
