@@ -28,6 +28,8 @@ public class ToDoPage implements ActionListener {
     JFrame settingsFrame;
     JCheckBox onTopCB;
     boolean onTopBool;
+    JCheckBox opacityCB;
+    boolean subWindowOpacity;
     float opacity;
 
     //get the last main window location/size from settings
@@ -266,6 +268,12 @@ public class ToDoPage implements ActionListener {
                     editFrame.addMouseMotionListener(frameDragListener);
                     editFrame.setLayout(new BorderLayout());
                     editFrame.setUndecorated(true);
+
+                    confirmSubOpacity();
+                    if(subWindowOpacity) {
+                        opacity = checkOpacity();
+                        editFrame.setOpacity(opacity);
+                    }
 
                     //update location of edit window to match the main window on open
                     String settings = getSettings();
@@ -575,6 +583,12 @@ public class ToDoPage implements ActionListener {
                 addFrame.setLayout(new BorderLayout());
                 addFrame.setUndecorated(true);
 
+                confirmSubOpacity();
+                if(subWindowOpacity) {
+                    opacity = checkOpacity();
+                    addFrame.setOpacity(opacity);
+                }
+
                 //update location of add window to match the main window on open
                 String settings = getSettings();
                 x = parseInt(settings.substring(settings.indexOf(":")+2,settings.indexOf(",")));
@@ -821,6 +835,12 @@ public class ToDoPage implements ActionListener {
         settingsFrame.addMouseListener(dialogFrameDragListener);
         settingsFrame.addMouseMotionListener(dialogFrameDragListener);
 
+        confirmSubOpacity();
+        if(subWindowOpacity) {
+            opacity = checkOpacity();
+            settingsFrame.setOpacity(opacity);
+        }
+
         //Settings TopBar
         topBar = new JPanel();
         topBar.setBackground(new Color(30, 30, 30));
@@ -891,8 +911,6 @@ public class ToDoPage implements ActionListener {
         opacityLabel.setBorder(BorderFactory.createMatteBorder(0,0,0,1,new Color(50,50,50)));
         settingsDiv.add(opacityLabel);
 
-        //confirmOpacity();
-
         JPanel sliderPanel = new JPanel();
         sliderPanel.setLayout(new GridLayout(2,0));
         sliderPanel.setBackground(new Color(24,24,24));
@@ -916,6 +934,9 @@ public class ToDoPage implements ActionListener {
             if(settingsFrame.isVisible() && !String.valueOf(val).equals(opacityVal.getText())){
                 opacityVal.setText(String.valueOf(val/10));
                 toDoFrame.setOpacity(val/10);
+                if(subWindowOpacity) {
+                    settingsFrame.setOpacity(val / 10);
+                }
             }
             try(BufferedWriter bw = new BufferedWriter(new FileWriter("settings/settings.txt"))){
                 String updatedSettings = settings.replaceFirst("Opacity: "+opacity,"Opacity: "+((float) opacitySlider.getValue()/10));
@@ -936,13 +957,37 @@ public class ToDoPage implements ActionListener {
         opacityVal.setFont(new Font("Arial",Font.PLAIN,18));
         opacityVal.setHighlighter(null);
         opacityVal.setFocusable(false);
-        opacityVal.setBorder(BorderFactory.createEmptyBorder(30,60,30,60));
+        opacityVal.setBorder(BorderFactory.createEmptyBorder(0,60,0,60));
         opacityVal.setHorizontalAlignment(JTextField.CENTER);
 
 
         sliderPanel.add(opacityVal);
 
         settingsDiv.add(sliderPanel);
+
+        settingsPanel.add(settingsDiv);
+
+        //Opacity for Sub-Windows
+
+        settingsDiv = new JPanel();
+        settingsDiv.setLayout(new GridLayout(0,2));
+        settingsDiv.setBackground(new Color(24,24,24));
+        settingsDiv.setBorder(BorderFactory.createMatteBorder(0,0,1,0,new Color(50,50,50)));
+
+        JLabel subOpacityLabel = new JLabel("Enable Opacity for sub-windows:");
+        prepLabel(subOpacityLabel);
+        subOpacityLabel.setBorder(BorderFactory.createMatteBorder(0,0,0,1,new Color(50,50,50)));
+        settingsDiv.add(subOpacityLabel);
+
+        confirmAlwaysOnTop();
+
+        opacityCB = new JCheckBox();
+        opacityCB.setSelected(subWindowOpacity);
+        opacityCB.setBackground(new Color(20,20,20));
+        opacityCB.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        opacityCB.addActionListener(this);
+        opacityCB.setBorder(BorderFactory.createEmptyBorder(20,90,20,20));
+        settingsDiv.add(opacityCB);
 
         settingsPanel.add(settingsDiv);
 
@@ -970,6 +1015,14 @@ public class ToDoPage implements ActionListener {
         String onTopSetting = settings.substring(settings.indexOf("❂")+1);
         onTopSetting = onTopSetting.substring(onTopSetting.indexOf(":")+2,onTopSetting.indexOf("❂")-1);
         onTopBool = onTopSetting.equals("true");
+    }
+
+    private void confirmSubOpacity(){
+        String subOpSetting = settings.substring(settings.indexOf("❂")+1);
+        subOpSetting = subOpSetting.substring(subOpSetting.indexOf("❂")+1);
+        subOpSetting = subOpSetting.substring(subOpSetting.indexOf("❂")+1);
+        subOpSetting = subOpSetting.substring(subOpSetting.indexOf(":")+2,subOpSetting.indexOf("❂")-1);
+        subWindowOpacity = subOpSetting.equals("true");
     }
 
     private Object createDialogWindow(String message, String title, Boolean question){
@@ -1320,6 +1373,28 @@ public class ToDoPage implements ActionListener {
         if(e.getSource() == onTopCB){
             alwaysOnTopEnabled = onTopCB.isSelected();
             updateAlwaysOnTop(alwaysOnTopEnabled);
+        }
+
+        if(e.getSource() == opacityCB){
+            updateSubOpacity(opacityCB.isSelected());
+        }
+    }
+
+    public void updateSubOpacity(boolean enabled){
+        String currentSettings = getSettings();
+        currentSettings = currentSettings.replaceFirst("Window Opacity: "+!enabled,"Window Opacity: "+enabled);
+        if(enabled){
+            opacity = checkOpacity();
+            settingsFrame.setOpacity(opacity);
+            subWindowOpacity = true;
+        } else {
+            settingsFrame.setOpacity(1f);
+            subWindowOpacity = false;
+        }
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter("settings/settings.txt"))){
+            bw.write(currentSettings);
+        } catch(IOException e){
+            throw new RuntimeException(e);
         }
     }
 
