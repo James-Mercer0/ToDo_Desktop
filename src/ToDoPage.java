@@ -908,8 +908,8 @@ public class ToDoPage implements ActionListener {
         opacitySlider.setPaintTicks(false);
         opacitySlider.setBackground(new Color(20,20,20));
         opacitySlider.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        String opacityForSlider = String.valueOf(opacity*10);
-        opacitySlider.setValue(Integer.parseInt(opacityForSlider.substring(0,1)));
+        int opacityForSlider = Math.round(opacity*10);
+        opacitySlider.setValue(opacityForSlider);
         opacitySlider.addChangeListener(e->{
             JSlider prop = (JSlider)e.getSource();
             float val = prop.getValue();
