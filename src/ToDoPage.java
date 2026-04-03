@@ -28,6 +28,7 @@ public class ToDoPage implements ActionListener {
     JFrame settingsFrame;
     JCheckBox onTopCB;
     boolean onTopBool;
+    float opacity;
 
     //get the last main window location/size from settings
     String settings = getSettings();
@@ -54,6 +55,10 @@ public class ToDoPage implements ActionListener {
         toDoFrame.addMouseListener(frameDragListener);
         toDoFrame.addMouseMotionListener(frameDragListener);
         toDoFrame.setLayout(new BorderLayout());
+
+        opacity = checkOpacity();
+
+        toDoFrame.setOpacity(opacity);
 
         //Check settings to see if main window should be Always On Top.
         confirmAlwaysOnTop();
@@ -848,12 +853,18 @@ public class ToDoPage implements ActionListener {
         JPanel settingsPanel = new JPanel();
         settingsPanel.setBackground(new Color(24,24,24));
         settingsPanel.setBorder(BorderFactory.createCompoundBorder((BorderFactory.createEmptyBorder(30,30,30,30)),(BorderFactory.createLineBorder(new Color(50,50,50),1))));
-        settingsPanel.setLayout(new GridLayout(0,2));
+        settingsPanel.setLayout(new GridLayout(0,1));
+
+        //Always On Top
+        JPanel settingsDiv = new JPanel();
+        settingsDiv.setLayout(new GridLayout(0,2));
+        settingsDiv.setBackground(new Color(24,24,24));
+        settingsDiv.setBorder(BorderFactory.createMatteBorder(0,0,1,0,new Color(50,50,50)));
 
         JLabel onTopLabel = new JLabel("Always On Top:");
         prepLabel(onTopLabel);
         onTopLabel.setBorder(BorderFactory.createMatteBorder(0,0,0,1,new Color(50,50,50)));
-        settingsPanel.add(onTopLabel);
+        settingsDiv.add(onTopLabel);
 
         confirmAlwaysOnTop();
 
@@ -862,9 +873,78 @@ public class ToDoPage implements ActionListener {
         onTopCB.setBackground(new Color(20,20,20));
         onTopCB.setCursor(new Cursor(Cursor.HAND_CURSOR));
         onTopCB.addActionListener(this);
+        onTopCB.setBorder(BorderFactory.createEmptyBorder(20,90,20,20));
+        settingsDiv.add(onTopCB);
 
-        onTopCB.setBorder(BorderFactory.createEmptyBorder(20,100,20,20));
-        settingsPanel.add(onTopCB);
+        settingsPanel.add(settingsDiv);
+
+
+        //Opacity for main window
+
+        settingsDiv = new JPanel();
+        settingsDiv.setLayout(new GridLayout(0,2));
+        settingsDiv.setBackground(new Color(24,24,24));
+        settingsDiv.setBorder(BorderFactory.createMatteBorder(0,0,0,0,new Color(50,50,50)));
+
+        JLabel opacityLabel = new JLabel("Opacity");
+        prepLabel(opacityLabel);
+        opacityLabel.setBorder(BorderFactory.createMatteBorder(0,0,0,1,new Color(50,50,50)));
+        settingsDiv.add(opacityLabel);
+
+        //confirmOpacity();
+
+        JPanel sliderPanel = new JPanel();
+        sliderPanel.setLayout(new GridLayout(2,0));
+        sliderPanel.setBackground(new Color(24,24,24));
+        sliderPanel.setBorder(BorderFactory.createMatteBorder(0,0,0,0,new Color(50,50,50)));
+
+        opacity = checkOpacity();
+
+        JTextField opacityVal = new JTextField();
+
+        JSlider opacitySlider = new JSlider();
+        opacitySlider.setMinimum(2);
+        opacitySlider.setMaximum(10);
+        opacitySlider.setPaintTicks(false);
+        opacitySlider.setBackground(new Color(20,20,20));
+        opacitySlider.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        String opacityForSlider = String.valueOf(opacity*10);
+        opacitySlider.setValue(Integer.parseInt(opacityForSlider.substring(0,1)));
+        opacitySlider.addChangeListener(e->{
+            JSlider prop = (JSlider)e.getSource();
+            float val = prop.getValue();
+            if(settingsFrame.isVisible() && !String.valueOf(val).equals(opacityVal.getText())){
+                opacityVal.setText(String.valueOf(val/10));
+                toDoFrame.setOpacity(val/10);
+            }
+            try(BufferedWriter bw = new BufferedWriter(new FileWriter("settings/settings.txt"))){
+                String updatedSettings = settings.replaceFirst("Opacity: "+opacity,"Opacity: "+((float) opacitySlider.getValue()/10));
+                bw.write(updatedSettings);
+            } catch (IOException e1){
+                throw new RuntimeException(e1);
+            }
+        });
+
+        settingsPanel.add(opacitySlider);
+
+        sliderPanel.add(opacitySlider);
+
+        opacityVal.setEditable(false);
+        opacityVal.setText(""+opacity);
+        opacityVal.setBackground(new Color(15,15,15));
+        opacityVal.setForeground(new Color(150,150,150));
+        opacityVal.setFont(new Font("Arial",Font.PLAIN,18));
+        opacityVal.setHighlighter(null);
+        opacityVal.setFocusable(false);
+        opacityVal.setBorder(BorderFactory.createEmptyBorder(30,60,30,60));
+        opacityVal.setHorizontalAlignment(JTextField.CENTER);
+
+
+        sliderPanel.add(opacityVal);
+
+        settingsDiv.add(sliderPanel);
+
+        settingsPanel.add(settingsDiv);
 
         //Settings Combine elements
         settingsFrame.setLayout(new BorderLayout());
@@ -874,6 +954,16 @@ public class ToDoPage implements ActionListener {
         settingsFrame.pack();
         settingsFrame.setVisible(true);
 
+    }
+
+    private float checkOpacity(){
+        settings=getSettings();
+        String opacitySetting = (settings.substring(settings.indexOf("❂")+1));
+        opacitySetting = opacitySetting.substring(opacitySetting.indexOf("❂")+1);
+        opacitySetting = opacitySetting.substring(opacitySetting.indexOf(":")+2,opacitySetting.indexOf("❂")-1);
+        opacity = Float.parseFloat(opacitySetting);
+
+        return opacity;
     }
 
     private void confirmAlwaysOnTop(){
