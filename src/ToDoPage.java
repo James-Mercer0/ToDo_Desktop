@@ -828,7 +828,7 @@ public class ToDoPage implements ActionListener {
         settingsFrame = new JFrame();
         settingsFrame.setAlwaysOnTop(true);
         settingsFrame.setUndecorated(true);
-        settingsFrame.setPreferredSize(new Dimension(450,500));
+        settingsFrame.setPreferredSize(new Dimension(500,500));
         settingsFrame.setBounds((toDoFrame.getX()+(toDoFrame.getWidth()/2)-(settingsFrame.getWidth()/2)),(toDoFrame.getY()+(toDoFrame.getHeight()/2)-(settingsFrame.getHeight()/2)),0,0);
 
         FrameDragListener dialogFrameDragListener = new FrameDragListener(settingsFrame, false);
@@ -904,7 +904,7 @@ public class ToDoPage implements ActionListener {
         settingsDiv = new JPanel();
         settingsDiv.setLayout(new GridLayout(0,2));
         settingsDiv.setBackground(new Color(24,24,24));
-        settingsDiv.setBorder(BorderFactory.createMatteBorder(0,0,0,0,new Color(50,50,50)));
+        settingsDiv.setBorder(BorderFactory.createMatteBorder(0,0,1,0,new Color(50,50,50)));
 
         JLabel opacityLabel = new JLabel("Opacity");
         prepLabel(opacityLabel);
