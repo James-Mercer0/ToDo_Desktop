@@ -1,1 +1,5 @@
-Last Location: 1705,133| Last Size: 500,340
+Last Location: 0,0| Last Size: 639,454 ❂
+Always On Top: false ❂
+Opacity: 1.0 ❂
+Sub Window Opacity: true ❂
+Move Buttons Enabled: false ❂

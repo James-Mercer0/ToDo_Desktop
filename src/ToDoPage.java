@@ -31,6 +31,8 @@ public class ToDoPage implements ActionListener {
     JCheckBox opacityCB;
     boolean subWindowOpacity;
     float opacity;
+    JCheckBox moveBtnCB;
+    boolean moveBtnsEnabled;
 
     //get the last main window location/size from settings
     String settings = getSettings();
@@ -807,6 +809,14 @@ public class ToDoPage implements ActionListener {
         bottomPanel.add(blankPnl, BorderLayout.WEST);
         bottomPanel.add(btnSpacing, BorderLayout.CENTER);
 
+        checkMoveBtnEnabled();
+        if(!moveBtnsEnabled){
+            for(int i=0;i<ListItem.numOfListItems();i++){
+                boolean visible = listPanel.getComponent(5+(i*6)).isVisible();
+                listPanel.getComponent(5+(i*6)).setVisible(!visible);
+            }
+        }
+
         toDoFrame.add(topBar, BorderLayout.NORTH);
         toDoFrame.add(bottomPanel, BorderLayout.SOUTH);
         toDoPanel.add(listSp, BorderLayout.CENTER);
@@ -991,6 +1001,31 @@ public class ToDoPage implements ActionListener {
 
         settingsPanel.add(settingsDiv);
 
+        //Move Task buttons toggle
+
+        settingsDiv = new JPanel();
+        settingsDiv.setLayout(new GridLayout(0,2));
+        settingsDiv.setBackground(new Color(24,24,24));
+        settingsDiv.setBorder(BorderFactory.createMatteBorder(0,0,1,0,new Color(24,24,24)));
+
+        JLabel disableMoveTaskBtns = new JLabel("Disable Move Task Buttons?");
+        prepLabel(disableMoveTaskBtns);
+        disableMoveTaskBtns.setBorder(BorderFactory.createMatteBorder(0,0,0,1,new Color(50,50,50)));
+        settingsDiv.add(disableMoveTaskBtns);
+
+        moveBtnCB = new JCheckBox();
+
+        checkMoveBtnEnabled();
+
+        moveBtnCB.setSelected(moveBtnsEnabled);
+        moveBtnCB.setBackground(new Color(20,20,20));
+        moveBtnCB.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        moveBtnCB.addActionListener(this);
+        moveBtnCB.setBorder(BorderFactory.createEmptyBorder(20,90,20,20));
+        settingsDiv.add(moveBtnCB);
+
+        settingsPanel.add(settingsDiv);
+
         //Settings Combine elements
         settingsFrame.setLayout(new BorderLayout());
         settingsFrame.add(settingsPanel, BorderLayout.CENTER);
@@ -999,6 +1034,12 @@ public class ToDoPage implements ActionListener {
         settingsFrame.pack();
         settingsFrame.setVisible(true);
 
+    }
+
+    private void checkMoveBtnEnabled(){
+        settings=getSettings();
+        String moveBtnSetting = getSpecificSetting(3,(settings.substring(settings.indexOf("❂")+1)));
+        moveBtnsEnabled = Boolean.parseBoolean(moveBtnSetting);
     }
 
     private float checkOpacity(){
@@ -1023,6 +1064,15 @@ public class ToDoPage implements ActionListener {
         subOpSetting = subOpSetting.substring(subOpSetting.indexOf("❂")+1);
         subOpSetting = subOpSetting.substring(subOpSetting.indexOf(":")+2,subOpSetting.indexOf("❂")-1);
         subWindowOpacity = subOpSetting.equals("true");
+    }
+
+    private String getSpecificSetting(int line, String settingString){
+        for(int i=0;i<line;i++){
+            settingString = settingString.substring(settingString.indexOf("❂")+1);
+        }
+        settingString = settingString.substring(settingString.indexOf(":")+2,settingString.indexOf("❂")-1);
+
+        return settingString;
     }
 
     private Object createDialogWindow(String message, String title, Boolean question){
@@ -1377,6 +1427,26 @@ public class ToDoPage implements ActionListener {
 
         if(e.getSource() == opacityCB){
             updateSubOpacity(opacityCB.isSelected());
+        }
+
+        if(e.getSource() == moveBtnCB){
+            for(int i=0;i<ListItem.numOfListItems();i++){
+                boolean visible = listPanel.getComponent(5+(i*6)).isVisible();
+                listPanel.getComponent(5+(i*6)).setVisible(!visible);
+            }
+            moveBtnsEnabled = moveBtnCB.isSelected();
+            updateMoveBtnsEnabled(moveBtnsEnabled);
+        }
+    }
+
+    private void updateMoveBtnsEnabled(boolean enabled){
+        String currentSettings = getSettings();
+        currentSettings = currentSettings.replaceFirst("Move Buttons Enabled: "+!enabled,"Move Buttons Enabled: "+enabled);
+
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter("settings/settings.txt"))){
+            bw.write(currentSettings);
+        } catch(IOException e){
+            throw new RuntimeException(e);
         }
     }
 
