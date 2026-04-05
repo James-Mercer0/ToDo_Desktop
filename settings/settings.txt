@@ -1,5 +1,5 @@
-Last Location: 0,0| Last Size: 639,454 ❂
+Last Location: 2928,222| Last Size: 560,402 ❂
 Always On Top: false ❂
 Opacity: 1.0 ❂
-Sub Window Opacity: true ❂
+Sub Window Opacity: false ❂
 Move Buttons Enabled: false ❂

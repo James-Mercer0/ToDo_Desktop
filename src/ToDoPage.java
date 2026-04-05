@@ -1008,7 +1008,7 @@ public class ToDoPage implements ActionListener {
         settingsDiv.setBackground(new Color(24,24,24));
         settingsDiv.setBorder(BorderFactory.createMatteBorder(0,0,1,0,new Color(24,24,24)));
 
-        JLabel disableMoveTaskBtns = new JLabel("Disable Move Task Buttons?");
+        JLabel disableMoveTaskBtns = new JLabel("Enable Move Task Buttons?");
         prepLabel(disableMoveTaskBtns);
         disableMoveTaskBtns.setBorder(BorderFactory.createMatteBorder(0,0,0,1,new Color(50,50,50)));
         settingsDiv.add(disableMoveTaskBtns);
@@ -1044,25 +1044,19 @@ public class ToDoPage implements ActionListener {
 
     private float checkOpacity(){
         settings=getSettings();
-        String opacitySetting = (settings.substring(settings.indexOf("❂")+1));
-        opacitySetting = opacitySetting.substring(opacitySetting.indexOf("❂")+1);
-        opacitySetting = opacitySetting.substring(opacitySetting.indexOf(":")+2,opacitySetting.indexOf("❂")-1);
+        String opacitySetting = getSpecificSetting(1, (settings.substring(settings.indexOf("❂")+1)));
         opacity = Float.parseFloat(opacitySetting);
 
         return opacity;
     }
 
     private void confirmAlwaysOnTop(){
-        String onTopSetting = settings.substring(settings.indexOf("❂")+1);
-        onTopSetting = onTopSetting.substring(onTopSetting.indexOf(":")+2,onTopSetting.indexOf("❂")-1);
+        String onTopSetting =  getSpecificSetting(0, (settings.substring(settings.indexOf("❂")+1)));
         onTopBool = onTopSetting.equals("true");
     }
 
     private void confirmSubOpacity(){
-        String subOpSetting = settings.substring(settings.indexOf("❂")+1);
-        subOpSetting = subOpSetting.substring(subOpSetting.indexOf("❂")+1);
-        subOpSetting = subOpSetting.substring(subOpSetting.indexOf("❂")+1);
-        subOpSetting = subOpSetting.substring(subOpSetting.indexOf(":")+2,subOpSetting.indexOf("❂")-1);
+        String subOpSetting =  getSpecificSetting(2, settings.substring(settings.indexOf("❂")+1));
         subWindowOpacity = subOpSetting.equals("true");
     }
 
