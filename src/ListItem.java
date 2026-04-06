@@ -64,7 +64,7 @@ public class ListItem {
                 settingsFile.createNewFile();
 
                 try(BufferedWriter bw = new BufferedWriter(new FileWriter("./settings/settings.txt"));) {
-                    bw.write("Last Location: 3188,216| Last Size: 560,402 ❂\n" +
+                    bw.write("Last Location: 0,0| Last Size: 560,402 ❂\n" +
                             "Always On Top: false ❂\n" +
                             "Opacity: 1.0 ❂\n" +
                             "Sub Window Opacity: false ❂\n" +

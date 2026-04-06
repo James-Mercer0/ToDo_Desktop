@@ -277,12 +277,6 @@ public class ToDoPage implements ActionListener {
                         editFrame.setOpacity(opacity);
                     }
 
-                    //update location of edit window to match the main window on open
-                    String settings = getSettings();
-                    x = parseInt(settings.substring(settings.indexOf(":")+2,settings.indexOf(",")));
-                    y = parseInt(settings.substring(settings.indexOf(",")+1,settings.indexOf("|")));
-
-                    editFrame.setBounds(x+15, y+60, 0, 0);
                     editFrame.setAlwaysOnTop(true);
 
                     topBar = new JPanel();
@@ -462,6 +456,10 @@ public class ToDoPage implements ActionListener {
                     editFrame.add(topBar, BorderLayout.NORTH);
                     editFrame.add(editPanel);
                     editFrame.pack();
+
+                    //update location of edit window to match the main window on open
+                    editFrame.setLocation((toDoFrame.getX()+(toDoFrame.getWidth()/2)-(editFrame.getWidth()/2)), (toDoFrame.getY()+(toDoFrame.getHeight()/2)-(editFrame.getHeight()/2)));
+
                     editFrame.setVisible(true);
                 }
             });
@@ -591,12 +589,6 @@ public class ToDoPage implements ActionListener {
                     addFrame.setOpacity(opacity);
                 }
 
-                //update location of add window to match the main window on open
-                String settings = getSettings();
-                x = parseInt(settings.substring(settings.indexOf(":")+2,settings.indexOf(",")));
-                y = parseInt(settings.substring(settings.indexOf(",")+1,settings.indexOf("|")));
-
-                addFrame.setBounds(x+15, y+60, 0, 0);
                 addFrame.setAlwaysOnTop(true);
 
                 topBar = new JPanel();
@@ -759,6 +751,10 @@ public class ToDoPage implements ActionListener {
                 addFrame.add(topBar, BorderLayout.NORTH);
                 addFrame.add(addPanel);
                 addFrame.pack();
+
+                //update location of Add Task window to match the main window on open
+                addFrame.setLocation((toDoFrame.getX()+(toDoFrame.getWidth()/2)-(addFrame.getWidth()/2)), (toDoFrame.getY()+(toDoFrame.getHeight()/2)-(addFrame.getHeight()/2)));
+
                 addFrame.setVisible(true);
             }
         });
@@ -838,8 +834,13 @@ public class ToDoPage implements ActionListener {
         settingsFrame = new JFrame();
         settingsFrame.setAlwaysOnTop(true);
         settingsFrame.setUndecorated(true);
-        settingsFrame.setPreferredSize(new Dimension(500,500));
-        settingsFrame.setBounds((toDoFrame.getX()+(toDoFrame.getWidth()/2)-(settingsFrame.getWidth()/2)),(toDoFrame.getY()+(toDoFrame.getHeight()/2)-(settingsFrame.getHeight()/2)),0,0);
+        int settingsWidth = 500;
+        int settingsHeight = 500;
+        settingsFrame.setPreferredSize(new Dimension(settingsWidth,settingsHeight));
+        settingsFrame.setBounds((toDoFrame.getX()+(toDoFrame.getWidth()/2)-(settingsWidth/2)),(toDoFrame.getY()+(toDoFrame.getHeight()/2)-(settingsHeight/2)),0,0);
+        if(settingsFrame.getY()<0){
+            settingsFrame.setLocation((toDoFrame.getX()+(toDoFrame.getWidth()/2)-(settingsWidth/2)),0);
+        }
 
         FrameDragListener dialogFrameDragListener = new FrameDragListener(settingsFrame, false);
         settingsFrame.addMouseListener(dialogFrameDragListener);
@@ -1124,7 +1125,7 @@ public class ToDoPage implements ActionListener {
         dialog.addMouseListener(dialogFrameDragListener);
         dialog.addMouseMotionListener(dialogFrameDragListener);
 
-        dialog.setLocation(toDoFrame.getX()+(toDoFrame.getWidth()/2)+(dialog.getWidth()/2),toDoFrame.getY()+(toDoFrame.getHeight()/2)+(dialog.getHeight()/2));
+        dialog.setLocation(toDoFrame.getX()+(toDoFrame.getWidth()/2)-(170),toDoFrame.getY()+(toDoFrame.getHeight()/2)-(60));
 
         confirmationPane.addPropertyChangeListener( e -> {
             String prop = e.getPropertyName();
