@@ -1,6 +1,9 @@
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.plaf.basic.BasicComboBoxUI;
+import javax.swing.plaf.basic.BasicComboPopup;
 import javax.swing.plaf.basic.BasicScrollBarUI;
+import javax.swing.plaf.basic.ComboPopup;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -886,8 +889,66 @@ public class ToDoPage implements ActionListener {
         settingsPanel.setBorder(BorderFactory.createCompoundBorder((BorderFactory.createEmptyBorder(30,30,30,30)),(BorderFactory.createLineBorder(new Color(50,50,50),1))));
         settingsPanel.setLayout(new GridLayout(0,1));
 
-        //Always On Top
+        //List Selection
         JPanel settingsDiv = new JPanel();
+        settingsDiv.setLayout(new GridLayout(0,2));
+        settingsDiv.setBackground(new Color(24,24,24));
+        settingsDiv.setBorder(BorderFactory.createMatteBorder(0,0,1,0,new Color(50,50,50)));
+
+        JLabel switchListsLabel = new JLabel("Change Current List:");
+        prepLabel(switchListsLabel);
+        switchListsLabel.setBorder(BorderFactory.createMatteBorder(0,0,0,1,new Color(50,50,50)));
+
+        String[] listOptions = new String[] {"one", "two", "three"};
+        JComboBox<String> listsList = new JComboBox<>(listOptions);
+        listsList.setForeground(new Color(220,220,220));
+        listsList.setBackground(new Color(24,24,24));
+        listsList.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createEmptyBorder(25,10,25,10),
+                BorderFactory.createLineBorder(new Color(50,50,50),1)
+        ));
+        listsList.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        listsList.setUI(new BasicComboBoxUI() {
+            @Override
+            protected ComboPopup createPopup() {
+                BasicComboPopup popup = new BasicComboPopup(comboBox) {
+                    @Override
+                    public void show() {
+                        int x = comboBox.getInsets().left-1;
+                        int y = comboBox.getHeight() - comboBox.getInsets().bottom;
+                        show(comboBox, x, y);
+                    }
+                };
+                popup.setPopupSize(new Dimension(171,(listOptions.length*20)));
+                return popup;
+            }
+            @Override
+            protected JButton createArrowButton() {
+                JButton newArrowBtn = new JButton("˅");
+                prepBtn(newArrowBtn);
+                newArrowBtn.setBorder(null);
+                newArrowBtn.setFont(new Font("Arial", Font.BOLD,20));
+                newArrowBtn.setBorder(BorderFactory.createMatteBorder(0,1,0,0,new Color(50,50,50)));
+                newArrowBtn.setBorderPainted(true);
+            return newArrowBtn;
+            }
+        });
+
+        System.out.println(listsList.getComponent(0));
+
+        listsList.addActionListener(e -> {
+//            System.out.println(listsList.getSelectedItem());
+        });
+
+
+        settingsDiv.add(switchListsLabel);
+        settingsDiv.add(listsList);
+
+        settingsPanel.add(settingsDiv);
+
+        //Always On Top
+        settingsDiv = new JPanel();
         settingsDiv.setLayout(new GridLayout(0,2));
         settingsDiv.setBackground(new Color(24,24,24));
         settingsDiv.setBorder(BorderFactory.createMatteBorder(0,0,1,0,new Color(50,50,50)));
