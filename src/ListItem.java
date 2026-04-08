@@ -31,24 +31,11 @@ public class ListItem {
         return this.itemInfo;
     }
 
+    static String dirPath = "./listStorage";
     static File dir = new File("./listStorage");
     static File savedList = new File("./listStorage/List01.tdli");
+    static String listFileName = "List01.tdli";
     String contents;
-
-    public static void checkForListFile() {
-        if (!dir.exists()) {
-            dir.mkdirs();
-            System.out.println("List Dir created");
-        }
-
-        if (!savedList.exists()) {
-            try {
-                savedList.createNewFile();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
 
     static File settingsDir = new File("./settings");
     static File settingsFile = new File("./settings/settings.txt");
@@ -68,9 +55,64 @@ public class ListItem {
                             "Always On Top: false ❂\n" +
                             "Opacity: 1.0 ❂\n" +
                             "Sub Window Opacity: false ❂\n" +
-                            "Move Buttons Enabled: false ❂");
+                            "Move Buttons Enabled: false ❂\n" +
+                            "Saved List: List01.tdli ❂");
                 }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 
+    public static String getSavedList(){
+        try(BufferedReader br = new BufferedReader(new FileReader("./settings/settings.txt"))) {
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while((line = br.readLine()) != null){
+                if(line.contains("Saved List: ")) {
+                    sb.append(line);
+                }
+            }
+
+            String settingLine = sb.toString();
+
+            listFileName = settingLine.substring(settingLine.indexOf(":")+2,settingLine.indexOf("❂")-1);
+            savedList = new File("./listStorage/" + listFileName);
+
+            return listFileName;
+        } catch (IOException e){
+            throw new RuntimeException (e);
+        }
+    }
+
+    public static void updateSavedList(String newList){
+        String settingsContent = "";
+        try(BufferedReader br = new BufferedReader(new FileReader("./settings/settings.txt"))){
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while((line = br.readLine()) != null){
+                sb.append(line).append("\n");
+            }
+            settingsContent = sb.toString();
+
+            String updatedSettings = settingsContent.replaceFirst(getSavedList(), newList);
+            try(BufferedWriter bw = new BufferedWriter(new FileWriter("./settings/settings.txt"))) {
+                bw.write(updatedSettings);
+            }
+        } catch (IOException e){
+            throw new RuntimeException (e);
+        }
+    }
+
+    public static void checkForListFile() {
+        if (!dir.exists()) {
+            dir.mkdirs();
+            System.out.println("List Dir created");
+        }
+
+        if (!savedList.exists()) {
+            try {
+                savedList.createNewFile();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

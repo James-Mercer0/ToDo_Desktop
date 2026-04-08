@@ -899,8 +899,22 @@ public class ToDoPage implements ActionListener {
         prepLabel(switchListsLabel);
         switchListsLabel.setBorder(BorderFactory.createMatteBorder(0,0,0,1,new Color(50,50,50)));
 
-        String[] listOptions = new String[] {"one", "two", "three"};
-        JComboBox<String> listsList = new JComboBox<>(listOptions);
+        ArrayList<String> listOptions = new ArrayList<>();
+        File listDir = new File("./listStorage/");
+
+        File[] files = listDir.listFiles();
+        assert files != null;
+        if(files.length>0){
+            for(int i=0;i<files.length;i++){
+                String fileName = files[i].toString();
+                listOptions.add(fileName.substring(ListItem.dirPath.length()+1));
+            }
+
+        }
+
+        String[] fileNameList = listOptions.toArray(new String[files.length]);
+
+        JComboBox<String> listsList = new JComboBox<>(fileNameList);
         listsList.setForeground(new Color(220,220,220));
         listsList.setBackground(new Color(24,24,24));
         listsList.setBorder(BorderFactory.createCompoundBorder(
@@ -920,7 +934,7 @@ public class ToDoPage implements ActionListener {
                         show(comboBox, x, y);
                     }
                 };
-                popup.setPopupSize(new Dimension(171,(listOptions.length*20)));
+                popup.setPopupSize(new Dimension(171,(fileNameList.length*20)));
                 return popup;
             }
             @Override
@@ -935,10 +949,9 @@ public class ToDoPage implements ActionListener {
             }
         });
 
-        System.out.println(listsList.getComponent(0));
-
         listsList.addActionListener(e -> {
 //            System.out.println(listsList.getSelectedItem());
+            ListItem.updateSavedList((String) listsList.getSelectedItem());
         });
 
 
