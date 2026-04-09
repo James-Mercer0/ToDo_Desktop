@@ -1660,7 +1660,7 @@ public class ToDoPage implements ActionListener {
                 }
 
                 //Create New List File
-                File newList = new File(ListItem.dirPath+"/"+listNameField.getText()+".tdli");
+                File newList = new File(ListItem.dirPath+"/"+noSpacesName+".tdli");
                 try {
                     newList.createNewFile();
                 } catch (IOException e1){
@@ -1668,7 +1668,7 @@ public class ToDoPage implements ActionListener {
                 }
 
                 //Set new list as current list
-                ListItem.updateSavedList(listNameField.getText()+".tdli");
+                ListItem.updateSavedList(noSpacesName+".tdli");
                 ListItem.listFileName = ListItem.getSavedList();
                 newListFrame.dispose();
                 settingsFrame.dispose();
