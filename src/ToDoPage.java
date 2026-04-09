@@ -294,7 +294,7 @@ public class ToDoPage implements ActionListener {
                     JLabel settingsLabel = new JLabel("Edit");
                     prepLabel(settingsLabel);
                     settingsLabel.setBorder(null);
-                    settingsLabel.setFont(new Font("Arial", Font.BOLD, 26));
+                    settingsLabel.setFont(new Font("Arial", Font.BOLD, 22));
                     topBar.add(settingsLabel, BorderLayout.CENTER);
 
                     JPanel blank = new JPanel();
@@ -606,7 +606,7 @@ public class ToDoPage implements ActionListener {
                 JLabel addLabel = new JLabel("Add Item");
                 prepLabel(addLabel);
                 addLabel.setBorder(null);
-                addLabel.setFont(new Font("Arial", Font.BOLD, 26));
+                addLabel.setFont(new Font("Arial", Font.BOLD, 22));
                 topBar.add(addLabel, BorderLayout.CENTER);
 
                 JPanel blank = new JPanel();
@@ -1573,10 +1573,10 @@ public class ToDoPage implements ActionListener {
             topBar.setBackground(new Color(30, 30, 30));
             topBar.setLayout(new BorderLayout());
 
-            JLabel addLabel = new JLabel("Add Item");
+            JLabel addLabel = new JLabel("Create New List");
             prepLabel(addLabel);
             addLabel.setBorder(null);
-            addLabel.setFont(new Font("Arial", Font.BOLD, 26));
+            addLabel.setFont(new Font("Arial", Font.BOLD, 22));
             topBar.add(addLabel, BorderLayout.CENTER);
 
             JPanel blank = new JPanel();
