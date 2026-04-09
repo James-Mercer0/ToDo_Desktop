@@ -738,7 +738,9 @@ public class ToDoPage implements ActionListener {
                     nli.saveListItem();
                     addFrame.dispose();
                     toDoFrame.dispose();
+                    Point location = toDoFrame.getLocation();
                     ToDoPage tdp = new ToDoPage();
+                    tdp.toDoFrame.setLocation(location);
                     //Ensure all updated list items are shown from left-most character
                     for(int i=0;i<ListItem.numOfListItems();i++){
                         JTextField nameField;
@@ -967,7 +969,9 @@ public class ToDoPage implements ActionListener {
             settingsFrame.dispose();
             toDoFrame.dispose();
             ListItem.listFileName = ListItem.getSavedList();
+            Point location = toDoFrame.getLocation();
             ToDoPage newToDo = new ToDoPage();
+            newToDo.toDoFrame.setLocation(location);
             openSettingsWindow();
             for(int i=0;i<ListItem.numOfListItems();i++){
                 JTextField taskName = (JTextField) newToDo.listPanel.getComponent(2+(i*6));
@@ -1669,7 +1673,9 @@ public class ToDoPage implements ActionListener {
                 newListFrame.dispose();
                 settingsFrame.dispose();
                 toDoFrame.dispose();
+                Point location = toDoFrame.getLocation();
                 ToDoPage newToDo = new ToDoPage();
+                newToDo.toDoFrame.setLocation(location);
                 newToDo.openSettingsWindow();
             });
 
@@ -1805,18 +1811,21 @@ public class ToDoPage implements ActionListener {
         private int newX;
         private int newY;
         private final boolean isMainFrame;
+        private boolean dragged;
 
         public FrameDragListener(Container frame, boolean mainFrame){this.frame = frame; isMainFrame = mainFrame;}
         public void mouseReleased(MouseEvent e){
             mouseDownCompCoords = null;
-            if(isMainFrame){
+            if(isMainFrame && dragged){
                 saveWindowStatus(newX, newY, 0, 0,true);
+                dragged=false;
             }
         }
         public void mousePressed(MouseEvent e){
-            mouseDownCompCoords = e.getPoint();
+                mouseDownCompCoords = e.getPoint();
         }
         public void mouseDragged(MouseEvent e){
+            dragged = true;
             Point currCoords = e.getLocationOnScreen();
             frame.setLocation(currCoords.x - mouseDownCompCoords.x, currCoords.y - mouseDownCompCoords.y);
             newX = currCoords.x-mouseDownCompCoords.x;
