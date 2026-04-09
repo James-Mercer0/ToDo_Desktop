@@ -915,6 +915,14 @@ public class ToDoPage implements ActionListener {
         String[] fileNameList = listOptions.toArray(new String[files.length]);
 
         JComboBox<String> listsList = new JComboBox<>(fileNameList);
+
+        int currentOptionIndex = 0;
+        for(int i=1;i<fileNameList.length;i++){
+            if(fileNameList[i].equals(ListItem.getSavedList())){
+                currentOptionIndex = i;
+            }
+        }
+        listsList.setSelectedIndex(currentOptionIndex);
         listsList.setForeground(new Color(220,220,220));
         listsList.setBackground(new Color(24,24,24));
         listsList.setBorder(BorderFactory.createCompoundBorder(
@@ -952,6 +960,15 @@ public class ToDoPage implements ActionListener {
         listsList.addActionListener(e -> {
 //            System.out.println(listsList.getSelectedItem());
             ListItem.updateSavedList((String) listsList.getSelectedItem());
+            settingsFrame.dispose();
+            toDoFrame.dispose();
+            ListItem.listFileName = ListItem.getSavedList();
+            ToDoPage newToDo = new ToDoPage();
+            openSettingsWindow();
+            for(int i=0;i<ListItem.numOfListItems();i++){
+                JTextField taskName = (JTextField) newToDo.listPanel.getComponent(2+(i*6));
+                taskName.setCaretPosition(0);
+            }
         });
 
 

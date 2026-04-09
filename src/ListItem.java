@@ -32,9 +32,9 @@ public class ListItem {
     }
 
     static String dirPath = "./listStorage";
-    static File dir = new File("./listStorage");
-    static File savedList = new File("./listStorage/List01.tdli");
-    static String listFileName = "List01.tdli";
+    static File dir = new File(dirPath);
+    static String listFileName = getSavedList();
+    static File savedList = new File(dirPath+"/"+listFileName);
     String contents;
 
     static File settingsDir = new File("./settings");
@@ -77,7 +77,7 @@ public class ListItem {
             String settingLine = sb.toString();
 
             listFileName = settingLine.substring(settingLine.indexOf(":")+2,settingLine.indexOf("❂")-1);
-            savedList = new File("./listStorage/" + listFileName);
+            savedList = new File(dirPath+"/" + listFileName);
 
             return listFileName;
         } catch (IOException e){
@@ -123,7 +123,7 @@ public class ListItem {
 
         checkForListFile();
 
-        try (BufferedReader br = new BufferedReader(new FileReader("./listStorage/List01.tdli"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(savedList))) {
             String line;
             StringBuilder sb = new StringBuilder();
             while ((line = br.readLine()) != null) {
@@ -136,7 +136,7 @@ public class ListItem {
 
 
         if (contents.isEmpty()) {
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter("./listStorage/List01.tdli"))) {
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(savedList))) {
                 String itemInfo = this.itemNumber + internalSeparator + this.itemPriority + internalSeparator + this.itemName + internalSeparator + this.itemInfo + itemSeparator;
                 bw.write(itemInfo);
                 return;
@@ -145,7 +145,7 @@ public class ListItem {
             }
         }
 
-        try (BufferedReader br = new BufferedReader(new FileReader("./listStorage/List01.tdli"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(savedList))) {
             String line;
             StringBuilder sb = new StringBuilder();
             while ((line = br.readLine()) != null) {
@@ -157,7 +157,7 @@ public class ListItem {
             }
             sb.append(itemInfo);
 
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter("./listStorage/List01.tdli"))) {
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(savedList))) {
                 bw.write(sb.toString());
             }
 
@@ -167,7 +167,7 @@ public class ListItem {
     }
 
     public static void saveUpdatedItemList(String allListItems) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("./listStorage/List01.tdli"))) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(savedList))) {
             bw.write(allListItems);
         }catch (IOException e) {
         throw new RuntimeException(e);
@@ -175,7 +175,7 @@ public class ListItem {
     }
 
     public static int numOfListItems() {
-        try (BufferedReader br = new BufferedReader(new FileReader("./listStorage/List01.tdli"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(savedList))) {
             String line;
             StringBuilder sb = new StringBuilder();
             while ((line = br.readLine()) != null) {
@@ -198,7 +198,7 @@ public class ListItem {
     }
 
     public static String getListItemInfo(int listItemNum) {
-        try (BufferedReader br = new BufferedReader(new FileReader("./listStorage/List01.tdli"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(savedList))) {
             String line;
             StringBuilder sb = new StringBuilder();
             while((line = br.readLine())!=null){
@@ -230,7 +230,7 @@ public class ListItem {
     }
 
     public static void deleteItem(int listItemNum){
-        try (BufferedReader br = new BufferedReader(new FileReader("./listStorage/List01.tdli"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(savedList))) {
             String line;
             StringBuilder sb = new StringBuilder();
             while((line = br.readLine())!=null){
@@ -242,7 +242,7 @@ public class ListItem {
             String currentListItem = contents.substring(0,contents.indexOf(itemSeparator));
             if(Integer.parseInt(String.valueOf(currentListItem.substring(0,currentListItem.indexOf(internalSeparator))))==listItemNum){
                 String itemRemoved = fullList.replace(currentListItem+itemSeparator,"");
-                try(BufferedWriter bw = new BufferedWriter(new FileWriter("./listStorage/List01.tdli"))) {
+                try(BufferedWriter bw = new BufferedWriter(new FileWriter(savedList))) {
                 bw.write(itemRemoved);
                 }
             } else {
@@ -251,7 +251,7 @@ public class ListItem {
                     currentListItem = contents.substring(0,contents.indexOf(itemSeparator));
                     if(Integer.parseInt(String.valueOf(currentListItem.substring(0,currentListItem.indexOf(internalSeparator))))==listItemNum){
                         String itemRemoved = fullList.replace(currentListItem+itemSeparator,"");
-                        try(BufferedWriter bw = new BufferedWriter(new FileWriter("./listStorage/List01.tdli"))) {
+                        try(BufferedWriter bw = new BufferedWriter(new FileWriter(savedList))) {
                             bw.write(itemRemoved);
                         }
                         return;
@@ -264,7 +264,7 @@ public class ListItem {
     }
 
     public static void updateListItems(){
-        try (BufferedReader br = new BufferedReader(new FileReader("./listStorage/List01.tdli"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(savedList))) {
             String line;
             StringBuilder sb = new StringBuilder();
             while ((line = br.readLine()) != null) {
@@ -287,7 +287,7 @@ public class ListItem {
             }
             updatedList = sb.toString();
 
-            try(BufferedWriter bw = new BufferedWriter(new FileWriter("./listStorage/List01.tdli"))){
+            try(BufferedWriter bw = new BufferedWriter(new FileWriter(savedList))){
                 bw.write(updatedList);
             }
 
@@ -297,7 +297,7 @@ public class ListItem {
     }
 
     public static void saveUpdatedListItem(String itemInformation){
-        try (BufferedReader br = new BufferedReader(new FileReader("./listStorage/List01.tdli"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(savedList))) {
             String line;
             StringBuilder sb = new StringBuilder();
             while ((line = br.readLine()) != null) {
@@ -321,7 +321,7 @@ public class ListItem {
                 }
             }
 
-            try(BufferedWriter bw = new BufferedWriter(new FileWriter("./listStorage/List01.tdli"))){
+            try(BufferedWriter bw = new BufferedWriter(new FileWriter(savedList))){
                 bw.write(sb.toString());
             }
 
