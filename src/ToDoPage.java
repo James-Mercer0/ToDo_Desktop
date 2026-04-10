@@ -37,9 +37,9 @@ public class ToDoPage implements ActionListener {
     boolean subWindowOpacity;
     float opacity;
     JCheckBox moveBtnCB;
-    boolean moveBtnsEnabled;
+    static boolean moveBtnsEnabled;
     JCheckBox taskNumCB;
-    boolean taskNumsEnabled;
+    static boolean taskNumsEnabled;
     JButton newListBtn;
 
     //get the last main window location/size from settings
@@ -112,12 +112,12 @@ public class ToDoPage implements ActionListener {
         toDoPanel = new JPanel();
         toDoPanel.setLayout(new BorderLayout());
         toDoPanel.setBackground(new Color(24,24,24));
-        toDoPanel.setBorder(createEmptyBorder(20,50,10,50));
+        toDoPanel.setBorder(createEmptyBorder(10,20,20,20));
 
         toDoName = new JLabel("To Do:");
         toDoName.setForeground(new Color(222,222,222));
-        toDoName.setFont(new Font("Arial", Font.PLAIN, 46));
-        toDoName.setBorder(createEmptyBorder(10,0,40,0));
+        toDoName.setFont(new Font("Arial", Font.BOLD, 38));
+        toDoName.setBorder(createEmptyBorder(5,0,10,0));
         toDoName.setHorizontalAlignment(SwingConstants.CENTER);
 
         JButton orderBtn = new JButton("Order Tasks");
@@ -836,6 +836,19 @@ public class ToDoPage implements ActionListener {
         toDoPanel.add(listSp, BorderLayout.CENTER);
         toDoFrame.add(toDoPanel);
         toDoFrame.pack();
+
+        //Check for updated min with allowing for optional buttons/nums
+        int minWidth = 434;
+        if(taskNumsEnabled){
+            minWidth = minWidth +24;
+        }
+        if(moveBtnsEnabled){
+            minWidth = minWidth +69;
+        }
+        if(toDoFrame.getWidth()< minWidth){
+            toDoFrame.setSize(minWidth,toDoFrame.getHeight());
+        }
+
         toDoFrame.setVisible(true);
     }
 
@@ -924,7 +937,6 @@ public class ToDoPage implements ActionListener {
                 String fileName = files[i].toString();
                 listOptions.add(fileName.substring(ListItem.dirPath.length()+1));
             }
-
         }
 
         String[] fileNameList = listOptions.toArray(new String[files.length]);
@@ -1214,7 +1226,7 @@ public class ToDoPage implements ActionListener {
         subWindowOpacity = subOpSetting.equals("true");
     }
 
-    private String getSpecificSetting(int line, String settingString){
+    private static String getSpecificSetting(int line, String settingString){
         for(int i=0;i<line;i++){
             settingString = settingString.substring(settingString.indexOf("❂")+1);
         }
@@ -1583,6 +1595,18 @@ public class ToDoPage implements ActionListener {
                 listPanel.getComponent(5+(i*6)).setVisible(!visible);
             }
             moveBtnsEnabled = moveBtnCB.isSelected();
+            int minWidth = 434;
+            if(taskNumsEnabled){
+                minWidth = minWidth +24;
+            }
+            if(moveBtnsEnabled){
+                minWidth = minWidth +69;
+            } else {
+                toDoFrame.setSize(toDoFrame.getWidth()-69,toDoFrame.getHeight());
+            }
+            if(toDoFrame.getWidth()< minWidth){
+                toDoFrame.setSize(minWidth,toDoFrame.getHeight());
+            }
             updateMoveBtnsEnabled(moveBtnsEnabled);
         }
 
@@ -1592,6 +1616,18 @@ public class ToDoPage implements ActionListener {
                 listPanel.getComponent(i*6).setVisible(!visible);
             }
             taskNumsEnabled = taskNumCB.isSelected();
+            int minWidth = 434;
+            if(taskNumsEnabled){
+                minWidth = minWidth +24;
+            } else {
+                toDoFrame.setSize(toDoFrame.getWidth()-24,toDoFrame.getHeight());
+            }
+            if(moveBtnsEnabled){
+                minWidth = minWidth +69;
+            }
+            if(toDoFrame.getWidth()< minWidth){
+                toDoFrame.setSize(minWidth,toDoFrame.getHeight());
+            }
             updateTaskNumsEnabled(taskNumsEnabled);
         }
 
@@ -1912,12 +1948,27 @@ public class ToDoPage implements ActionListener {
         public void mouseDragged(MouseEvent e){
             Point currCoords = e.getLocationOnScreen();
             int width = currCoords.x-mouseDownCompCoords.x-frame.getX()+25;
-            if(width<500){
-                width = 500;
+
+            String settings=getSettings();
+            String taskNumSetting = getSpecificSetting(5,(settings.substring(settings.indexOf("❂")+1)));
+            taskNumsEnabled = Boolean.parseBoolean(taskNumSetting);
+
+            String moveBtnSetting = getSpecificSetting(3,(settings.substring(settings.indexOf("❂")+1)));
+            moveBtnsEnabled = Boolean.parseBoolean(moveBtnSetting);
+            int minWidth = 434;
+            if(moveBtnsEnabled){
+                minWidth = minWidth +72;
+            }
+            if(taskNumsEnabled){
+                minWidth = minWidth +24;
+            }
+
+            if(width< minWidth){
+                width = minWidth;
             }
             int height = currCoords.y-mouseDownCompCoords.y-frameY+25;
-            if(height<340){
-                height = 340;
+            if(height<262){
+                height = 262;
             }
             sizeWidth = width;
             sizeHeight = height;
