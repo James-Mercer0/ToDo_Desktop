@@ -7,7 +7,6 @@ import javax.swing.plaf.basic.ComboPopup;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.nio.file.FileSystem;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
@@ -15,7 +14,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.Integer.parseInt;
-import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static javax.swing.BorderFactory.createEmptyBorder;
 
 public class ToDoPage implements ActionListener {
@@ -40,6 +38,8 @@ public class ToDoPage implements ActionListener {
     float opacity;
     JCheckBox moveBtnCB;
     boolean moveBtnsEnabled;
+    JCheckBox taskNumCB;
+    boolean taskNumsEnabled;
     JButton newListBtn;
 
     //get the last main window location/size from settings
@@ -823,6 +823,14 @@ public class ToDoPage implements ActionListener {
             }
         }
 
+        checkTaskNumsEnabled();
+        if(!taskNumsEnabled){
+            for(int i=0;i<ListItem.numOfListItems();i++){
+                boolean visible = listPanel.getComponent((i*6)).isVisible();
+                listPanel.getComponent((i*6)).setVisible(!visible);
+            }
+        }
+
         toDoFrame.add(topBar, BorderLayout.NORTH);
         toDoFrame.add(bottomPanel, BorderLayout.SOUTH);
         toDoPanel.add(listSp, BorderLayout.CENTER);
@@ -933,7 +941,7 @@ public class ToDoPage implements ActionListener {
         listsList.setForeground(new Color(220,220,220));
         listsList.setBackground(new Color(24,24,24));
         listsList.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createEmptyBorder(25,10,25,10),
+                BorderFactory.createEmptyBorder(15,10,15,10),
                 BorderFactory.createLineBorder(new Color(50,50,50),1)
         ));
         listsList.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -972,7 +980,7 @@ public class ToDoPage implements ActionListener {
             Point location = toDoFrame.getLocation();
             ToDoPage newToDo = new ToDoPage();
             newToDo.toDoFrame.setLocation(location);
-            openSettingsWindow();
+            newToDo.openSettingsWindow();
             for(int i=0;i<ListItem.numOfListItems();i++){
                 JTextField taskName = (JTextField) newToDo.listPanel.getComponent(2+(i*6));
                 taskName.setCaretPosition(0);
@@ -1096,7 +1104,6 @@ public class ToDoPage implements ActionListener {
         settingsPanel.add(settingsDiv);
 
         //Opacity for Sub-Windows
-
         settingsDiv = new JPanel();
         settingsDiv.setLayout(new GridLayout(0,2));
         settingsDiv.setBackground(new Color(24,24,24));
@@ -1120,11 +1127,10 @@ public class ToDoPage implements ActionListener {
         settingsPanel.add(settingsDiv);
 
         //Move Task buttons toggle
-
         settingsDiv = new JPanel();
         settingsDiv.setLayout(new GridLayout(0,2));
         settingsDiv.setBackground(new Color(24,24,24));
-        settingsDiv.setBorder(BorderFactory.createMatteBorder(0,0,1,0,new Color(24,24,24)));
+        settingsDiv.setBorder(BorderFactory.createMatteBorder(0,0,1,0,new Color(50,50,50)));
 
         JLabel disableMoveTaskBtns = new JLabel("Enable Move Task Buttons?");
         prepLabel(disableMoveTaskBtns);
@@ -1144,6 +1150,30 @@ public class ToDoPage implements ActionListener {
 
         settingsPanel.add(settingsDiv);
 
+        //Task Number toggle
+        settingsDiv = new JPanel();
+        settingsDiv.setLayout(new GridLayout(0,2));
+        settingsDiv.setBackground(new Color(24,24,24));
+//        settingsDiv.setBorder(BorderFactory.createMatteBorder(0,0,0,0,new Color(50,50,50)));
+
+        JLabel disableTaskNums = new JLabel("Enable Task Numbers?");
+        prepLabel(disableTaskNums);
+        disableTaskNums.setBorder(BorderFactory.createMatteBorder(0,0,0,1,new Color(50,50,50)));
+        settingsDiv.add(disableTaskNums);
+
+        taskNumCB = new JCheckBox();
+
+        checkTaskNumsEnabled();
+
+        taskNumCB.setSelected(taskNumsEnabled);
+        taskNumCB.setBackground(new Color(20,20,20));
+        taskNumCB.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        taskNumCB.addActionListener(this);
+        taskNumCB.setBorder(BorderFactory.createEmptyBorder(20,90,20,20));
+        settingsDiv.add(taskNumCB);
+
+        settingsPanel.add(settingsDiv);
+
         //Settings Combine elements
         settingsFrame.setLayout(new BorderLayout());
         settingsFrame.add(settingsPanel, BorderLayout.CENTER);
@@ -1152,6 +1182,12 @@ public class ToDoPage implements ActionListener {
         settingsFrame.pack();
         settingsFrame.setVisible(true);
 
+    }
+
+    private void checkTaskNumsEnabled(){
+        settings=getSettings();
+        String taskNumSetting = getSpecificSetting(5,(settings.substring(settings.indexOf("❂")+1)));
+        taskNumsEnabled = Boolean.parseBoolean(taskNumSetting);
     }
 
     private void checkMoveBtnEnabled(){
@@ -1550,8 +1586,16 @@ public class ToDoPage implements ActionListener {
             updateMoveBtnsEnabled(moveBtnsEnabled);
         }
 
+        if(e.getSource() == taskNumCB){
+            for(int i=0;i<ListItem.numOfListItems();i++){
+                boolean visible = listPanel.getComponent(i*6).isVisible();
+                listPanel.getComponent(i*6).setVisible(!visible);
+            }
+            taskNumsEnabled = taskNumCB.isSelected();
+            updateTaskNumsEnabled(taskNumsEnabled);
+        }
+
         if(e.getSource() == newListBtn){
-//            System.out.println("yay!");
             JFrame newListFrame = new JFrame();
             JPanel newListPanel = new JPanel();
 
@@ -1696,6 +1740,17 @@ public class ToDoPage implements ActionListener {
             newListFrame.setLocation((toDoFrame.getX()+(toDoFrame.getWidth()/2)-(newListFrame.getWidth()/2)), (toDoFrame.getY()+(toDoFrame.getHeight()/2)-(newListFrame.getHeight()/2)));
 
             newListFrame.setVisible(true);
+        }
+    }
+
+    private void updateTaskNumsEnabled(boolean enabled){
+        String currentSettings = getSettings();
+        currentSettings = currentSettings.replaceFirst("Task Numbers Enabled: "+!enabled,"Task Numbers Enabled: "+enabled);
+
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter("settings/settings.txt"))){
+            bw.write(currentSettings);
+        } catch(IOException e){
+            throw new RuntimeException(e);
         }
     }
 

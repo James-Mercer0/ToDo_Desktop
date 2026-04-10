@@ -51,12 +51,14 @@ public class ListItem {
                 settingsFile.createNewFile();
 
                 try(BufferedWriter bw = new BufferedWriter(new FileWriter("./settings/settings.txt"));) {
-                    bw.write("Last Location: 0,0| Last Size: 560,402 ❂\n" +
-                            "Always On Top: false ❂\n" +
-                            "Opacity: 1.0 ❂\n" +
-                            "Sub Window Opacity: false ❂\n" +
-                            "Move Buttons Enabled: false ❂\n" +
-                            "Saved List: List01.tdli ❂");
+                    bw.write("""
+                            Last Location: 0,0| Last Size: 560,402 ❂
+                            Always On Top: false ❂
+                            Opacity: 1.0 ❂
+                            Sub Window Opacity: false ❂
+                            Move Buttons Enabled: false ❂
+                            Saved List: List01.tdli ❂
+                            Task Numbers Enabled: false ❂""");
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
