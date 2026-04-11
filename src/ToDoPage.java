@@ -41,6 +41,7 @@ public class ToDoPage implements ActionListener {
     JCheckBox taskNumCB;
     static boolean taskNumsEnabled;
     JButton newListBtn;
+    JButton listNameBtn;
 
     //get the last main window location/size from settings
     String settings = getSettings();
@@ -1023,6 +1024,24 @@ public class ToDoPage implements ActionListener {
 
         settingsPanel.add(settingsDiv);
 
+        //Rename Current List
+        settingsDiv = new JPanel();
+        settingsDiv.setLayout(new GridLayout(0,1));
+        settingsDiv.setBackground(new Color(24,24,24));
+        settingsDiv.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0,0,1,0,new Color(50,50,50)),
+                BorderFactory.createEmptyBorder(12,90,12,90)
+        ));
+
+        listNameBtn = new JButton("Rename Current List");
+        prepBtn(listNameBtn);
+        listNameBtn.setBorderPainted(true);
+        listNameBtn.setBorder(BorderFactory.createLineBorder(new Color(50,50,50),1));
+
+        settingsDiv.add(listNameBtn);
+
+        settingsPanel.add(settingsDiv);
+
         //Always On Top
         settingsDiv = new JPanel();
         settingsDiv.setLayout(new GridLayout(0,2));
@@ -1656,7 +1675,7 @@ public class ToDoPage implements ActionListener {
             JLabel addLabel = new JLabel("Create New List");
             prepLabel(addLabel);
             addLabel.setBorder(null);
-            addLabel.setFont(new Font("Arial", Font.BOLD, 22));
+            addLabel.setFont(new Font("Arial", Font.BOLD, 20));
             topBar.add(addLabel, BorderLayout.CENTER);
 
             JPanel blank = new JPanel();
@@ -1670,7 +1689,6 @@ public class ToDoPage implements ActionListener {
             addCloseBtn.setFont(new Font("Arial", Font.PLAIN, 38));
             addCloseBtn.addActionListener(e3 -> {
                 newListFrame.dispose();
-                newItemWindowAlreadyOpen[0] = false;
             });
             prepBtn(addCloseBtn);
 
@@ -1678,6 +1696,7 @@ public class ToDoPage implements ActionListener {
 
             //New List Name input
             JLabel listNameLabel = new JLabel("New List's Name:");
+            listNameLabel.setFont(new Font("Arial",Font.BOLD,15));
             prepLabel(listNameLabel);
             JTextField listNameField = new JTextField();
             prepTextField(listNameField);
@@ -1690,9 +1709,9 @@ public class ToDoPage implements ActionListener {
             newListPanel.add(listNameLabel);
             newListPanel.add(listNameField);
 
-            newListPanel.setBorder(createEmptyBorder(50, 50, 0, 50));
+            newListPanel.setBorder(createEmptyBorder(20, 20, 0, 20));
             newListPanel.setBackground(new Color(20, 20, 20));
-            newListPanel.setPreferredSize(new Dimension(400, 200));
+            newListPanel.setPreferredSize(new Dimension(350, 140));
 
             JButton newListSaveBtn = new JButton("Save New List");
             prepBtn(newListSaveBtn);
@@ -1776,6 +1795,181 @@ public class ToDoPage implements ActionListener {
             newListFrame.setLocation((toDoFrame.getX()+(toDoFrame.getWidth()/2)-(newListFrame.getWidth()/2)), (toDoFrame.getY()+(toDoFrame.getHeight()/2)-(newListFrame.getHeight()/2)));
 
             newListFrame.setVisible(true);
+        }
+
+        if (e.getSource() == listNameBtn){
+            JFrame listNameFrame = new JFrame();
+            JPanel listNamePanel = new JPanel();
+
+            FrameDragListener frameDragListener = new FrameDragListener(listNameFrame, false);
+            listNameFrame.addMouseListener(frameDragListener);
+            listNameFrame.addMouseMotionListener(frameDragListener);
+            listNameFrame.setLayout(new BorderLayout());
+            listNameFrame.setUndecorated(true);
+
+            confirmSubOpacity();
+            if(subWindowOpacity) {
+                opacity = checkOpacity();
+                listNameFrame.setOpacity(opacity);
+            }
+
+            listNameFrame.setAlwaysOnTop(true);
+
+            topBar = new JPanel();
+            topBar.setBackground(new Color(30, 30, 30));
+            topBar.setLayout(new BorderLayout());
+
+            JLabel addLabel = new JLabel("Rename this List?");
+            prepLabel(addLabel);
+            addLabel.setBorder(null);
+            addLabel.setFont(new Font("Arial", Font.BOLD, 20));
+            topBar.add(addLabel, BorderLayout.CENTER);
+
+            JPanel blank = new JPanel();
+            blank.setBackground(new Color(30, 30, 30));
+            blank.setPreferredSize(new Dimension(50, 0));
+            topBar.add(blank, BorderLayout.WEST);
+
+            JButton addCloseBtn = new JButton("x");
+            addCloseBtn.setBorder(createEmptyBorder(0, 0, 6, 0));
+            addCloseBtn.setPreferredSize(new Dimension(50, 30));
+            addCloseBtn.setFont(new Font("Arial", Font.PLAIN, 38));
+            addCloseBtn.addActionListener(e3 -> {
+                listNameFrame.dispose();
+            });
+            prepBtn(addCloseBtn);
+
+            topBar.add(addCloseBtn, BorderLayout.EAST);
+
+            //New List Name input
+            JLabel listNameLabel = new JLabel("New name for the Current List:");
+            listNameLabel.setFont(new Font("Arial",Font.BOLD,15));
+            prepLabel(listNameLabel);
+            JTextField listNameField = new JTextField();
+            prepTextField(listNameField);
+            listNameField.setEditable(true);
+            listNameField.setFocusable(true);
+
+
+            listNamePanel.setLayout(new GridLayout(3,0));
+
+            listNamePanel.add(listNameLabel);
+            listNamePanel.add(listNameField);
+
+            listNamePanel.setBorder(createEmptyBorder(20, 20, 0, 20));
+            listNamePanel.setBackground(new Color(20, 20, 20));
+            listNamePanel.setPreferredSize(new Dimension(350, 140));
+
+            JButton newListNameBtn = new JButton("Save New List");
+            prepBtn(newListNameBtn);
+            newListNameBtn.setPreferredSize(new Dimension(40,80));
+            newListNameBtn.setBorder(BorderFactory.createLineBorder((new Color(50,50,50)),1));
+            newListNameBtn.setBorderPainted(true);
+
+            // add new Task to list
+            newListNameBtn.addActionListener(e4 -> {
+
+                //ensure NO Special Chars in List Name
+                Pattern pattern = Pattern.compile("[^a-z0-9 ,'()@_~-]", Pattern.CASE_INSENSITIVE);
+                Matcher match = pattern.matcher(listNameField.getText());
+                boolean foundSpecialChar = match.find();
+
+                //ensure New List Name does not already exist
+                ArrayList<String> listOptions = new ArrayList<>();
+                File listDir = new File(ListItem.dirPath+"/");
+                File[] files = listDir.listFiles();
+                assert files != null;
+
+                if(files.length>0){
+                    for(int i=0;i<files.length;i++){
+                        String fileName = files[i].toString();
+                        listOptions.add(fileName.substring(ListItem.dirPath.length()+1));
+                    }
+                }
+
+                String[] fileNameList = listOptions.toArray(new String[files.length]);
+                boolean listNameAlreadyExists = false;
+
+                for(int i=0;i<fileNameList.length;i++){
+                    String existingListName = fileNameList[i].substring(0,fileNameList[i].indexOf("."));
+                    if(existingListName.equals(listNameField.getText())){
+                        listNameAlreadyExists = true;
+                    }
+                }
+
+                String noSpacesName = listNameField.getText().replace(" ","_");
+
+                //List Name Valid?
+                if(noSpacesName.isEmpty() || foundSpecialChar || listNameAlreadyExists){
+                    createDialogWindow("<html><b style=\" color:#c8c8c8; font-size:12px;\">Please add a Valid and Unique list name with No Special Characters.</b></html>","  Invalid Task Name  ", false);
+                    return;
+                }
+
+                //Create New List File with the new name
+                File newList = new File(ListItem.dirPath+"/"+noSpacesName+".tdli");
+                try {
+                    newList.createNewFile();
+                } catch (IOException e1){
+                    throw new RuntimeException (e1);
+                }
+
+                //Copy info from old list to new list
+                String oldList = ListItem.getSavedList();
+                String listContents;
+
+                try(BufferedReader br = new BufferedReader(new FileReader("./listStorage/"+oldList))){
+                    String line;
+                    StringBuilder sb = new StringBuilder();
+                    while((line=br.readLine()) != null){
+                        sb.append(line);
+                    }
+                    listContents = sb.toString();
+
+                    try(BufferedWriter bw = new BufferedWriter(new FileWriter(newList))){
+                        bw.write(listContents);
+                    }
+
+                } catch (IOException e1){
+                    throw new RuntimeException(e1);
+                }
+
+                //Remove the now redundant file with old name
+                File oldListFile = new File("./listStorage/"+oldList);
+                if(oldListFile.delete()){
+                    System.out.println("deleted "+"./listStorage/"+oldList);
+                } else {
+                    System.out.println("Old file not deleted: "+"./listStorage/"+oldList);
+                }
+
+                //Set new list as current list
+                ListItem.updateSavedList(noSpacesName+".tdli");
+                ListItem.listFileName = ListItem.getSavedList();
+                listNameFrame.dispose();
+                settingsFrame.dispose();
+                toDoFrame.dispose();
+                Point location = toDoFrame.getLocation();
+                ToDoPage newToDo = new ToDoPage();
+                newToDo.toDoFrame.setLocation(location);
+                newToDo.openSettingsWindow();
+            });
+
+            bottomBar = new JPanel();
+            bottomBar.setBackground(new Color(20,20,20));
+            bottomBar.setLayout(new BorderLayout());
+            bottomBar.add(newListNameBtn, BorderLayout.CENTER);
+            bottomBar.setPreferredSize(new Dimension(0,60));
+            bottomBar.setBorder(BorderFactory.createEmptyBorder(0,100,10,100));
+
+            listNameFrame.add(bottomBar, BorderLayout.SOUTH);
+
+            listNameFrame.add(topBar, BorderLayout.NORTH);
+            listNameFrame.add(listNamePanel);
+            listNameFrame.pack();
+
+            //update location of Add Task window to match the main window on open
+            listNameFrame.setLocation((toDoFrame.getX()+(toDoFrame.getWidth()/2)-(listNameFrame.getWidth()/2)), (toDoFrame.getY()+(toDoFrame.getHeight()/2)-(listNameFrame.getHeight()/2)));
+
+            listNameFrame.setVisible(true);
         }
     }
 
@@ -1957,7 +2151,7 @@ public class ToDoPage implements ActionListener {
             moveBtnsEnabled = Boolean.parseBoolean(moveBtnSetting);
             int minWidth = 434;
             if(moveBtnsEnabled){
-                minWidth = minWidth +72;
+                minWidth = minWidth +69;
             }
             if(taskNumsEnabled){
                 minWidth = minWidth +24;
