@@ -87,7 +87,10 @@ public class ListItem {
         }
     }
 
-    public static void updateSavedList(String newList){
+    public static boolean updateSavedList(String newList){
+        if(newList.equals(getSavedList())){
+            return false;
+        }
         String settingsContent = "";
         try(BufferedReader br = new BufferedReader(new FileReader("./settings/settings.txt"))){
             StringBuilder sb = new StringBuilder();
@@ -104,6 +107,7 @@ public class ListItem {
         } catch (IOException e){
             throw new RuntimeException (e);
         }
+        return true;
     }
 
     public static void checkForListFile() {

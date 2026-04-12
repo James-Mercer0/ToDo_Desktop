@@ -1045,7 +1045,7 @@ public class ToDoPage implements ActionListener {
         listsList.setForeground(new Color(220,220,220));
         listsList.setBackground(new Color(24,24,24));
         listsList.setBorder(BorderFactory.createCompoundBorder(
-                createEmptyBorder(15,10,15,10),
+                createEmptyBorder(10,10,10,10),
                 BorderFactory.createLineBorder(new Color(50,50,50),1)
         ));
         listsList.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -1077,7 +1077,10 @@ public class ToDoPage implements ActionListener {
         });
 
         listsList.addActionListener(e -> {
-            ListItem.updateSavedList((String) listsList.getSelectedItem());
+            boolean listAlreadyInUse = !ListItem.updateSavedList((String) listsList.getSelectedItem());
+            if(listAlreadyInUse){
+                return;
+            }
             settingsFrame.dispose();
             toDoFrame.dispose();
             ListItem.listFileName = ListItem.getSavedList();
@@ -1103,7 +1106,7 @@ public class ToDoPage implements ActionListener {
         settingsDiv.setBackground(new Color(24,24,24));
         settingsDiv.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0,0,1,0,new Color(50,50,50)),
-                createEmptyBorder(12,90,12,90)
+                createEmptyBorder(8,90,8,90)
         ));
 
         newListBtn = new JButton("Create New List");
@@ -1121,7 +1124,7 @@ public class ToDoPage implements ActionListener {
         settingsDiv.setBackground(new Color(24,24,24));
         settingsDiv.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0,0,1,0,new Color(50,50,50)),
-                createEmptyBorder(12,90,12,90)
+                createEmptyBorder(8,90,8,90)
         ));
 
         listNameBtn = new JButton("Rename Current List");
@@ -1151,7 +1154,7 @@ public class ToDoPage implements ActionListener {
         onTopCB.setBackground(new Color(20,20,20));
         onTopCB.setCursor(new Cursor(Cursor.HAND_CURSOR));
         onTopCB.addActionListener(this);
-        onTopCB.setBorder(createEmptyBorder(20,90,20,20));
+        onTopCB.setBorder(createEmptyBorder(20,100,20,20));
         settingsDiv.add(onTopCB);
 
         settingsPanel.add(settingsDiv);
@@ -1243,7 +1246,7 @@ public class ToDoPage implements ActionListener {
         opacityCB.setBackground(new Color(20,20,20));
         opacityCB.setCursor(new Cursor(Cursor.HAND_CURSOR));
         opacityCB.addActionListener(this);
-        opacityCB.setBorder(createEmptyBorder(20,90,20,20));
+        opacityCB.setBorder(createEmptyBorder(20,100,20,20));
         settingsDiv.add(opacityCB);
 
         settingsPanel.add(settingsDiv);
@@ -1267,7 +1270,7 @@ public class ToDoPage implements ActionListener {
         moveBtnCB.setBackground(new Color(20,20,20));
         moveBtnCB.setCursor(new Cursor(Cursor.HAND_CURSOR));
         moveBtnCB.addActionListener(this);
-        moveBtnCB.setBorder(createEmptyBorder(20,90,20,20));
+        moveBtnCB.setBorder(createEmptyBorder(20,100,20,20));
         settingsDiv.add(moveBtnCB);
 
         settingsPanel.add(settingsDiv);
@@ -1291,7 +1294,7 @@ public class ToDoPage implements ActionListener {
         taskNumCB.setBackground(new Color(20,20,20));
         taskNumCB.setCursor(new Cursor(Cursor.HAND_CURSOR));
         taskNumCB.addActionListener(this);
-        taskNumCB.setBorder(createEmptyBorder(20,90,20,20));
+        taskNumCB.setBorder(createEmptyBorder(20,100,20,20));
         settingsDiv.add(taskNumCB);
 
         settingsPanel.add(settingsDiv);
@@ -2030,11 +2033,6 @@ public class ToDoPage implements ActionListener {
 
                 //Remove the now redundant file with old name
                 File oldListFile = new File("./listStorage/"+oldList);
-                if(oldListFile.delete()){
-                    System.out.println("deleted "+"./listStorage/"+oldList);
-                } else {
-                    System.out.println("Old file not deleted: "+"./listStorage/"+oldList);
-                }
 
                 //Set new list as current list
                 ListItem.updateSavedList(noSpacesName+".tdli");
