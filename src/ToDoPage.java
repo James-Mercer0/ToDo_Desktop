@@ -132,10 +132,10 @@ public class ToDoPage implements ActionListener {
             }
             if(ascending[0]){
                   ascending[0] = false;
-                 sortList(ascending[0],orderBtn);
+                 sortList(listPanel,ascending[0],orderBtn);
             } else {
                 ascending[0] = true;
-                sortList(ascending[0],orderBtn);
+                sortList(listPanel,ascending[0],orderBtn);
             }
         });
 
@@ -338,7 +338,7 @@ public class ToDoPage implements ActionListener {
 
                     JLabel nameLabel = new JLabel("Name:");
                     prepLabel(nameLabel);
-                    Border blankBorder = BorderFactory.createEmptyBorder(15,0,0,0);
+                    Border blankBorder = createEmptyBorder(15,0,0,0);
                     Border lineBorder = BorderFactory.createLineBorder((new Color(50,50,50)),1);
                     nameLabel.setBorder(BorderFactory.createCompoundBorder(blankBorder,lineBorder));
                     JTextField editNameField = new JTextField(1);
@@ -358,7 +358,7 @@ public class ToDoPage implements ActionListener {
                     editInfoField.setText(itemInfo);
 
                     JScrollPane sp = new JScrollPane(editInfoField);
-                    Border emptyBorder = BorderFactory.createEmptyBorder(5, 5, 5, 5);
+                    Border emptyBorder = createEmptyBorder(5, 5, 5, 5);
                     editInfoField.setBorder(emptyBorder);
                     sp.setBorder(lineBorder);
                     sp.setBackground(new Color(20,20,20));
@@ -435,6 +435,48 @@ public class ToDoPage implements ActionListener {
                             return;
                         }
 
+                        //If list is already in order, when editing priority, keep the same ordering
+                        boolean inOrder = true;
+                        boolean ascending = false;
+
+                        int iterator = 0;
+
+                        JLabel priorityLabel = (JLabel) listPanel.getComponent(1+(iterator*6));
+                        int currentListItemPrio = parseInt(priorityLabel.getText());
+                        JLabel nextPriorityLabel = (JLabel) listPanel.getComponent(1+((iterator+1)*6));
+                        int nextListItemPrio = parseInt(nextPriorityLabel.getText());
+
+                        if(currentListItemPrio>nextListItemPrio){
+                            while(1+((iterator+1)*6)<=listPanel.getComponentCount()-1){
+                                priorityLabel = (JLabel) listPanel.getComponent(1+(iterator*6));
+                                currentListItemPrio = parseInt(priorityLabel.getText());
+                                nextPriorityLabel = (JLabel) listPanel.getComponent(1+((iterator+1)*6));
+                                nextListItemPrio = parseInt(nextPriorityLabel.getText());
+                                iterator++;
+
+                                if(currentListItemPrio<nextListItemPrio){
+                                    inOrder = false;
+                                }
+
+                            }
+                        }
+
+                        if(currentListItemPrio<nextListItemPrio){
+                            ascending = true;
+                            while(1+((iterator+1)*6)<=listPanel.getComponentCount()-1){
+                                priorityLabel = (JLabel) listPanel.getComponent(1+(iterator*6));
+                                currentListItemPrio = parseInt(priorityLabel.getText());
+                                nextPriorityLabel = (JLabel) listPanel.getComponent(1+((iterator+1)*6));
+                                nextListItemPrio = parseInt(nextPriorityLabel.getText());
+                                iterator++;
+
+                                if(currentListItemPrio>nextListItemPrio){
+                                    inOrder = false;
+                                }
+
+                            }
+                        }
+
                         int itemNumber = parseInt(editBtni.getToolTipText().substring(12),10);
                         String collatedItemInfo;
                         collatedItemInfo = itemNumber+ internalSeparator +editPrioField.getText()+ internalSeparator +editNameField.getText()+ internalSeparator +editInfoField.getText();
@@ -445,6 +487,9 @@ public class ToDoPage implements ActionListener {
                         lINamei.setText(editNameField.getText());
                         editFrame.dispose();
                         editWindowAlreadyOpen[0] = false;
+                        if(inOrder){
+                            sortList(listPanel,ascending,null);
+                        }
                         toDoFrame.repaint();
                         //Ensure updated list item is shown from left-most character
                             for(int i=0;i<ListItem.numOfListItems();i++){
@@ -459,7 +504,7 @@ public class ToDoPage implements ActionListener {
                     bottomBar.setLayout(new BorderLayout());
                     bottomBar.add(editSaveBtn, BorderLayout.CENTER);
                     bottomBar.setPreferredSize(new Dimension(0,60));
-                    bottomBar.setBorder(BorderFactory.createEmptyBorder(0,180,10,180));
+                    bottomBar.setBorder(createEmptyBorder(0,180,10,180));
 
                     editFrame.add(bottomBar, BorderLayout.SOUTH);
                     editFrame.add(topBar, BorderLayout.NORTH);
@@ -637,7 +682,7 @@ public class ToDoPage implements ActionListener {
 
                 JLabel nameLabel = new JLabel("Name:");
                 prepLabel(nameLabel);
-                Border blankBorder = BorderFactory.createEmptyBorder(15,0,0,0);
+                Border blankBorder = createEmptyBorder(15,0,0,0);
                 Border lineBorder = BorderFactory.createLineBorder((new Color(50,50,50)),1);
                 nameLabel.setBorder(BorderFactory.createCompoundBorder(blankBorder,lineBorder));
 
@@ -657,7 +702,7 @@ public class ToDoPage implements ActionListener {
                 addInfoField.setLineWrap(true);
 
                 JScrollPane sp = new JScrollPane(addInfoField);
-                Border emptyBorder = BorderFactory.createEmptyBorder(5, 5, 5, 5);
+                Border emptyBorder = createEmptyBorder(5, 5, 5, 5);
                 addInfoField.setBorder(emptyBorder);
                 sp.setBorder(lineBorder);
                 sp.setBackground(new Color(20,20,20));
@@ -734,6 +779,48 @@ public class ToDoPage implements ActionListener {
                         return;
                     }
 
+                    //Check if list is already ordered - reorder if so.
+                    boolean inOrder = true;
+                    boolean ascending = false;
+
+                    int iterator = 0;
+
+                    JLabel priorityLabel = (JLabel) listPanel.getComponent(1+(iterator*6));
+                    int currentListItemPrio = parseInt(priorityLabel.getText());
+                    JLabel nextPriorityLabel = (JLabel) listPanel.getComponent(1+((iterator+1)*6));
+                    int nextListItemPrio = parseInt(nextPriorityLabel.getText());
+
+                    if(currentListItemPrio>nextListItemPrio){
+                        while(1+((iterator+1)*6)<=listPanel.getComponentCount()-1){
+                            priorityLabel = (JLabel) listPanel.getComponent(1+(iterator*6));
+                            currentListItemPrio = parseInt(priorityLabel.getText());
+                            nextPriorityLabel = (JLabel) listPanel.getComponent(1+((iterator+1)*6));
+                            nextListItemPrio = parseInt(nextPriorityLabel.getText());
+                            iterator++;
+
+                            if(currentListItemPrio<nextListItemPrio){
+                                inOrder = false;
+                            }
+
+                        }
+                    }
+
+                    if(currentListItemPrio<nextListItemPrio){
+                        ascending = true;
+                        while(1+((iterator+1)*6)<=listPanel.getComponentCount()-1){
+                            priorityLabel = (JLabel) listPanel.getComponent(1+(iterator*6));
+                            currentListItemPrio = parseInt(priorityLabel.getText());
+                            nextPriorityLabel = (JLabel) listPanel.getComponent(1+((iterator+1)*6));
+                            nextListItemPrio = parseInt(nextPriorityLabel.getText());
+                            iterator++;
+
+                            if(currentListItemPrio>nextListItemPrio){
+                                inOrder = false;
+                            }
+
+                        }
+                    }
+
                     ListItem nli = new ListItem(ListItem.numOfListItems()+1, parseInt(addPrioField.getText(),10),addNameField.getText(),addInfoField.getText());
                     updateListNums();
                     nli.saveListItem();
@@ -742,6 +829,10 @@ public class ToDoPage implements ActionListener {
                     Point location = toDoFrame.getLocation();
                     ToDoPage tdp = new ToDoPage();
                     tdp.toDoFrame.setLocation(location);
+                    if(inOrder){
+                        sortList(tdp.listPanel, ascending,null);
+                    }
+
                     //Ensure all updated list items are shown from left-most character
                     for(int i=0;i<ListItem.numOfListItems();i++){
                         JTextField nameField;
@@ -755,7 +846,7 @@ public class ToDoPage implements ActionListener {
                 bottomBar.setLayout(new BorderLayout());
                 bottomBar.add(addSaveBtn, BorderLayout.CENTER);
                 bottomBar.setPreferredSize(new Dimension(0,60));
-                bottomBar.setBorder(BorderFactory.createEmptyBorder(0,180,10,180));
+                bottomBar.setBorder(createEmptyBorder(0,180,10,180));
 
                 addFrame.add(bottomBar, BorderLayout.SOUTH);
 
@@ -778,7 +869,7 @@ public class ToDoPage implements ActionListener {
         JPanel btnSpacing = new JPanel();
         btnSpacing.setBackground(new Color(24,24,24));
         btnSpacing.setLayout(new BorderLayout());
-        btnSpacing.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+        btnSpacing.setBorder(createEmptyBorder(0,0,10,0));
 
         btnSpacing.add(newListItemBtn);
 
@@ -915,7 +1006,7 @@ public class ToDoPage implements ActionListener {
         //Settings Main Panel
         JPanel settingsPanel = new JPanel();
         settingsPanel.setBackground(new Color(24,24,24));
-        settingsPanel.setBorder(BorderFactory.createCompoundBorder((BorderFactory.createEmptyBorder(30,30,30,30)),(BorderFactory.createLineBorder(new Color(50,50,50),1))));
+        settingsPanel.setBorder(BorderFactory.createCompoundBorder((createEmptyBorder(30,30,30,30)),(BorderFactory.createLineBorder(new Color(50,50,50),1))));
         settingsPanel.setLayout(new GridLayout(0,1));
 
         //List Selection
@@ -954,7 +1045,7 @@ public class ToDoPage implements ActionListener {
         listsList.setForeground(new Color(220,220,220));
         listsList.setBackground(new Color(24,24,24));
         listsList.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createEmptyBorder(15,10,15,10),
+                createEmptyBorder(15,10,15,10),
                 BorderFactory.createLineBorder(new Color(50,50,50),1)
         ));
         listsList.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -1012,7 +1103,7 @@ public class ToDoPage implements ActionListener {
         settingsDiv.setBackground(new Color(24,24,24));
         settingsDiv.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0,0,1,0,new Color(50,50,50)),
-                BorderFactory.createEmptyBorder(12,90,12,90)
+                createEmptyBorder(12,90,12,90)
         ));
 
         newListBtn = new JButton("Create New List");
@@ -1030,7 +1121,7 @@ public class ToDoPage implements ActionListener {
         settingsDiv.setBackground(new Color(24,24,24));
         settingsDiv.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0,0,1,0,new Color(50,50,50)),
-                BorderFactory.createEmptyBorder(12,90,12,90)
+                createEmptyBorder(12,90,12,90)
         ));
 
         listNameBtn = new JButton("Rename Current List");
@@ -1060,7 +1151,7 @@ public class ToDoPage implements ActionListener {
         onTopCB.setBackground(new Color(20,20,20));
         onTopCB.setCursor(new Cursor(Cursor.HAND_CURSOR));
         onTopCB.addActionListener(this);
-        onTopCB.setBorder(BorderFactory.createEmptyBorder(20,90,20,20));
+        onTopCB.setBorder(createEmptyBorder(20,90,20,20));
         settingsDiv.add(onTopCB);
 
         settingsPanel.add(settingsDiv);
@@ -1124,7 +1215,7 @@ public class ToDoPage implements ActionListener {
         opacityVal.setFont(new Font("Arial",Font.PLAIN,18));
         opacityVal.setHighlighter(null);
         opacityVal.setFocusable(false);
-        opacityVal.setBorder(BorderFactory.createEmptyBorder(0,60,0,60));
+        opacityVal.setBorder(createEmptyBorder(0,60,0,60));
         opacityVal.setHorizontalAlignment(JTextField.CENTER);
 
 
@@ -1152,7 +1243,7 @@ public class ToDoPage implements ActionListener {
         opacityCB.setBackground(new Color(20,20,20));
         opacityCB.setCursor(new Cursor(Cursor.HAND_CURSOR));
         opacityCB.addActionListener(this);
-        opacityCB.setBorder(BorderFactory.createEmptyBorder(20,90,20,20));
+        opacityCB.setBorder(createEmptyBorder(20,90,20,20));
         settingsDiv.add(opacityCB);
 
         settingsPanel.add(settingsDiv);
@@ -1176,7 +1267,7 @@ public class ToDoPage implements ActionListener {
         moveBtnCB.setBackground(new Color(20,20,20));
         moveBtnCB.setCursor(new Cursor(Cursor.HAND_CURSOR));
         moveBtnCB.addActionListener(this);
-        moveBtnCB.setBorder(BorderFactory.createEmptyBorder(20,90,20,20));
+        moveBtnCB.setBorder(createEmptyBorder(20,90,20,20));
         settingsDiv.add(moveBtnCB);
 
         settingsPanel.add(settingsDiv);
@@ -1200,7 +1291,7 @@ public class ToDoPage implements ActionListener {
         taskNumCB.setBackground(new Color(20,20,20));
         taskNumCB.setCursor(new Cursor(Cursor.HAND_CURSOR));
         taskNumCB.addActionListener(this);
-        taskNumCB.setBorder(BorderFactory.createEmptyBorder(20,90,20,20));
+        taskNumCB.setBorder(createEmptyBorder(20,90,20,20));
         settingsDiv.add(taskNumCB);
 
         settingsPanel.add(settingsDiv);
@@ -1329,7 +1420,7 @@ public class ToDoPage implements ActionListener {
         for (Component comp : container.getComponents()) {
             if (comp instanceof JButton btn) {
                 prepBtn(btn);
-                Border padding = BorderFactory.createEmptyBorder(10,10,10,10);
+                Border padding = createEmptyBorder(10,10,10,10);
                 Border line = BorderFactory.createLineBorder(new Color(50,50,50),1);
                 btn.setBorder(BorderFactory.createCompoundBorder(line,padding));
                 btn.setBorderPainted(true);
@@ -1408,7 +1499,7 @@ public class ToDoPage implements ActionListener {
         ListItem.saveUpdatedItemList(sb.toString());
     }
 
-    private void sortList(boolean ascending,JButton orderBtn) {
+    private void sortList(JPanel listPanel, boolean ascending,JButton orderBtn) {
         TreeMap<String,String> orderedList = new TreeMap<>();
         for(int i=0;i<ListItem.numOfListItems();i++){
             JLabel numLabel = (JLabel) listPanel.getComponent(i*6);
@@ -1420,7 +1511,9 @@ public class ToDoPage implements ActionListener {
         HashMap<String, ArrayList<String>> reOrderedList = new HashMap<>();
 
         if(ascending){
-            orderBtn.setText("OrderTasks ▼");
+            if(orderBtn != null){
+                orderBtn.setText("OrderTasks ▼");
+            }
             for(int h=0;h<ListItem.numOfListItems();h++) {
                 String original = orderedList.firstKey();
                 if(orderedList.size()>1) {
@@ -1459,12 +1552,14 @@ public class ToDoPage implements ActionListener {
                 sb.append(updatedItem).append("❂");
             }
             ListItem.saveUpdatedItemList(sb.toString());
-            updateList();
+            updateList(listPanel);
             orderedList.clear();
             reOrderedList.clear();
         }
         if(!ascending){
-            orderBtn.setText("OrderTasks ▲");
+            if(orderBtn != null) {
+                orderBtn.setText("OrderTasks ▲");
+            }
             for(int h=0;h<ListItem.numOfListItems();h++) {
                 String original = orderedList.firstKey();
                 if(orderedList.size()>1) {
@@ -1503,14 +1598,14 @@ public class ToDoPage implements ActionListener {
                 sb.append(updatedItem).append("❂");
             }
             ListItem.saveUpdatedItemList(sb.toString());
-            updateList();
+            updateList(listPanel);
             orderedList.clear();
             reOrderedList.clear();
         }
 
     }
 
-    private void updateList() {
+    private void updateList(JPanel listPanel) {
 
         for(int i=0;i<ListItem.numOfListItems();i++) {
             String itemI = ListItem.getListItemInfo(i);
@@ -1783,7 +1878,7 @@ public class ToDoPage implements ActionListener {
             bottomBar.setLayout(new BorderLayout());
             bottomBar.add(newListSaveBtn, BorderLayout.CENTER);
             bottomBar.setPreferredSize(new Dimension(0,60));
-            bottomBar.setBorder(BorderFactory.createEmptyBorder(0,100,10,100));
+            bottomBar.setBorder(createEmptyBorder(0,100,10,100));
 
             newListFrame.add(bottomBar, BorderLayout.SOUTH);
 
@@ -1958,7 +2053,7 @@ public class ToDoPage implements ActionListener {
             bottomBar.setLayout(new BorderLayout());
             bottomBar.add(newListNameBtn, BorderLayout.CENTER);
             bottomBar.setPreferredSize(new Dimension(0,60));
-            bottomBar.setBorder(BorderFactory.createEmptyBorder(0,100,10,100));
+            bottomBar.setBorder(createEmptyBorder(0,100,10,100));
 
             listNameFrame.add(bottomBar, BorderLayout.SOUTH);
 
