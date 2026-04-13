@@ -36,6 +36,8 @@ public class ToDoPage implements ActionListener {
     JCheckBox opacityCB;
     boolean subWindowOpacity;
     float opacity;
+    JCheckBox taskLabelsCB;
+    static boolean taskLabelsEnabled;
     JCheckBox moveBtnCB;
     static boolean moveBtnsEnabled;
     JCheckBox taskNumCB;
@@ -974,6 +976,13 @@ public class ToDoPage implements ActionListener {
             }
         }
 
+        checkTaskLabelsEnabled();
+        if(!taskLabelsEnabled){
+            for(int i=0;i<6;i++){
+                listPanel.getComponent(i).setVisible(false);
+            }
+        }
+
         toDoFrame.add(topBar, BorderLayout.NORTH);
         toDoFrame.add(bottomPanel, BorderLayout.SOUTH);
         toDoPanel.add(listSp, BorderLayout.CENTER);
@@ -983,7 +992,7 @@ public class ToDoPage implements ActionListener {
         //Check for updated min with allowing for optional buttons/nums
         int minWidth = 434;
         if(taskNumsEnabled){
-            minWidth = minWidth +24;
+            minWidth = minWidth +28;
         }
         if(moveBtnsEnabled){
             minWidth = minWidth +69;
@@ -1302,6 +1311,30 @@ public class ToDoPage implements ActionListener {
 
         settingsPanel.add(settingsDiv);
 
+        //Task Info Labels toggle
+        settingsDiv = new JPanel();
+        settingsDiv.setLayout(new GridLayout(0,2));
+        settingsDiv.setBackground(new Color(24,24,24));
+        settingsDiv.setBorder(BorderFactory.createMatteBorder(0,0,1,0,new Color(50,50,50)));
+
+        JLabel disableTaskLabels = new JLabel("Enable Task information Labels?");
+        prepLabel(disableTaskLabels);
+        disableTaskLabels.setBorder(BorderFactory.createMatteBorder(0,0,0,1,new Color(50,50,50)));
+        settingsDiv.add(disableTaskLabels);
+
+        taskLabelsCB = new JCheckBox();
+
+        checkTaskLabelsEnabled();
+
+        taskLabelsCB.setSelected(taskLabelsEnabled);
+        taskLabelsCB.setBackground(new Color(20,20,20));
+        taskLabelsCB.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        taskLabelsCB.addActionListener(this);
+        taskLabelsCB.setBorder(createEmptyBorder(20,100,20,20));
+        settingsDiv.add(taskLabelsCB);
+
+        settingsPanel.add(settingsDiv);
+
         //Move Task buttons toggle
         settingsDiv = new JPanel();
         settingsDiv.setLayout(new GridLayout(0,2));
@@ -1358,6 +1391,12 @@ public class ToDoPage implements ActionListener {
         settingsFrame.pack();
         settingsFrame.setVisible(true);
 
+    }
+
+    private void checkTaskLabelsEnabled(){
+        settings=getSettings();
+        String taskLabelSetting = getSpecificSetting(6,(settings.substring(settings.indexOf("❂")+1)));
+        taskLabelsEnabled = Boolean.parseBoolean(taskLabelSetting);
     }
 
     private void checkTaskNumsEnabled(){
@@ -1761,15 +1800,39 @@ public class ToDoPage implements ActionListener {
             updateSubOpacity(opacityCB.isSelected());
         }
 
+        if(e.getSource() == taskLabelsCB){
+            checkTaskLabelsEnabled();
+            checkTaskNumsEnabled();
+            checkMoveBtnEnabled();
+            for(int i=0;i<6;i++){
+                if(i==0){
+                    listPanel.getComponent(i).setVisible((taskLabelsCB.isSelected() && taskNumsEnabled));
+                } else if(i==5){
+                    listPanel.getComponent(i).setVisible((taskLabelsCB.isSelected() && moveBtnsEnabled));
+                } else {
+                    listPanel.getComponent(i).setVisible(taskLabelsCB.isSelected());
+                }
+            }
+            taskLabelsEnabled = taskLabelsCB.isSelected();
+            updateTaskLabelsEnabled(taskLabelsEnabled);
+        }
+
         if(e.getSource() == moveBtnCB){
-            for(int i=0;i<ListItem.numOfListItems()+1;i++){
-                boolean visible = listPanel.getComponent(5+(i*6)).isVisible();
-                listPanel.getComponent(5+(i*6)).setVisible(!visible);
+            checkTaskLabelsEnabled();
+
+            if(taskLabelsEnabled){
+                boolean visible = listPanel.getComponent(5).isVisible();
+                listPanel.getComponent(5).setVisible(!visible);
+            }
+
+            for(int i=0;i<ListItem.numOfListItems();i++){
+                boolean visible = listPanel.getComponent(6+(5+(i*6))).isVisible();
+                listPanel.getComponent(6+(5+(i*6))).setVisible(!visible);
             }
             moveBtnsEnabled = moveBtnCB.isSelected();
             int minWidth = 434;
             if(taskNumsEnabled){
-                minWidth = minWidth +24;
+                minWidth = minWidth +28;
             }
             if(moveBtnsEnabled){
                 minWidth = minWidth +69;
@@ -1783,14 +1846,20 @@ public class ToDoPage implements ActionListener {
         }
 
         if(e.getSource() == taskNumCB){
-            for(int i=0;i<ListItem.numOfListItems()+1;i++){
-                boolean visible = listPanel.getComponent((i*6)).isVisible();
-                listPanel.getComponent((i*6)).setVisible(!visible);
+            checkTaskLabelsEnabled();
+
+            if(taskLabelsEnabled){
+                boolean visible = listPanel.getComponent(0).isVisible();
+                listPanel.getComponent(0).setVisible(!visible);
+            }
+            for(int i=0;i<ListItem.numOfListItems();i++){
+                boolean visible = listPanel.getComponent(6+(i*6)).isVisible();
+                listPanel.getComponent(6+(i*6)).setVisible(!visible);
             }
             taskNumsEnabled = taskNumCB.isSelected();
             int minWidth = 434;
             if(taskNumsEnabled){
-                minWidth = minWidth +24;
+                minWidth = minWidth +28;
             } else {
                 toDoFrame.setSize(toDoFrame.getWidth()-24,toDoFrame.getHeight());
             }
@@ -2143,6 +2212,17 @@ public class ToDoPage implements ActionListener {
         }
     }
 
+    private void updateTaskLabelsEnabled(boolean enabled){
+        String currentSettings = getSettings();
+        currentSettings = currentSettings.replaceFirst("Task Labels Enabled: "+!enabled,"Task Labels Enabled: "+enabled);
+
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter("settings/settings.txt"))){
+            bw.write(currentSettings);
+        } catch(IOException e){
+            throw new RuntimeException(e);
+        }
+    }
+
     public void updateSubOpacity(boolean enabled){
         String currentSettings = getSettings();
         currentSettings = currentSettings.replaceFirst("Window Opacity: "+!enabled,"Window Opacity: "+enabled);
@@ -2302,7 +2382,7 @@ public class ToDoPage implements ActionListener {
                 minWidth = minWidth +69;
             }
             if(taskNumsEnabled){
-                minWidth = minWidth +24;
+                minWidth = minWidth +28;
             }
 
             if(width< minWidth){
