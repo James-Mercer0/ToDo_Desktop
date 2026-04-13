@@ -481,6 +481,9 @@ public class ToDoPage implements ActionListener {
                         if((editPrioField.getText().isEmpty() || !intIsValid(editPrioField.getText()))){
                             createDialogWindow("<html><b style=\" color:#c8c8c8; font-size:12px;\"> Your priority number is invalid - please add a valid whole number. </b></html>","Invalid Priority Number", false);
                             return;
+                        } else if(parseInt(editPrioField.getText())>9999){
+                            createDialogWindow("<html><b style=\" color:#c8c8c8; font-size:12px;\"> Priority cannot be higher than 9999. </b></html>","Invalid Priority Number", false);
+                            return;
                         }
                         //check if updated task has a name
                         if(editNameField.getText().isEmpty()){
@@ -830,6 +833,9 @@ public class ToDoPage implements ActionListener {
                     if((addPrioField.getText().isEmpty() || !intIsValid(addPrioField.getText()))){
                         createDialogWindow("<html><b style=\" color:#c8c8c8; font-size:12px;\"> Your priority number is invalid - please add a valid whole number. </b></html>","Invalid Priority Number", false);
                         return;
+                    } else if(parseInt(addPrioField.getText())>9999){
+                        createDialogWindow("<html><b style=\" color:#c8c8c8; font-size:12px;\"> Priority cannot be higher than 9999. </b></html>","Invalid Priority Number", false);
+                        return;
                     }
                     //ensure that the task has a title
                     if(addNameField.getText().isEmpty()){
@@ -1002,7 +1008,7 @@ public class ToDoPage implements ActionListener {
         //Check for updated min with allowing for optional buttons/nums
         int minWidth = 434;
         if(taskNumsEnabled){
-            minWidth = minWidth +28;
+            minWidth = minWidth +41;
         }
         if(moveBtnsEnabled){
             minWidth = minWidth +69;
@@ -1842,7 +1848,7 @@ public class ToDoPage implements ActionListener {
             moveBtnsEnabled = moveBtnCB.isSelected();
             int minWidth = 434;
             if(taskNumsEnabled){
-                minWidth = minWidth +28;
+                minWidth = minWidth +41;
             }
             if(moveBtnsEnabled){
                 minWidth = minWidth +69;
@@ -1869,9 +1875,9 @@ public class ToDoPage implements ActionListener {
             taskNumsEnabled = taskNumCB.isSelected();
             int minWidth = 434;
             if(taskNumsEnabled){
-                minWidth = minWidth +28;
+                minWidth = minWidth +41;
             } else {
-                toDoFrame.setSize(toDoFrame.getWidth()-24,toDoFrame.getHeight());
+                toDoFrame.setSize(toDoFrame.getWidth()-41,toDoFrame.getHeight());
             }
             if(moveBtnsEnabled){
                 minWidth = minWidth +69;
@@ -2392,9 +2398,8 @@ public class ToDoPage implements ActionListener {
                 minWidth = minWidth +69;
             }
             if(taskNumsEnabled){
-                minWidth = minWidth +28;
+                minWidth = minWidth +41;
             }
-
             if(width< minWidth){
                 width = minWidth;
             }
