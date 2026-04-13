@@ -167,8 +167,59 @@ public class ToDoPage implements ActionListener {
 
         int loops=0;
 
+        JLabel listNumLabel = new JLabel("Num");
+        prepLabel(listNumLabel);
+        con.fill = GridBagConstraints.HORIZONTAL;
+        con.anchor = GridBagConstraints.NORTH;
+        con.gridy = 0;
+        con.gridx = 0;
+        con.weighty = 0;
+        con.ipady = 10;
+        con.ipadx = 15;
+        con.weightx = 0.05;
+        listPanel.add(listNumLabel, con);
+
+        JLabel listPrioLabel = new JLabel("Prio");
+        prepLabel(listPrioLabel);
+        con.gridx = 1;
+        con.weightx = 0.05;
+        listPanel.add(listPrioLabel, con);
+
+        JTextField listNameLabel = new JTextField("Name");
+        prepTextField(listNameLabel);
+        con.gridx = 2;
+        con.weightx = 0.65;
+
+        listPanel.add(listNameLabel, con);
+
+        JPanel emptyPanel = new JPanel();
+        emptyPanel.setBackground(new Color(20,20,20));
+        emptyPanel.setBorder(BorderFactory.createLineBorder(new Color(50,50,50),1));
+
+        con.gridx = 3;
+        con.weightx = 0.05;
+        con.fill = GridBagConstraints.BOTH;
+        listPanel.add(emptyPanel, con);
+
+        JPanel emptyPanel2 = new JPanel();
+        emptyPanel2.setBackground(new Color(20,20,20));
+        emptyPanel2.setBorder(BorderFactory.createLineBorder(new Color(50,50,50),1));
+
+        con.gridx = 4;
+        con.weightx = 0.05;
+        listPanel.add(emptyPanel2, con);
+
+        JPanel emptyPanel3 = new JPanel();
+        emptyPanel3.setBackground(new Color(20,20,20));
+        emptyPanel3.setBorder(BorderFactory.createLineBorder(new Color(50,50,50),1));
+
+        con.gridx = 5;
+        con.weightx = 0.05;
+        listPanel.add(emptyPanel3, con);
+
         //for each task in the list, create the task and buttons for each task
         for(int i=0;i<ListItem.numOfListItems();i++){
+            int j = i+1;
             String itemI = ListItem.getListItemInfo(i);
 
             String internalSeparator = "❒";
@@ -183,7 +234,7 @@ public class ToDoPage implements ActionListener {
             prepLabel(lINumi);
             con.fill = GridBagConstraints.HORIZONTAL;
             con.anchor = GridBagConstraints.NORTH;
-            con.gridy = i;
+            con.gridy = j;
             con.gridx = 0;
             con.weighty = 0;
             con.ipady = 10;
@@ -193,7 +244,7 @@ public class ToDoPage implements ActionListener {
 
             JLabel lIPrioi = new JLabel(String.valueOf(iPrio));
             prepLabel(lIPrioi);
-            con.gridy = i;
+            con.gridy = j;
             con.gridx = 1;
             con.weightx = 0.05;
             listPanel.add(lIPrioi, con);
@@ -201,7 +252,7 @@ public class ToDoPage implements ActionListener {
             JTextField lINamei = new JTextField(iName,20);
             lINamei.setToolTipText(iName);
             prepTextField(lINamei);
-            con.gridy = i;
+            con.gridy = j;
             con.gridx = 2;
             con.weightx = 0.65;
 
@@ -247,7 +298,7 @@ public class ToDoPage implements ActionListener {
                 listPanel.repaint();
                 listPanel.updateUI();
             });
-            con.gridy = i;
+            con.gridy = j;
             con.gridx = 3;
             con.weightx = 0.05;
             listPanel.add(binBtni, con);
@@ -441,16 +492,16 @@ public class ToDoPage implements ActionListener {
 
                         int iterator = 0;
 
-                        JLabel priorityLabel = (JLabel) listPanel.getComponent(1+(iterator*6));
+                        JLabel priorityLabel = (JLabel) listPanel.getComponent(6+(1+(iterator*6)));
                         int currentListItemPrio = parseInt(priorityLabel.getText());
-                        JLabel nextPriorityLabel = (JLabel) listPanel.getComponent(1+((iterator+1)*6));
+                        JLabel nextPriorityLabel = (JLabel) listPanel.getComponent(6+(1+((iterator+1)*6)));
                         int nextListItemPrio = parseInt(nextPriorityLabel.getText());
 
                         if(currentListItemPrio>nextListItemPrio){
-                            while(1+((iterator+1)*6)<=listPanel.getComponentCount()-1){
-                                priorityLabel = (JLabel) listPanel.getComponent(1+(iterator*6));
+                            while(6+(1+((iterator+1)*6))<=listPanel.getComponentCount()-1){
+                                priorityLabel = (JLabel) listPanel.getComponent(6+(1+(iterator*6)));
                                 currentListItemPrio = parseInt(priorityLabel.getText());
-                                nextPriorityLabel = (JLabel) listPanel.getComponent(1+((iterator+1)*6));
+                                nextPriorityLabel = (JLabel) listPanel.getComponent(6+(1+((iterator+1)*6)));
                                 nextListItemPrio = parseInt(nextPriorityLabel.getText());
                                 iterator++;
 
@@ -463,10 +514,10 @@ public class ToDoPage implements ActionListener {
 
                         if(currentListItemPrio<nextListItemPrio){
                             ascending = true;
-                            while(1+((iterator+1)*6)<=listPanel.getComponentCount()-1){
-                                priorityLabel = (JLabel) listPanel.getComponent(1+(iterator*6));
+                            while(6+(1+((iterator+1)*6))<=listPanel.getComponentCount()-1){
+                                priorityLabel = (JLabel) listPanel.getComponent(6+(1+(iterator*6)));
                                 currentListItemPrio = parseInt(priorityLabel.getText());
-                                nextPriorityLabel = (JLabel) listPanel.getComponent(1+((iterator+1)*6));
+                                nextPriorityLabel = (JLabel) listPanel.getComponent(6+(1+((iterator+1)*6)));
                                 nextListItemPrio = parseInt(nextPriorityLabel.getText());
                                 iterator++;
 
@@ -494,7 +545,7 @@ public class ToDoPage implements ActionListener {
                         //Ensure updated list item is shown from left-most character
                             for(int i=0;i<ListItem.numOfListItems();i++){
                                 JTextField nameField;
-                                nameField = (JTextField) listPanel.getComponent(2+(6*i));
+                                nameField = (JTextField) listPanel.getComponent(6+(2+(i*6)));
                                 nameField.setCaretPosition(0);
                             }
                     });
@@ -521,7 +572,7 @@ public class ToDoPage implements ActionListener {
             // == END - edit window ==
             //
 
-            con.gridy = i;
+            con.gridy = j;
             con.gridx = 4;
             con.weightx = 0.05;
 
@@ -567,7 +618,7 @@ public class ToDoPage implements ActionListener {
             moveBtnsPaneli.add(moveUpi);
             moveBtnsPaneli.add(moveDowni);
 
-            con.gridy = i;
+            con.gridy = j;
             con.gridx = 5;
             con.weightx = 0.05;
 
@@ -785,16 +836,16 @@ public class ToDoPage implements ActionListener {
 
                     int iterator = 0;
 
-                    JLabel priorityLabel = (JLabel) listPanel.getComponent(1+(iterator*6));
+                    JLabel priorityLabel = (JLabel) listPanel.getComponent(6+(1+(iterator*6)));
                     int currentListItemPrio = parseInt(priorityLabel.getText());
-                    JLabel nextPriorityLabel = (JLabel) listPanel.getComponent(1+((iterator+1)*6));
+                    JLabel nextPriorityLabel = (JLabel) listPanel.getComponent(6+(1+((iterator+1)*6)));
                     int nextListItemPrio = parseInt(nextPriorityLabel.getText());
 
                     if(currentListItemPrio>nextListItemPrio){
-                        while(1+((iterator+1)*6)<=listPanel.getComponentCount()-1){
-                            priorityLabel = (JLabel) listPanel.getComponent(1+(iterator*6));
+                        while(6+(1+((iterator+1)*6))<=listPanel.getComponentCount()-1){
+                            priorityLabel = (JLabel) listPanel.getComponent(6+(1+(iterator*6)));
                             currentListItemPrio = parseInt(priorityLabel.getText());
-                            nextPriorityLabel = (JLabel) listPanel.getComponent(1+((iterator+1)*6));
+                            nextPriorityLabel = (JLabel) listPanel.getComponent(6+(1+((iterator+1)*6)));
                             nextListItemPrio = parseInt(nextPriorityLabel.getText());
                             iterator++;
 
@@ -807,10 +858,10 @@ public class ToDoPage implements ActionListener {
 
                     if(currentListItemPrio<nextListItemPrio){
                         ascending = true;
-                        while(1+((iterator+1)*6)<=listPanel.getComponentCount()-1){
-                            priorityLabel = (JLabel) listPanel.getComponent(1+(iterator*6));
+                        while(6+(1+((iterator+1)*6))<=listPanel.getComponentCount()-1){
+                            priorityLabel = (JLabel) listPanel.getComponent(6+(1+(iterator*6)));
                             currentListItemPrio = parseInt(priorityLabel.getText());
-                            nextPriorityLabel = (JLabel) listPanel.getComponent(1+((iterator+1)*6));
+                            nextPriorityLabel = (JLabel) listPanel.getComponent(6+(1+((iterator+1)*6)));
                             nextListItemPrio = parseInt(nextPriorityLabel.getText());
                             iterator++;
 
@@ -836,7 +887,7 @@ public class ToDoPage implements ActionListener {
                     //Ensure all updated list items are shown from left-most character
                     for(int i=0;i<ListItem.numOfListItems();i++){
                         JTextField nameField;
-                        nameField = (JTextField) tdp.listPanel.getComponent(2+(6*i));
+                        nameField = (JTextField) tdp.listPanel.getComponent(6+(2+(i*6)));
                         nameField.setCaretPosition(0);
                     }
                 });
@@ -909,7 +960,7 @@ public class ToDoPage implements ActionListener {
 
         checkMoveBtnEnabled();
         if(!moveBtnsEnabled){
-            for(int i=0;i<ListItem.numOfListItems();i++){
+            for(int i=0;i<ListItem.numOfListItems()+1;i++){
                 boolean visible = listPanel.getComponent(5+(i*6)).isVisible();
                 listPanel.getComponent(5+(i*6)).setVisible(!visible);
             }
@@ -917,7 +968,7 @@ public class ToDoPage implements ActionListener {
 
         checkTaskNumsEnabled();
         if(!taskNumsEnabled){
-            for(int i=0;i<ListItem.numOfListItems();i++){
+            for(int i=0;i<ListItem.numOfListItems()+1;i++){
                 boolean visible = listPanel.getComponent((i*6)).isVisible();
                 listPanel.getComponent((i*6)).setVisible(!visible);
             }
@@ -1089,7 +1140,7 @@ public class ToDoPage implements ActionListener {
             newToDo.toDoFrame.setLocation(location);
             newToDo.openSettingsWindow();
             for(int i=0;i<ListItem.numOfListItems();i++){
-                JTextField taskName = (JTextField) newToDo.listPanel.getComponent(2+(i*6));
+                JTextField taskName = (JTextField) newToDo.listPanel.getComponent(6+(2+(i*6)));
                 taskName.setCaretPosition(0);
             }
         });
@@ -1445,10 +1496,10 @@ public class ToDoPage implements ActionListener {
         }
 
         JLabel currentPriority;
-        currentPriority = (JLabel) this.listPanel.getComponent(1+((taskNum-1)*6));
+        currentPriority = (JLabel) this.listPanel.getComponent(6+(1+((taskNum-1)*6)));
 
         JTextField currentName;
-        currentName = (JTextField) this.listPanel.getComponent(2+((taskNum-1)*6));
+        currentName = (JTextField) this.listPanel.getComponent(6+(2+((taskNum-1)*6)));
 
         JLabel toSwapPriority;
         JTextField toSwapName;
@@ -1458,16 +1509,16 @@ public class ToDoPage implements ActionListener {
                 return;
             }
             taskToSwapNum = taskNum-1;
-            toSwapPriority = (JLabel) this.listPanel.getComponent(1+((taskNum-2)*6));
-            toSwapName = (JTextField) this.listPanel.getComponent(2+((taskNum-2)*6));
+            toSwapPriority = (JLabel) this.listPanel.getComponent(6+(1+((taskNum-2)*6)));
+            toSwapName = (JTextField) this.listPanel.getComponent(6+(2+((taskNum-2)*6)));
         } else {
             taskToSwapNum = taskNum+1;
             if(taskToSwapNum>ListItem.numOfListItems()){
                 return;
             }
             taskToSwapNum = taskNum+1;
-            toSwapPriority = (JLabel) this.listPanel.getComponent(1+((taskNum)*6));
-            toSwapName = (JTextField) this.listPanel.getComponent(2+((taskNum)*6));
+            toSwapPriority = (JLabel) this.listPanel.getComponent(6+(1+((taskNum)*6)));
+            toSwapName = (JTextField) this.listPanel.getComponent(6+(2+((taskNum)*6)));
         }
 
         String holdingP = currentPriority.getText();
@@ -1500,14 +1551,18 @@ public class ToDoPage implements ActionListener {
             }
         }
         ListItem.saveUpdatedItemList(sb.toString());
+        for(int i=0;i<ListItem.numOfListItems();i++){
+            JTextField taskName = (JTextField) this.listPanel.getComponent(6+(2+(i*6)));
+            taskName.setCaretPosition(0);
+        }
     }
 
     private void sortList(JPanel listPanel, boolean ascending,JButton orderBtn) {
         TreeMap<String,String> orderedList = new TreeMap<>();
         for(int i=0;i<ListItem.numOfListItems();i++){
-            JLabel numLabel = (JLabel) listPanel.getComponent(i*6);
+            JLabel numLabel = (JLabel) listPanel.getComponent(6+(i*6));
             String itemNum = numLabel.getText();
-            JLabel prioLabel = (JLabel) listPanel.getComponent(1+(i*6));
+            JLabel prioLabel = (JLabel) listPanel.getComponent(6+(1+(i*6)));
             String itemPrio = prioLabel.getText();
             orderedList.put(itemNum,itemPrio);
         }
@@ -1515,7 +1570,7 @@ public class ToDoPage implements ActionListener {
 
         if(ascending){
             if(orderBtn != null){
-                orderBtn.setText("OrderTasks ▼");
+                orderBtn.setText("Order Tasks ▼");
             }
             for(int h=0;h<ListItem.numOfListItems();h++) {
                 String original = orderedList.firstKey();
@@ -1561,7 +1616,7 @@ public class ToDoPage implements ActionListener {
         }
         if(!ascending){
             if(orderBtn != null) {
-                orderBtn.setText("OrderTasks ▲");
+                orderBtn.setText("Order Tasks ▲");
             }
             for(int h=0;h<ListItem.numOfListItems();h++) {
                 String original = orderedList.firstKey();
@@ -1621,13 +1676,13 @@ public class ToDoPage implements ActionListener {
             forNextItem = forNextItem.substring(forNextItem.indexOf(internalSeparator) + 1);
             String iName = forNextItem.substring(0, forNextItem.indexOf(internalSeparator));
 
-            JLabel itemNameLabel = (JLabel)listPanel.getComponent(i*6);
+            JLabel itemNameLabel = (JLabel)listPanel.getComponent(6+(i*6));
             itemNameLabel.setText(String.valueOf(iNum));
 
-            JLabel itemPrioLabel = (JLabel)listPanel.getComponent(1+(i*6));
+            JLabel itemPrioLabel = (JLabel)listPanel.getComponent(6+(1+(i*6)));
             itemPrioLabel.setText(String.valueOf(iPrio));
 
-            JTextField itemName = (JTextField)listPanel.getComponent(2+(i*6));
+            JTextField itemName = (JTextField)listPanel.getComponent(6+(2+(i*6)));
             itemName.setText(iName);
             itemName.setToolTipText(iName);
             itemName.setCaretPosition(0);
@@ -1644,7 +1699,7 @@ public class ToDoPage implements ActionListener {
 
     public void updateListNums(){
         for(int i=0;i<ListItem.numOfListItems();i++){
-            JLabel example = (JLabel) listPanel.getComponent((i*6));
+            JLabel example = (JLabel) listPanel.getComponent(6+((i*6)));
             example.setText(i+1+"");
         }
     }
@@ -1652,15 +1707,15 @@ public class ToDoPage implements ActionListener {
     public void updateBtnNums(){
         for(int i=0;i<ListItem.numOfListItems();i++) {
             JButton example;
-            example = (JButton) listPanel.getComponent(3 + (i*6));
+            example = (JButton) listPanel.getComponent(6+(3 + (i*6)));
             example.setToolTipText("Delete Button "+(i+1));
 
             JButton editBtn;
-            editBtn = (JButton) listPanel.getComponent(4 + (i*6));
+            editBtn = (JButton) listPanel.getComponent(6+(4 + (i*6)));
             editBtn.setToolTipText("Edit Button "+(i+1));
 
             JPanel movePnl;
-            movePnl = (JPanel) listPanel.getComponent(5 + (i*6));
+            movePnl = (JPanel) listPanel.getComponent(6+(5 + (i*6)));
 
             JButton moveUpBtn;
             moveUpBtn = (JButton) movePnl.getComponent(0);
@@ -1707,7 +1762,7 @@ public class ToDoPage implements ActionListener {
         }
 
         if(e.getSource() == moveBtnCB){
-            for(int i=0;i<ListItem.numOfListItems();i++){
+            for(int i=0;i<ListItem.numOfListItems()+1;i++){
                 boolean visible = listPanel.getComponent(5+(i*6)).isVisible();
                 listPanel.getComponent(5+(i*6)).setVisible(!visible);
             }
@@ -1728,9 +1783,9 @@ public class ToDoPage implements ActionListener {
         }
 
         if(e.getSource() == taskNumCB){
-            for(int i=0;i<ListItem.numOfListItems();i++){
-                boolean visible = listPanel.getComponent(i*6).isVisible();
-                listPanel.getComponent(i*6).setVisible(!visible);
+            for(int i=0;i<ListItem.numOfListItems()+1;i++){
+                boolean visible = listPanel.getComponent((i*6)).isVisible();
+                listPanel.getComponent((i*6)).setVisible(!visible);
             }
             taskNumsEnabled = taskNumCB.isSelected();
             int minWidth = 434;
