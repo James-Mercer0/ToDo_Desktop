@@ -832,45 +832,47 @@ public class ToDoPage implements ActionListener {
                         return;
                     }
 
-                    //Check if list is already ordered - reorder if so.
+                    //If more than 1 Task, Check if list is already ordered - reorder if so.
                     boolean inOrder = true;
                     boolean ascending = false;
 
-                    int iterator = 0;
+                    if(ListItem.numOfListItems()>1) {
+                        int iterator = 0;
 
-                    JLabel priorityLabel = (JLabel) listPanel.getComponent(6+(1+(iterator*6)));
-                    int currentListItemPrio = parseInt(priorityLabel.getText());
-                    JLabel nextPriorityLabel = (JLabel) listPanel.getComponent(6+(1+((iterator+1)*6)));
-                    int nextListItemPrio = parseInt(nextPriorityLabel.getText());
+                        JLabel priorityLabel = (JLabel) listPanel.getComponent(6 + (1 + (iterator * 6)));
+                        int currentListItemPrio = parseInt(priorityLabel.getText());
+                        JLabel nextPriorityLabel = (JLabel) listPanel.getComponent(6 + (1 + ((iterator + 1) * 6)));
+                        int nextListItemPrio = parseInt(nextPriorityLabel.getText());
 
-                    if(currentListItemPrio>nextListItemPrio){
-                        while(6+(1+((iterator+1)*6))<=listPanel.getComponentCount()-1){
-                            priorityLabel = (JLabel) listPanel.getComponent(6+(1+(iterator*6)));
-                            currentListItemPrio = parseInt(priorityLabel.getText());
-                            nextPriorityLabel = (JLabel) listPanel.getComponent(6+(1+((iterator+1)*6)));
-                            nextListItemPrio = parseInt(nextPriorityLabel.getText());
-                            iterator++;
+                        if (currentListItemPrio > nextListItemPrio) {
+                            while (6 + (1 + ((iterator + 1) * 6)) <= listPanel.getComponentCount() - 1) {
+                                priorityLabel = (JLabel) listPanel.getComponent(6 + (1 + (iterator * 6)));
+                                currentListItemPrio = parseInt(priorityLabel.getText());
+                                nextPriorityLabel = (JLabel) listPanel.getComponent(6 + (1 + ((iterator + 1) * 6)));
+                                nextListItemPrio = parseInt(nextPriorityLabel.getText());
+                                iterator++;
 
-                            if(currentListItemPrio<nextListItemPrio){
-                                inOrder = false;
+                                if (currentListItemPrio < nextListItemPrio) {
+                                    inOrder = false;
+                                }
+
                             }
-
                         }
-                    }
 
-                    if(currentListItemPrio<nextListItemPrio){
-                        ascending = true;
-                        while(6+(1+((iterator+1)*6))<=listPanel.getComponentCount()-1){
-                            priorityLabel = (JLabel) listPanel.getComponent(6+(1+(iterator*6)));
-                            currentListItemPrio = parseInt(priorityLabel.getText());
-                            nextPriorityLabel = (JLabel) listPanel.getComponent(6+(1+((iterator+1)*6)));
-                            nextListItemPrio = parseInt(nextPriorityLabel.getText());
-                            iterator++;
+                        if (currentListItemPrio < nextListItemPrio) {
+                            ascending = true;
+                            while (6 + (1 + ((iterator + 1) * 6)) <= listPanel.getComponentCount() - 1) {
+                                priorityLabel = (JLabel) listPanel.getComponent(6 + (1 + (iterator * 6)));
+                                currentListItemPrio = parseInt(priorityLabel.getText());
+                                nextPriorityLabel = (JLabel) listPanel.getComponent(6 + (1 + ((iterator + 1) * 6)));
+                                nextListItemPrio = parseInt(nextPriorityLabel.getText());
+                                iterator++;
 
-                            if(currentListItemPrio>nextListItemPrio){
-                                inOrder = false;
+                                if (currentListItemPrio > nextListItemPrio) {
+                                    inOrder = false;
+                                }
+
                             }
-
                         }
                     }
 
@@ -882,8 +884,11 @@ public class ToDoPage implements ActionListener {
                     Point location = toDoFrame.getLocation();
                     ToDoPage tdp = new ToDoPage();
                     tdp.toDoFrame.setLocation(location);
-                    if(inOrder){
-                        sortList(tdp.listPanel, ascending,null);
+
+                    if(ListItem.numOfListItems()>1) {
+                        if (inOrder) {
+                            sortList(tdp.listPanel, ascending, null);
+                        }
                     }
 
                     //Ensure all updated list items are shown from left-most character
