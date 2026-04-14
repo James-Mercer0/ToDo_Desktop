@@ -52,13 +52,14 @@ public class ListItem {
 
                 try(BufferedWriter bw = new BufferedWriter(new FileWriter("./settings/settings.txt"));) {
                     bw.write("""
-                            Last Location: 0,0| Last Size: 560,402 ❂
+                            Last Location: 0,0| Last Size: 544,300 ❂
                             Always On Top: false ❂
                             Opacity: 1.0 ❂
                             Sub Window Opacity: false ❂
-                            Move Buttons Enabled: false ❂
+                            Move Buttons Enabled: true ❂
                             Saved List: List01.tdli ❂
-                            Task Numbers Enabled: false ❂""");
+                            Task Numbers Enabled: true ❂
+                            Task Labels Enabled: true ❂""");
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);

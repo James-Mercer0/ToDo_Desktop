@@ -2347,7 +2347,7 @@ public class ToDoPage implements ActionListener {
             mouseDownCompCoords = null;
             if(isMainFrame && dragged){
                 saveWindowStatus(newX, newY, 0, 0,true);
-                dragged=false;
+                dragged = false;
             }
         }
         public void mousePressed(MouseEvent e){
@@ -2370,13 +2370,17 @@ public class ToDoPage implements ActionListener {
         int frameY;
         int sizeWidth;
         int sizeHeight;
+        boolean dragged;
 
         public PanelResizeListener(JFrame frame){
             this.frame = frame;
         }
         public void mouseReleased(MouseEvent e){
             mouseDownCompCoords = null;
-            saveWindowStatus(0, 0, sizeWidth, sizeHeight, false);
+            if(dragged){
+                saveWindowStatus(0, 0, sizeWidth, sizeHeight, false);
+                dragged = false;
+            }
         }
         public void mousePressed(MouseEvent e){
             mouseDownCompCoords = e.getPoint();
@@ -2384,6 +2388,8 @@ public class ToDoPage implements ActionListener {
             frameY = frame.getY();
         }
         public void mouseDragged(MouseEvent e){
+            dragged = true;
+
             Point currCoords = e.getLocationOnScreen();
             int width = currCoords.x-mouseDownCompCoords.x-frame.getX()+25;
 
