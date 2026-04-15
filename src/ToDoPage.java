@@ -1175,12 +1175,12 @@ public class ToDoPage implements ActionListener {
                 return;
             }
             settingsFrame.dispose();
+            settingsWindowAlreadyOpen[0] = false;
             toDoFrame.dispose();
             ListItem.listFileName = ListItem.getSavedList();
             Point location = toDoFrame.getLocation();
             ToDoPage newToDo = new ToDoPage();
             newToDo.toDoFrame.setLocation(location);
-            newToDo.openSettingsWindow();
             for(int i=0;i<ListItem.numOfListItems();i++){
                 JTextField taskName = (JTextField) newToDo.listPanel.getComponent(6+(2+(i*6)));
                 taskName.setCaretPosition(0);
@@ -2028,11 +2028,11 @@ public class ToDoPage implements ActionListener {
                 ListItem.listFileName = ListItem.getSavedList();
                 newListFrame.dispose();
                 settingsFrame.dispose();
+                settingsWindowAlreadyOpen[0] = false;
                 toDoFrame.dispose();
                 Point location = toDoFrame.getLocation();
                 ToDoPage newToDo = new ToDoPage();
                 newToDo.toDoFrame.setLocation(location);
-                newToDo.openSettingsWindow();
             });
 
             bottomBar = new JPanel();
@@ -2200,6 +2200,7 @@ public class ToDoPage implements ActionListener {
                 ListItem.listFileName = ListItem.getSavedList();
                 listNameFrame.dispose();
                 settingsFrame.dispose();
+                settingsWindowAlreadyOpen[0] = false;
                 toDoFrame.dispose();
                 Point location = toDoFrame.getLocation();
                 ToDoPage newToDo = new ToDoPage();
