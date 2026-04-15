@@ -905,6 +905,7 @@ public class ToDoPage implements ActionListener {
                     updateListNums();
                     nli.saveListItem();
                     addFrame.dispose();
+                    newItemWindowAlreadyOpen[0] = false;
                     toDoFrame.dispose();
                     Point location = toDoFrame.getLocation();
                     ToDoPage tdp = new ToDoPage();
