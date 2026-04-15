@@ -1,3 +1,4 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.plaf.basic.BasicComboBoxUI;
@@ -6,6 +7,7 @@ import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.plaf.basic.ComboPopup;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,6 +46,7 @@ public class ToDoPage implements ActionListener {
     static boolean taskNumsEnabled;
     JButton newListBtn;
     JButton listNameBtn;
+    BufferedImage logo =  setLogo();
 
     //get the last main window location/size from settings
     String settings = getSettings();
@@ -52,9 +55,9 @@ public class ToDoPage implements ActionListener {
     String sizeSettings = settings.substring(settings.indexOf("|")+1);
     int width = parseInt(sizeSettings.substring(sizeSettings.indexOf(":")+2,sizeSettings.indexOf(",")));
     int height = parseInt(sizeSettings.substring(sizeSettings.indexOf(",")+1,sizeSettings.indexOf("❂")-1));
-    final boolean[] editWindowAlreadyOpen = new boolean[1];
-    final boolean[] newItemWindowAlreadyOpen = new boolean[1];
-    final boolean[] settingsWindowAlreadyOpen = new boolean[1];
+    final static boolean[] editWindowAlreadyOpen = new boolean[1];
+    final static boolean[] newItemWindowAlreadyOpen = new boolean[1];
+    final static boolean[] settingsWindowAlreadyOpen = new boolean[1];
 
     public ToDoPage(){
 
@@ -65,6 +68,8 @@ public class ToDoPage implements ActionListener {
         toDoFrame.setPreferredSize(new Dimension(width, height));
         toDoFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         toDoFrame.setUndecorated(true);
+
+        toDoFrame.setIconImage(logo);
 
         FrameDragListener frameDragListener = new FrameDragListener(toDoFrame, true);
         toDoFrame.addMouseListener(frameDragListener);
@@ -325,6 +330,8 @@ public class ToDoPage implements ActionListener {
 
                     JFrame editFrame = new JFrame();
 
+                    editFrame.setIconImage(logo);
+
                     editWindowAlreadyOpen[0] = true;
 
                     FrameDragListener frameDragListener = new FrameDragListener(editFrame, false);
@@ -332,6 +339,8 @@ public class ToDoPage implements ActionListener {
                     editFrame.addMouseMotionListener(frameDragListener);
                     editFrame.setLayout(new BorderLayout());
                     editFrame.setUndecorated(true);
+
+                    windowCloseDetection(editFrame,1);
 
                     confirmSubOpacity();
                     if(subWindowOpacity) {
@@ -690,6 +699,8 @@ public class ToDoPage implements ActionListener {
                 JFrame addFrame = new JFrame();
                 JPanel addPanel = new JPanel();
 
+                addFrame.setIconImage(logo);
+
                 newItemWindowAlreadyOpen[0] = true;
 
                 FrameDragListener frameDragListener = new FrameDragListener(addFrame, false);
@@ -697,6 +708,8 @@ public class ToDoPage implements ActionListener {
                 addFrame.addMouseMotionListener(frameDragListener);
                 addFrame.setLayout(new BorderLayout());
                 addFrame.setUndecorated(true);
+
+                windowCloseDetection(addFrame,2);
 
                 confirmSubOpacity();
                 if(subWindowOpacity) {
@@ -1031,6 +1044,7 @@ public class ToDoPage implements ActionListener {
         settingsWindowAlreadyOpen[0] = true;
 
         settingsFrame = new JFrame();
+        settingsFrame.setIconImage(logo);
         settingsFrame.setAlwaysOnTop(true);
         settingsFrame.setUndecorated(true);
         int settingsWidth = 500;
@@ -1044,6 +1058,8 @@ public class ToDoPage implements ActionListener {
         FrameDragListener dialogFrameDragListener = new FrameDragListener(settingsFrame, false);
         settingsFrame.addMouseListener(dialogFrameDragListener);
         settingsFrame.addMouseMotionListener(dialogFrameDragListener);
+
+        windowCloseDetection(settingsFrame,3);
 
         confirmSubOpacity();
         if(subWindowOpacity) {
@@ -1892,6 +1908,8 @@ public class ToDoPage implements ActionListener {
             JFrame newListFrame = new JFrame();
             JPanel newListPanel = new JPanel();
 
+            newListFrame.setIconImage(logo);
+
             FrameDragListener frameDragListener = new FrameDragListener(newListFrame, false);
             newListFrame.addMouseListener(frameDragListener);
             newListFrame.addMouseMotionListener(frameDragListener);
@@ -2038,6 +2056,8 @@ public class ToDoPage implements ActionListener {
         if (e.getSource() == listNameBtn){
             JFrame listNameFrame = new JFrame();
             JPanel listNamePanel = new JPanel();
+
+            listNameFrame.setIconImage(logo);
 
             FrameDragListener frameDragListener = new FrameDragListener(listNameFrame, false);
             listNameFrame.addMouseListener(frameDragListener);
@@ -2451,6 +2471,30 @@ public class ToDoPage implements ActionListener {
         } catch (IOException e){
             throw new RuntimeException(e);
         }
+    }
+
+    private static BufferedImage setLogo(){
+        try {
+            return ImageIO.read(new File("./imgs/ToDo.png"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void windowCloseDetection(JFrame frame, int subWindow){
+        frame.addWindowListener(new WindowAdapter(){
+            public void windowClosing(WindowEvent e) {
+                if (subWindow == 1) {
+                    editWindowAlreadyOpen[0] = false;
+                }
+                if (subWindow == 2) {
+                    newItemWindowAlreadyOpen[0] = false;
+                }
+                if (subWindow == 3) {
+                    settingsWindowAlreadyOpen[0] = false;
+                }
+            }
+        });
     }
 
 }
