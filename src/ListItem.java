@@ -31,12 +31,6 @@ public class ListItem {
         return this.itemInfo;
     }
 
-    static String dirPath = "./listStorage";
-    static File dir = new File(dirPath);
-    static String listFileName = getSavedList();
-    static File savedList = new File(dirPath+"/"+listFileName);
-    String contents;
-
     static File settingsDir = new File("./settings");
     static File settingsFile = new File("./settings/settings.txt");
 
@@ -67,7 +61,14 @@ public class ListItem {
         }
     }
 
+    static String dirPath = "./listStorage";
+    static File dir = new File(dirPath);
+    static String listFileName = getSavedList();
+    static File savedList = new File(dirPath+"/"+listFileName);
+    String contents;
+
     public static String getSavedList(){
+        checkForSettings();
         try(BufferedReader br = new BufferedReader(new FileReader("./settings/settings.txt"))) {
             StringBuilder sb = new StringBuilder();
             String line;

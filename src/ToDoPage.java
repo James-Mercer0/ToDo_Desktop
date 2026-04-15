@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -2473,9 +2474,13 @@ public class ToDoPage implements ActionListener {
         }
     }
 
-    private static BufferedImage setLogo(){
+    private BufferedImage setLogo(){
         try {
-            return ImageIO.read(new File("./imgs/ToDo.png"));
+            File imgDir = new File("./imgs/");
+            if(imgDir.exists()){
+                return ImageIO.read(new File("./imgs/ToDo.png"));
+            }
+            return ImageIO.read(Objects.requireNonNull(this.getClass().getResource("/imgs/ToDo.png")));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
