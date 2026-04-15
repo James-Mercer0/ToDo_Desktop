@@ -69,6 +69,7 @@ public class ToDoPage implements ActionListener {
         toDoFrame.setPreferredSize(new Dimension(width, height));
         toDoFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         toDoFrame.setUndecorated(true);
+        toDoFrame.setTitle("Your ToDo List");
 
         toDoFrame.setIconImage(logo);
 
@@ -331,6 +332,7 @@ public class ToDoPage implements ActionListener {
 
                     JFrame editFrame = new JFrame();
 
+                    editFrame.setTitle("Edit Task");
                     editFrame.setIconImage(logo);
 
                     editWindowAlreadyOpen[0] = true;
@@ -700,6 +702,7 @@ public class ToDoPage implements ActionListener {
                 JFrame addFrame = new JFrame();
                 JPanel addPanel = new JPanel();
 
+                addFrame.setTitle("Add New Task");
                 addFrame.setIconImage(logo);
 
                 newItemWindowAlreadyOpen[0] = true;
@@ -1049,6 +1052,7 @@ public class ToDoPage implements ActionListener {
         settingsFrame.setIconImage(logo);
         settingsFrame.setAlwaysOnTop(true);
         settingsFrame.setUndecorated(true);
+        settingsFrame.setTitle("ToDo List Settings");
         int settingsWidth = 500;
         int settingsHeight = 500;
         settingsFrame.setPreferredSize(new Dimension(settingsWidth,settingsHeight));
@@ -1910,6 +1914,7 @@ public class ToDoPage implements ActionListener {
             JFrame newListFrame = new JFrame();
             JPanel newListPanel = new JPanel();
 
+            newListFrame.setTitle("Create New List");
             newListFrame.setIconImage(logo);
 
             FrameDragListener frameDragListener = new FrameDragListener(newListFrame, false);
@@ -2059,6 +2064,7 @@ public class ToDoPage implements ActionListener {
             JFrame listNameFrame = new JFrame();
             JPanel listNamePanel = new JPanel();
 
+            listNameFrame.setTitle("Rename List");
             listNameFrame.setIconImage(logo);
 
             FrameDragListener frameDragListener = new FrameDragListener(listNameFrame, false);
