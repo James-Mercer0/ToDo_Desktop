@@ -1,5 +1,9 @@
-Last Location: 2928,222| Last Size: 560,402 ❂
+Last Location: 0,0| Last Size: 629,315 ❂
 Always On Top: false ❂
 Opacity: 1.0 ❂
 Sub Window Opacity: false ❂
-Move Buttons Enabled: false ❂
+Move Buttons Enabled: true ❂
+Saved List: List01.tdli ❂
+Task Numbers Enabled: true ❂
+Task Labels Enabled: true ❂
+Task Dates Enabled: true ❂

@@ -9,6 +9,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
@@ -41,10 +43,13 @@ public class ToDoPage implements ActionListener {
     float opacity;
     JCheckBox taskLabelsCB;
     static boolean taskLabelsEnabled;
-    JCheckBox moveBtnCB;
-    static boolean moveBtnsEnabled;
     JCheckBox taskNumCB;
     static boolean taskNumsEnabled;
+    JCheckBox taskDatesEnabledCB;
+    static boolean taskDatesEnabled;
+    JCheckBox moveBtnCB;
+    static boolean moveBtnsEnabled;
+
     JButton newListBtn;
     JButton listNameBtn;
     BufferedImage logo =  setLogo();
@@ -178,6 +183,7 @@ public class ToDoPage implements ActionListener {
 
         JLabel listNumLabel = new JLabel("Num");
         prepLabel(listNumLabel);
+        listNumLabel.setFont(new Font("Arial", Font.BOLD,13));
         con.fill = GridBagConstraints.HORIZONTAL;
         con.anchor = GridBagConstraints.NORTH;
         con.gridy = 0;
@@ -190,22 +196,31 @@ public class ToDoPage implements ActionListener {
 
         JLabel listPrioLabel = new JLabel("Prio");
         prepLabel(listPrioLabel);
+        listPrioLabel.setFont(new Font("Arial", Font.BOLD,13));
         con.gridx = 1;
         con.weightx = 0.05;
         listPanel.add(listPrioLabel, con);
 
         JTextField listNameLabel = new JTextField("Name");
         prepTextField(listNameLabel);
+        listNameLabel.setFont(new Font("Arial", Font.BOLD,13));
         con.gridx = 2;
         con.weightx = 0.65;
 
         listPanel.add(listNameLabel, con);
 
+        JLabel listDateLabel = new JLabel("Added");
+        prepLabel(listDateLabel);
+        listDateLabel.setFont(new Font("Arial", Font.BOLD,13));
+        con.gridx = 3;
+        con.weightx = 0.1;
+        listPanel.add(listDateLabel, con);
+
         JPanel emptyPanel = new JPanel();
         emptyPanel.setBackground(new Color(20,20,20));
         emptyPanel.setBorder(BorderFactory.createLineBorder(new Color(50,50,50),1));
 
-        con.gridx = 3;
+        con.gridx = 4;
         con.weightx = 0.05;
         con.fill = GridBagConstraints.BOTH;
         listPanel.add(emptyPanel, con);
@@ -214,7 +229,7 @@ public class ToDoPage implements ActionListener {
         emptyPanel2.setBackground(new Color(20,20,20));
         emptyPanel2.setBorder(BorderFactory.createLineBorder(new Color(50,50,50),1));
 
-        con.gridx = 4;
+        con.gridx = 5;
         con.weightx = 0.05;
         listPanel.add(emptyPanel2, con);
 
@@ -222,7 +237,7 @@ public class ToDoPage implements ActionListener {
         emptyPanel3.setBackground(new Color(20,20,20));
         emptyPanel3.setBorder(BorderFactory.createLineBorder(new Color(50,50,50),1));
 
-        con.gridx = 5;
+        con.gridx = 6;
         con.weightx = 0.05;
         listPanel.add(emptyPanel3, con);
 
@@ -238,6 +253,8 @@ public class ToDoPage implements ActionListener {
             int iPrio = parseInt(forNextItem.substring(0,forNextItem.indexOf(internalSeparator)));
             forNextItem = forNextItem.substring(forNextItem.indexOf(internalSeparator)+1);
             String iName = forNextItem.substring(0,forNextItem.indexOf(internalSeparator));
+            forNextItem = forNextItem.substring(forNextItem.indexOf(internalSeparator)+1);
+            String iDate = forNextItem.substring(forNextItem.indexOf(internalSeparator)+1);
 
             JLabel lINumi = new JLabel(String.valueOf(iNum));
             prepLabel(lINumi);
@@ -267,6 +284,20 @@ public class ToDoPage implements ActionListener {
 
             lINamei.setAutoscrolls(true);
             listPanel.add(lINamei, con);
+
+            //Add Date Added
+            JLabel lIDate = new JLabel(iDate);
+            prepLabel(lIDate);
+            con.fill = GridBagConstraints.HORIZONTAL;
+            con.anchor = GridBagConstraints.NORTH;
+            con.gridy = j;
+            con.gridx = 3;
+            con.weighty = 0;
+            con.ipady = 10;
+            con.ipadx = 15;
+            con.weightx = 0.1;
+            listPanel.add(lIDate, con);
+
 
             JButton editBtni = new JButton("Edit");
 
@@ -298,6 +329,7 @@ public class ToDoPage implements ActionListener {
                 listPanel.remove(lINumi);
                 listPanel.remove(lIPrioi);
                 listPanel.remove(lINamei);
+                listPanel.remove(lIDate);
                 listPanel.remove(binBtni);
                 listPanel.remove(editBtni);
                 listPanel.remove(moveBtnsPaneli);
@@ -308,7 +340,7 @@ public class ToDoPage implements ActionListener {
                 listPanel.updateUI();
             });
             con.gridy = j;
-            con.gridx = 3;
+            con.gridx = 4;
             con.weightx = 0.05;
             listPanel.add(binBtni, con);
 
@@ -390,7 +422,7 @@ public class ToDoPage implements ActionListener {
                     infoForNextItem = infoForNextItem.substring(infoForNextItem.indexOf(internalSeparator)+1);
                     String itemName = infoForNextItem.substring(0,infoForNextItem.indexOf(internalSeparator));
                     infoForNextItem = infoForNextItem.substring(infoForNextItem.indexOf(internalSeparator)+1);
-                    String itemInfo = infoForNextItem;
+                    String itemInfo = infoForNextItem.substring(0,infoForNextItem.indexOf(internalSeparator));
 
                     // add text fields - grab info from item
                     JLabel prioLabel = new JLabel("Priority:");
@@ -510,16 +542,16 @@ public class ToDoPage implements ActionListener {
                         if(ListItem.numOfListItems()>1) {
                             int iterator = 0;
 
-                            JLabel priorityLabel = (JLabel) listPanel.getComponent(6 + (1 + (iterator * 6)));
+                            JLabel priorityLabel = (JLabel) listPanel.getComponent(7 + (1 + (iterator * 7)));
                             int currentListItemPrio = parseInt(priorityLabel.getText());
-                            JLabel nextPriorityLabel = (JLabel) listPanel.getComponent(6 + (1 + ((iterator + 1) * 6)));
+                            JLabel nextPriorityLabel = (JLabel) listPanel.getComponent(7 + (1 + ((iterator + 1) * 7)));
                             int nextListItemPrio = parseInt(nextPriorityLabel.getText());
 
                             if (currentListItemPrio > nextListItemPrio) {
-                                while (6 + (1 + ((iterator + 1) * 6)) <= listPanel.getComponentCount() - 1) {
-                                    priorityLabel = (JLabel) listPanel.getComponent(6 + (1 + (iterator * 6)));
+                                while (7 + (1 + ((iterator + 1) * 7)) <= listPanel.getComponentCount() - 1) {
+                                    priorityLabel = (JLabel) listPanel.getComponent(7 + (1 + (iterator * 7)));
                                     currentListItemPrio = parseInt(priorityLabel.getText());
-                                    nextPriorityLabel = (JLabel) listPanel.getComponent(6 + (1 + ((iterator + 1) * 6)));
+                                    nextPriorityLabel = (JLabel) listPanel.getComponent(7 + (1 + ((iterator + 1) * 7)));
                                     nextListItemPrio = parseInt(nextPriorityLabel.getText());
                                     iterator++;
 
@@ -532,10 +564,10 @@ public class ToDoPage implements ActionListener {
 
                             if (currentListItemPrio < nextListItemPrio) {
                                 ascending = true;
-                                while (6 + (1 + ((iterator + 1) * 6)) <= listPanel.getComponentCount() - 1) {
-                                    priorityLabel = (JLabel) listPanel.getComponent(6 + (1 + (iterator * 6)));
+                                while (7 + (1 + ((iterator + 1) * 7)) <= listPanel.getComponentCount() - 1) {
+                                    priorityLabel = (JLabel) listPanel.getComponent(7 + (1 + (iterator * 7)));
                                     currentListItemPrio = parseInt(priorityLabel.getText());
-                                    nextPriorityLabel = (JLabel) listPanel.getComponent(6 + (1 + ((iterator + 1) * 6)));
+                                    nextPriorityLabel = (JLabel) listPanel.getComponent(7 + (1 + ((iterator + 1) * 7)));
                                     nextListItemPrio = parseInt(nextPriorityLabel.getText());
                                     iterator++;
 
@@ -549,7 +581,10 @@ public class ToDoPage implements ActionListener {
 
                         int itemNumber = parseInt(editBtni.getToolTipText().substring(12),10);
                         String collatedItemInfo;
-                        collatedItemInfo = itemNumber+ internalSeparator +editPrioField.getText()+ internalSeparator +editNameField.getText()+ internalSeparator +editInfoField.getText();
+
+                        JLabel itemDateField = (JLabel) listPanel.getComponent(7+3+((itemNumber-1)*7));
+                        String itemDate = itemDateField.getText();
+                        collatedItemInfo = itemNumber+ internalSeparator +editPrioField.getText()+ internalSeparator +editNameField.getText()+ internalSeparator +editInfoField.getText()+ internalSeparator + itemDate;
                         ListItem.saveUpdatedListItem(collatedItemInfo);
                         updateListNums();
                         ListItem.updateListItems();
@@ -567,7 +602,7 @@ public class ToDoPage implements ActionListener {
                         //Ensure updated list item is shown from left-most character
                             for(int i=0;i<ListItem.numOfListItems();i++){
                                 JTextField nameField;
-                                nameField = (JTextField) listPanel.getComponent(6+(2+(i*6)));
+                                nameField = (JTextField) listPanel.getComponent(7+(2+(i*7)));
                                 nameField.setCaretPosition(0);
                             }
                     });
@@ -595,7 +630,7 @@ public class ToDoPage implements ActionListener {
             //
 
             con.gridy = j;
-            con.gridx = 4;
+            con.gridx = 5;
             con.weightx = 0.05;
 
             listPanel.add(editBtni, con);
@@ -641,7 +676,7 @@ public class ToDoPage implements ActionListener {
             moveBtnsPaneli.add(moveDowni);
 
             con.gridy = j;
-            con.gridx = 5;
+            con.gridx = 6;
             con.weightx = 0.05;
 
             listPanel.add(moveBtnsPaneli, con);
@@ -867,16 +902,16 @@ public class ToDoPage implements ActionListener {
                     if(ListItem.numOfListItems()>1) {
                         int iterator = 0;
 
-                        JLabel priorityLabel = (JLabel) listPanel.getComponent(6 + (1 + (iterator * 6)));
+                        JLabel priorityLabel = (JLabel) listPanel.getComponent(7 + (1 + (iterator * 7)));
                         int currentListItemPrio = parseInt(priorityLabel.getText());
-                        JLabel nextPriorityLabel = (JLabel) listPanel.getComponent(6 + (1 + ((iterator + 1) * 6)));
+                        JLabel nextPriorityLabel = (JLabel) listPanel.getComponent(7 + (1 + ((iterator + 1) * 7)));
                         int nextListItemPrio = parseInt(nextPriorityLabel.getText());
 
                         if (currentListItemPrio > nextListItemPrio) {
-                            while (6 + (1 + ((iterator + 1) * 6)) <= listPanel.getComponentCount() - 1) {
-                                priorityLabel = (JLabel) listPanel.getComponent(6 + (1 + (iterator * 6)));
+                            while (7 + (1 + ((iterator + 1) * 7)) <= listPanel.getComponentCount() - 1) {
+                                priorityLabel = (JLabel) listPanel.getComponent(7 + (1 + (iterator * 7)));
                                 currentListItemPrio = parseInt(priorityLabel.getText());
-                                nextPriorityLabel = (JLabel) listPanel.getComponent(6 + (1 + ((iterator + 1) * 6)));
+                                nextPriorityLabel = (JLabel) listPanel.getComponent(7 + (1 + ((iterator + 1) * 7)));
                                 nextListItemPrio = parseInt(nextPriorityLabel.getText());
                                 iterator++;
 
@@ -889,10 +924,10 @@ public class ToDoPage implements ActionListener {
 
                         if (currentListItemPrio < nextListItemPrio) {
                             ascending = true;
-                            while (6 + (1 + ((iterator + 1) * 6)) <= listPanel.getComponentCount() - 1) {
-                                priorityLabel = (JLabel) listPanel.getComponent(6 + (1 + (iterator * 6)));
+                            while (7 + (1 + ((iterator + 1) * 7)) <= listPanel.getComponentCount() - 1) {
+                                priorityLabel = (JLabel) listPanel.getComponent(7 + (1 + (iterator * 7)));
                                 currentListItemPrio = parseInt(priorityLabel.getText());
-                                nextPriorityLabel = (JLabel) listPanel.getComponent(6 + (1 + ((iterator + 1) * 6)));
+                                nextPriorityLabel = (JLabel) listPanel.getComponent(7 + (1 + ((iterator + 1) * 7)));
                                 nextListItemPrio = parseInt(nextPriorityLabel.getText());
                                 iterator++;
 
@@ -904,7 +939,9 @@ public class ToDoPage implements ActionListener {
                         }
                     }
 
-                    ListItem nli = new ListItem(ListItem.numOfListItems()+1, parseInt(addPrioField.getText(),10),addNameField.getText(),addInfoField.getText());
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+
+                    ListItem nli = new ListItem(ListItem.numOfListItems()+1, parseInt(addPrioField.getText(),10),addNameField.getText(),addInfoField.getText(),LocalDate.now().format(formatter));
                     updateListNums();
                     nli.saveListItem();
                     addFrame.dispose();
@@ -923,7 +960,7 @@ public class ToDoPage implements ActionListener {
                     //Ensure all updated list items are shown from left-most character
                     for(int i=0;i<ListItem.numOfListItems();i++){
                         JTextField nameField;
-                        nameField = (JTextField) tdp.listPanel.getComponent(6+(2+(i*6)));
+                        nameField = (JTextField) tdp.listPanel.getComponent(7+(2+(i*7)));
                         nameField.setCaretPosition(0);
                     }
                 });
@@ -994,28 +1031,50 @@ public class ToDoPage implements ActionListener {
         bottomPanel.add(blankPnl, BorderLayout.WEST);
         bottomPanel.add(btnSpacing, BorderLayout.CENTER);
 
-        checkMoveBtnEnabled();
-        if(!moveBtnsEnabled){
-            for(int i=0;i<ListItem.numOfListItems()+1;i++){
-                boolean visible = listPanel.getComponent(5+(i*6)).isVisible();
-                listPanel.getComponent(5+(i*6)).setVisible(!visible);
+        checkTaskNumsEnabled();
+        if(!taskNumsEnabled){
+            for(int i=0;i<ListItem.numOfListItems();i++){
+                boolean visible = listPanel.getComponent(7+(i*7)).isVisible();
+                listPanel.getComponent(7+(i*7)).setVisible(!visible);
             }
         }
 
-        checkTaskNumsEnabled();
-        if(!taskNumsEnabled){
-            for(int i=0;i<ListItem.numOfListItems()+1;i++){
-                boolean visible = listPanel.getComponent((i*6)).isVisible();
-                listPanel.getComponent((i*6)).setVisible(!visible);
+        checkTaskDatesEnabled();
+        if(!taskDatesEnabled){
+            for(int i=0;i<ListItem.numOfListItems();i++){
+                boolean visible = listPanel.getComponent(7+3+(i*7)).isVisible();
+                listPanel.getComponent(7+3+(i*7)).setVisible(!visible);
+            }
+        }
+
+        checkMoveBtnEnabled();
+        if(!moveBtnsEnabled){
+            for(int i=0;i<ListItem.numOfListItems();i++){
+                boolean visible = listPanel.getComponent(7+6+(i*7)).isVisible();
+                listPanel.getComponent(7+6+(i*7)).setVisible(!visible);
             }
         }
 
         checkTaskLabelsEnabled();
         if(!taskLabelsEnabled){
-            for(int i=0;i<6;i++){
-                listPanel.getComponent(i).setVisible(false);
+            for(int i=0;i<7;i++) {
+                boolean visible = listPanel.getComponent(i).isVisible();
+                listPanel.getComponent(i).setVisible(!visible);
+            }
+        } else {
+            for (int i = 0; i < 7; i++) {
+                if (i == 0) {
+                    listPanel.getComponent(i).setVisible((taskNumsEnabled));
+                } else if (i == 3) {
+                    listPanel.getComponent(i).setVisible((taskDatesEnabled));
+                } else if (i == 6) {
+                    listPanel.getComponent(i).setVisible((moveBtnsEnabled));
+                } else {
+                    listPanel.getComponent(i).setVisible(true);
+                }
             }
         }
+
 
         toDoFrame.add(topBar, BorderLayout.NORTH);
         toDoFrame.add(bottomPanel, BorderLayout.SOUTH);
@@ -1030,6 +1089,9 @@ public class ToDoPage implements ActionListener {
         }
         if(moveBtnsEnabled){
             minWidth = minWidth +69;
+        }
+        if(taskDatesEnabled){
+            minWidth = minWidth +85;
         }
         if(toDoFrame.getWidth()< minWidth){
             toDoFrame.setSize(minWidth,toDoFrame.getHeight());
@@ -1054,7 +1116,7 @@ public class ToDoPage implements ActionListener {
         settingsFrame.setUndecorated(true);
         settingsFrame.setTitle("ToDo List Settings");
         int settingsWidth = 500;
-        int settingsHeight = 500;
+        int settingsHeight = 550;
         settingsFrame.setPreferredSize(new Dimension(settingsWidth,settingsHeight));
         settingsFrame.setBounds((toDoFrame.getX()+(toDoFrame.getWidth()/2)-(settingsWidth/2)),(toDoFrame.getY()+(toDoFrame.getHeight()/2)-(settingsHeight/2)),0,0);
         if(settingsFrame.getY()<0){
@@ -1187,7 +1249,7 @@ public class ToDoPage implements ActionListener {
             ToDoPage newToDo = new ToDoPage();
             newToDo.toDoFrame.setLocation(location);
             for(int i=0;i<ListItem.numOfListItems();i++){
-                JTextField taskName = (JTextField) newToDo.listPanel.getComponent(6+(2+(i*6)));
+                JTextField taskName = (JTextField) newToDo.listPanel.getComponent(7+(2+(i*7)));
                 taskName.setCaretPosition(0);
             }
         });
@@ -1373,35 +1435,11 @@ public class ToDoPage implements ActionListener {
 
         settingsPanel.add(settingsDiv);
 
-        //Move Task buttons toggle
-        settingsDiv = new JPanel();
-        settingsDiv.setLayout(new GridLayout(0,2));
-        settingsDiv.setBackground(new Color(24,24,24));
-        settingsDiv.setBorder(BorderFactory.createMatteBorder(0,0,1,0,new Color(50,50,50)));
-
-        JLabel disableMoveTaskBtns = new JLabel("Enable Move Task Buttons?");
-        prepLabel(disableMoveTaskBtns);
-        disableMoveTaskBtns.setBorder(BorderFactory.createMatteBorder(0,0,0,1,new Color(50,50,50)));
-        settingsDiv.add(disableMoveTaskBtns);
-
-        moveBtnCB = new JCheckBox();
-
-        checkMoveBtnEnabled();
-
-        moveBtnCB.setSelected(moveBtnsEnabled);
-        moveBtnCB.setBackground(new Color(20,20,20));
-        moveBtnCB.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        moveBtnCB.addActionListener(this);
-        moveBtnCB.setBorder(createEmptyBorder(20,100,20,20));
-        settingsDiv.add(moveBtnCB);
-
-        settingsPanel.add(settingsDiv);
-
         //Task Number toggle
         settingsDiv = new JPanel();
         settingsDiv.setLayout(new GridLayout(0,2));
         settingsDiv.setBackground(new Color(24,24,24));
-//        settingsDiv.setBorder(BorderFactory.createMatteBorder(0,0,0,0,new Color(50,50,50)));
+        settingsDiv.setBorder(BorderFactory.createMatteBorder(0,0,1,0,new Color(50,50,50)));
 
         JLabel disableTaskNums = new JLabel("Enable Task Numbers?");
         prepLabel(disableTaskNums);
@@ -1418,6 +1456,53 @@ public class ToDoPage implements ActionListener {
         taskNumCB.addActionListener(this);
         taskNumCB.setBorder(createEmptyBorder(20,100,20,20));
         settingsDiv.add(taskNumCB);
+
+        settingsPanel.add(settingsDiv);
+
+        //Date Added toggle
+        settingsDiv = new JPanel();
+        settingsDiv.setLayout(new GridLayout(0,2));
+        settingsDiv.setBackground(new Color(24,24,24));
+        settingsDiv.setBorder(BorderFactory.createMatteBorder(0,0,1,0,new Color(50,50,50)));
+
+        JLabel addedDate = new JLabel("Enable Date Added?");
+        prepLabel(addedDate);
+        addedDate.setBorder(BorderFactory.createMatteBorder(0,0,0,1,new Color(50,50,50)));
+        settingsDiv.add(addedDate);
+
+        taskDatesEnabledCB = new JCheckBox();
+
+        checkTaskDatesEnabled();
+
+        taskDatesEnabledCB.setSelected(taskDatesEnabled);
+        taskDatesEnabledCB.setBackground(new Color(20,20,20));
+        taskDatesEnabledCB.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        taskDatesEnabledCB.addActionListener(this);
+        taskDatesEnabledCB.setBorder(createEmptyBorder(20,100,20,20));
+        settingsDiv.add(taskDatesEnabledCB);
+
+        settingsPanel.add(settingsDiv);
+
+        //Move Task buttons toggle
+        settingsDiv = new JPanel();
+        settingsDiv.setLayout(new GridLayout(0,2));
+        settingsDiv.setBackground(new Color(24,24,24));
+
+        JLabel disableMoveTaskBtns = new JLabel("Enable Move Task Buttons?");
+        prepLabel(disableMoveTaskBtns);
+        disableMoveTaskBtns.setBorder(BorderFactory.createMatteBorder(0,0,0,1,new Color(50,50,50)));
+        settingsDiv.add(disableMoveTaskBtns);
+
+        moveBtnCB = new JCheckBox();
+
+        checkMoveBtnEnabled();
+
+        moveBtnCB.setSelected(moveBtnsEnabled);
+        moveBtnCB.setBackground(new Color(20,20,20));
+        moveBtnCB.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        moveBtnCB.addActionListener(this);
+        moveBtnCB.setBorder(createEmptyBorder(20,100,20,20));
+        settingsDiv.add(moveBtnCB);
 
         settingsPanel.add(settingsDiv);
 
@@ -1441,6 +1526,12 @@ public class ToDoPage implements ActionListener {
         settings=getSettings();
         String taskNumSetting = getSpecificSetting(5,(settings.substring(settings.indexOf("❂")+1)));
         taskNumsEnabled = Boolean.parseBoolean(taskNumSetting);
+    }
+
+    private void checkTaskDatesEnabled(){
+        settings=getSettings();
+        String taskDatesSetting = getSpecificSetting(7,(settings.substring(settings.indexOf("❂")+1)));
+        taskDatesEnabled = Boolean.parseBoolean(taskDatesSetting);
     }
 
     private void checkMoveBtnEnabled(){
@@ -1573,42 +1664,51 @@ public class ToDoPage implements ActionListener {
         }
 
         JLabel currentPriority;
-        currentPriority = (JLabel) this.listPanel.getComponent(6+(1+((taskNum-1)*6)));
+        currentPriority = (JLabel) this.listPanel.getComponent(7+(1+((taskNum-1)*7)));
 
         JTextField currentName;
-        currentName = (JTextField) this.listPanel.getComponent(6+(2+((taskNum-1)*6)));
+        currentName = (JTextField) this.listPanel.getComponent(7+(2+((taskNum-1)*7)));
+
+        JLabel currentDate;
+        currentDate = (JLabel) this.listPanel.getComponent(7+(3+((taskNum-1)*7)));
 
         JLabel toSwapPriority;
         JTextField toSwapName;
+        JLabel toSwapDate;
 
         if(moveUp){
             if(taskNum==1){
                 return;
             }
             taskToSwapNum = taskNum-1;
-            toSwapPriority = (JLabel) this.listPanel.getComponent(6+(1+((taskNum-2)*6)));
-            toSwapName = (JTextField) this.listPanel.getComponent(6+(2+((taskNum-2)*6)));
+            toSwapPriority = (JLabel) this.listPanel.getComponent(7+(1+((taskNum-2)*7)));
+            toSwapName = (JTextField) this.listPanel.getComponent(7+(2+((taskNum-2)*7)));
+            toSwapDate = (JLabel) this.listPanel.getComponent(7+(3+((taskNum-2)*7)));
         } else {
             taskToSwapNum = taskNum+1;
             if(taskToSwapNum>ListItem.numOfListItems()){
                 return;
             }
             taskToSwapNum = taskNum+1;
-            toSwapPriority = (JLabel) this.listPanel.getComponent(6+(1+((taskNum)*6)));
-            toSwapName = (JTextField) this.listPanel.getComponent(6+(2+((taskNum)*6)));
+            toSwapPriority = (JLabel) this.listPanel.getComponent(7+(1+((taskNum)*7)));
+            toSwapName = (JTextField) this.listPanel.getComponent(7+(2+((taskNum)*7)));
+            toSwapDate = (JLabel) this.listPanel.getComponent(7+(3+((taskNum)*7)));
         }
 
         String holdingP = currentPriority.getText();
         String holdingN = currentName.getText();
         String holdingTT = currentName.getToolTipText();
+        String holdingD = currentDate.getText();
 
         currentPriority.setText(toSwapPriority.getText());
         currentName.setText(toSwapName.getText());
         currentName.setToolTipText(toSwapName.getToolTipText());
+        currentDate.setText(toSwapDate.getText());
 
         toSwapPriority.setText(holdingP);
         toSwapName.setText(holdingN);
         toSwapName.setToolTipText(holdingTT);
+        toSwapDate.setText(holdingD);
 
         //Update Swapped tasks in the tasklist file
         StringBuilder sb = new StringBuilder();
@@ -1629,7 +1729,7 @@ public class ToDoPage implements ActionListener {
         }
         ListItem.saveUpdatedItemList(sb.toString());
         for(int i=0;i<ListItem.numOfListItems();i++){
-            JTextField taskName = (JTextField) this.listPanel.getComponent(6+(2+(i*6)));
+            JTextField taskName = (JTextField) this.listPanel.getComponent(7+(2+(i*7)));
             taskName.setCaretPosition(0);
         }
     }
@@ -1637,9 +1737,9 @@ public class ToDoPage implements ActionListener {
     private void sortList(JPanel listPanel, boolean ascending,JButton orderBtn) {
         TreeMap<String,String> orderedList = new TreeMap<>();
         for(int i=0;i<ListItem.numOfListItems();i++){
-            JLabel numLabel = (JLabel) listPanel.getComponent(6+(i*6));
+            JLabel numLabel = (JLabel) listPanel.getComponent(7+(i*7));
             String itemNum = numLabel.getText();
-            JLabel prioLabel = (JLabel) listPanel.getComponent(6+(1+(i*6)));
+            JLabel prioLabel = (JLabel) listPanel.getComponent(7+(1+(i*7)));
             String itemPrio = prioLabel.getText();
             orderedList.put(itemNum,itemPrio);
         }
@@ -1752,17 +1852,23 @@ public class ToDoPage implements ActionListener {
             int iPrio = parseInt(forNextItem.substring(0, forNextItem.indexOf(internalSeparator)));
             forNextItem = forNextItem.substring(forNextItem.indexOf(internalSeparator) + 1);
             String iName = forNextItem.substring(0, forNextItem.indexOf(internalSeparator));
+            forNextItem = forNextItem.substring(forNextItem.indexOf(internalSeparator) + 1);
+            forNextItem = forNextItem.substring(forNextItem.indexOf(internalSeparator) + 1);
+            String iDate = forNextItem;
 
-            JLabel itemNameLabel = (JLabel)listPanel.getComponent(6+(i*6));
+            JLabel itemNameLabel = (JLabel)listPanel.getComponent(7+(i*7));
             itemNameLabel.setText(String.valueOf(iNum));
 
-            JLabel itemPrioLabel = (JLabel)listPanel.getComponent(6+(1+(i*6)));
+            JLabel itemPrioLabel = (JLabel)listPanel.getComponent(7+(1+(i*7)));
             itemPrioLabel.setText(String.valueOf(iPrio));
 
-            JTextField itemName = (JTextField)listPanel.getComponent(6+(2+(i*6)));
+            JTextField itemName = (JTextField)listPanel.getComponent(7+(2+(i*7)));
             itemName.setText(iName);
             itemName.setToolTipText(iName);
             itemName.setCaretPosition(0);
+
+            JLabel itemDate = (JLabel)listPanel.getComponent(7+(3+(i*7)));
+            itemDate.setText(iDate);
         }
     }
 
@@ -1776,7 +1882,7 @@ public class ToDoPage implements ActionListener {
 
     public void updateListNums(){
         for(int i=0;i<ListItem.numOfListItems();i++){
-            JLabel example = (JLabel) listPanel.getComponent(6+((i*6)));
+            JLabel example = (JLabel) listPanel.getComponent(7+((i*7)));
             example.setText(i+1+"");
         }
     }
@@ -1784,15 +1890,15 @@ public class ToDoPage implements ActionListener {
     public void updateBtnNums(){
         for(int i=0;i<ListItem.numOfListItems();i++) {
             JButton example;
-            example = (JButton) listPanel.getComponent(6+(3 + (i*6)));
+            example = (JButton) listPanel.getComponent(7+(4 + (i*7)));
             example.setToolTipText("Delete Button "+(i+1));
 
             JButton editBtn;
-            editBtn = (JButton) listPanel.getComponent(6+(4 + (i*6)));
+            editBtn = (JButton) listPanel.getComponent(7+(5 + (i*7)));
             editBtn.setToolTipText("Edit Button "+(i+1));
 
             JPanel movePnl;
-            movePnl = (JPanel) listPanel.getComponent(6+(5 + (i*6)));
+            movePnl = (JPanel) listPanel.getComponent(7+(6 + (i*7)));
 
             JButton moveUpBtn;
             moveUpBtn = (JButton) movePnl.getComponent(0);
@@ -1842,10 +1948,13 @@ public class ToDoPage implements ActionListener {
             checkTaskLabelsEnabled();
             checkTaskNumsEnabled();
             checkMoveBtnEnabled();
-            for(int i=0;i<6;i++){
+            checkTaskDatesEnabled();
+            for(int i=0;i<7;i++){
                 if(i==0){
                     listPanel.getComponent(i).setVisible((taskLabelsCB.isSelected() && taskNumsEnabled));
-                } else if(i==5){
+                } else if(i==3) {
+                    listPanel.getComponent(i).setVisible((taskLabelsCB.isSelected() && taskDatesEnabled));
+                } else if(i==6){
                     listPanel.getComponent(i).setVisible((taskLabelsCB.isSelected() && moveBtnsEnabled));
                 } else {
                     listPanel.getComponent(i).setVisible(taskLabelsCB.isSelected());
@@ -1859,21 +1968,25 @@ public class ToDoPage implements ActionListener {
             checkTaskLabelsEnabled();
 
             if(taskLabelsEnabled){
-                boolean visible = listPanel.getComponent(5).isVisible();
-                listPanel.getComponent(5).setVisible(!visible);
+                boolean visible = listPanel.getComponent(6).isVisible();
+                listPanel.getComponent(6).setVisible(!visible);
             }
 
             for(int i=0;i<ListItem.numOfListItems();i++){
-                boolean visible = listPanel.getComponent(6+(5+(i*6))).isVisible();
-                listPanel.getComponent(6+(5+(i*6))).setVisible(!visible);
+                boolean visible = listPanel.getComponent(7+(6+(i*7))).isVisible();
+                listPanel.getComponent(7+(6+(i*7))).setVisible(!visible);
             }
             moveBtnsEnabled = moveBtnCB.isSelected();
             int minWidth = 434;
             if(taskNumsEnabled){
                 minWidth = minWidth +41;
             }
+            if(taskDatesEnabled){
+                minWidth = minWidth +85;
+            }
             if(moveBtnsEnabled){
                 minWidth = minWidth +69;
+                toDoFrame.setSize(toDoFrame.getWidth()+69,toDoFrame.getHeight());
             } else {
                 toDoFrame.setSize(toDoFrame.getWidth()-69,toDoFrame.getHeight());
             }
@@ -1890,16 +2003,21 @@ public class ToDoPage implements ActionListener {
                 boolean visible = listPanel.getComponent(0).isVisible();
                 listPanel.getComponent(0).setVisible(!visible);
             }
+
             for(int i=0;i<ListItem.numOfListItems();i++){
-                boolean visible = listPanel.getComponent(6+(i*6)).isVisible();
-                listPanel.getComponent(6+(i*6)).setVisible(!visible);
+                boolean visible = listPanel.getComponent(7+(i*7)).isVisible();
+                listPanel.getComponent(7+(i*7)).setVisible(!visible);
             }
             taskNumsEnabled = taskNumCB.isSelected();
             int minWidth = 434;
             if(taskNumsEnabled){
                 minWidth = minWidth +41;
+                toDoFrame.setSize(toDoFrame.getWidth()+41,toDoFrame.getHeight());
             } else {
                 toDoFrame.setSize(toDoFrame.getWidth()-41,toDoFrame.getHeight());
+            }
+            if(taskDatesEnabled){
+                minWidth = minWidth +85;
             }
             if(moveBtnsEnabled){
                 minWidth = minWidth +69;
@@ -1908,6 +2026,38 @@ public class ToDoPage implements ActionListener {
                 toDoFrame.setSize(minWidth,toDoFrame.getHeight());
             }
             updateTaskNumsEnabled(taskNumsEnabled);
+        }
+
+        if(e.getSource() == taskDatesEnabledCB){
+
+            checkTaskLabelsEnabled();
+
+            if(taskLabelsEnabled){
+                boolean visible = listPanel.getComponent(3).isVisible();
+                listPanel.getComponent(3).setVisible(!visible);
+            }
+            for(int i=0;i<ListItem.numOfListItems();i++){
+                boolean visible = listPanel.getComponent(7+3+(i*7)).isVisible();
+                listPanel.getComponent(7+3+(i*7)).setVisible(!visible);
+            }
+            taskDatesEnabled = taskDatesEnabledCB.isSelected();
+            int minWidth = 434;
+            if(taskNumsEnabled){
+                minWidth = minWidth +41;
+            }
+            if(moveBtnsEnabled){
+                minWidth = minWidth +69;
+            }
+            if(taskDatesEnabled){
+                minWidth = minWidth +85;
+                toDoFrame.setSize(toDoFrame.getWidth()+85,toDoFrame.getHeight());
+            } else {
+                toDoFrame.setSize(toDoFrame.getWidth()-85,toDoFrame.getHeight());
+            }
+            if(toDoFrame.getWidth()<minWidth){
+                toDoFrame.setSize(minWidth,toDoFrame.getHeight());
+            }
+            updateTaskDatesEnabled(taskDatesEnabled);
         }
 
         if(e.getSource() == newListBtn){
@@ -2246,6 +2396,17 @@ public class ToDoPage implements ActionListener {
         }
     }
 
+    private void updateTaskDatesEnabled(boolean enabled){
+        String currentSettings = getSettings();
+        currentSettings = currentSettings.replaceFirst("Task Dates Enabled: "+!enabled,"Task Dates Enabled: "+enabled);
+
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter("settings/settings.txt"))){
+            bw.write(currentSettings);
+        } catch(IOException e){
+            throw new RuntimeException(e);
+        }
+    }
+
     private void updateMoveBtnsEnabled(boolean enabled){
         String currentSettings = getSettings();
         currentSettings = currentSettings.replaceFirst("Move Buttons Enabled: "+!enabled,"Move Buttons Enabled: "+enabled);
@@ -2423,17 +2584,24 @@ public class ToDoPage implements ActionListener {
             int width = currCoords.x-mouseDownCompCoords.x-frame.getX()+25;
 
             String settings=getSettings();
+            String taskDatesSetting = getSpecificSetting(7,(settings.substring(settings.indexOf("❂")+1)));
+            taskDatesEnabled = Boolean.parseBoolean(taskDatesSetting);
+
             String taskNumSetting = getSpecificSetting(5,(settings.substring(settings.indexOf("❂")+1)));
             taskNumsEnabled = Boolean.parseBoolean(taskNumSetting);
 
             String moveBtnSetting = getSpecificSetting(3,(settings.substring(settings.indexOf("❂")+1)));
             moveBtnsEnabled = Boolean.parseBoolean(moveBtnSetting);
+
             int minWidth = 434;
             if(moveBtnsEnabled){
                 minWidth = minWidth +69;
             }
             if(taskNumsEnabled){
                 minWidth = minWidth +41;
+            }
+            if(taskDatesEnabled){
+                minWidth = minWidth +85;
             }
             if(width< minWidth){
                 width = minWidth;

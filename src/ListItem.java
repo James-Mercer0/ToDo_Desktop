@@ -5,30 +5,16 @@ public class ListItem {
     int itemNumber;
     int itemPriority;
     String itemInfo;
+    String dateInfo;
     static final String internalSeparator = "❒";
     static final String itemSeparator = "❂";
 
-    public ListItem(int number, int priority, String name, String info) {
+    public ListItem(int number, int priority, String name, String info, String date) {
         this.itemNumber = number;
         this.itemPriority = priority;
         this.itemName = name;
         this.itemInfo = info;
-    }
-
-    public String getItemName() {
-        return this.itemName;
-    }
-
-    public int getItemNumber() {
-        return this.itemNumber;
-    }
-
-    public int getItemPriority() {
-        return this.itemPriority;
-    }
-
-    public String getItemInfo() {
-        return this.itemInfo;
+        this.dateInfo = date;
     }
 
     static File settingsDir = new File("./settings");
@@ -53,7 +39,8 @@ public class ListItem {
                             Move Buttons Enabled: true ❂
                             Saved List: List01.tdli ❂
                             Task Numbers Enabled: true ❂
-                            Task Labels Enabled: true ❂""");
+                            Task Labels Enabled: true ❂
+                            Task Dates Enabled: true ❂""");
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -131,6 +118,8 @@ public class ListItem {
 
         checkForListFile();
 
+
+        //Get saved list contents
         try (BufferedReader br = new BufferedReader(new FileReader(savedList))) {
             String line;
             StringBuilder sb = new StringBuilder();
@@ -142,10 +131,10 @@ public class ListItem {
             throw new RuntimeException(e + "\nUnable to Read from File!");
         }
 
-
+        //if empty write list item to file
         if (contents.isEmpty()) {
             try (BufferedWriter bw = new BufferedWriter(new FileWriter(savedList))) {
-                String itemInfo = this.itemNumber + internalSeparator + this.itemPriority + internalSeparator + this.itemName + internalSeparator + this.itemInfo + itemSeparator;
+                String itemInfo = this.itemNumber + internalSeparator + this.itemPriority + internalSeparator + this.itemName + internalSeparator + this.itemInfo + internalSeparator + this.dateInfo + itemSeparator;
                 bw.write(itemInfo);
                 return;
             } catch (IOException e) {
@@ -159,7 +148,7 @@ public class ListItem {
             while ((line = br.readLine()) != null) {
                 sb.append(line);
             }
-            String itemInfo = this.itemNumber + internalSeparator + this.itemPriority + internalSeparator + this.itemName + internalSeparator + this.itemInfo + itemSeparator;
+            String itemInfo = this.itemNumber + internalSeparator + this.itemPriority + internalSeparator + this.itemName + internalSeparator + this.itemInfo + internalSeparator + this.dateInfo + itemSeparator;
             if (sb.toString().contains(itemInfo)) {
                 return;
             }
