@@ -9,8 +9,8 @@ This is a personal project of mine, a simple Java applet that allows you to crea
 </p>
 
 <p align="center">
-<img width="400" alt="image" src="https://github.com/user-attachments/assets/873936d8-f639-4046-8309-5bd1e3781124" />
-<img width="478"alt="image" src="https://github.com/user-attachments/assets/a51a6ae2-3a7b-4da0-a66b-eb579004ce96" />
+<img width="300" alt="image" src="https://github.com/user-attachments/assets/873936d8-f639-4046-8309-5bd1e3781124" />
+<img width="358"alt="image" src="https://github.com/user-attachments/assets/a51a6ae2-3a7b-4da0-a66b-eb579004ce96" />
 </p>
 
 Desktop ToDo is a simple task-list application and has several features:
