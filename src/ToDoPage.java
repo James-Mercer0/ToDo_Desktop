@@ -525,8 +525,8 @@ public class ToDoPage implements ActionListener {
                         if((editPrioField.getText().isEmpty() || !intIsValid(editPrioField.getText()))){
                             createDialogWindow("<html><b style=\" color:#c8c8c8; font-size:12px;\"> Your priority number is invalid - please add a valid whole number. </b></html>","Invalid Priority Number", false);
                             return;
-                        } else if(parseInt(editPrioField.getText())>9999){
-                            createDialogWindow("<html><b style=\" color:#c8c8c8; font-size:12px;\"> Priority cannot be higher than 9999. </b></html>","Invalid Priority Number", false);
+                        } else if(parseInt(editPrioField.getText())>9999 || parseInt(editPrioField.getText())<0){
+                            createDialogWindow("<html><b style=\" color:#c8c8c8; font-size:12px;\"> Priority cannot be higher than 9999 or lower than 1. </b></html>","Invalid Priority Number", false);
                             return;
                         }
                         //check if updated task has a name
@@ -638,14 +638,12 @@ public class ToDoPage implements ActionListener {
             moveBtnsPaneli.setBackground(new Color(20,20,20));
             moveBtnsPaneli.setLayout(new GridLayout(1,2));
 
-
             prepBtn(moveUpi);
             moveUpi.setPreferredSize(new Dimension(30,18));
             moveUpi.setFont(new Font("",Font.BOLD,12));
             moveUpi.setBorder(BorderFactory.createLineBorder(new Color(50,50,50),1));
             moveUpi.setBorderPainted(true);
             moveUpi.setToolTipText("Move up button "+(i+1));
-
 
             moveUpi.addActionListener( e->{
                 if(settingsWindowAlreadyOpen[0] || editWindowAlreadyOpen[0]){
@@ -885,8 +883,8 @@ public class ToDoPage implements ActionListener {
                     if((addPrioField.getText().isEmpty() || !intIsValid(addPrioField.getText()))){
                         createDialogWindow("<html><b style=\" color:#c8c8c8; font-size:12px;\"> Your priority number is invalid - please add a valid whole number. </b></html>","Invalid Priority Number", false);
                         return;
-                    } else if(parseInt(addPrioField.getText())>9999){
-                        createDialogWindow("<html><b style=\" color:#c8c8c8; font-size:12px;\"> Priority cannot be higher than 9999. </b></html>","Invalid Priority Number", false);
+                    } else if(parseInt(addPrioField.getText())>9999 || parseInt(addPrioField.getText())<0){
+                        createDialogWindow("<html><b style=\" color:#c8c8c8; font-size:12px;\"> Priority cannot be higher than 9999 or lower than 1. </b></html>","Invalid Priority Number", false);
                         return;
                     }
                     //ensure that the task has a title
@@ -1075,7 +1073,6 @@ public class ToDoPage implements ActionListener {
             }
         }
 
-
         toDoFrame.add(topBar, BorderLayout.NORTH);
         toDoFrame.add(bottomPanel, BorderLayout.SOUTH);
         toDoPanel.add(listSp, BorderLayout.CENTER);
@@ -1254,7 +1251,6 @@ public class ToDoPage implements ActionListener {
             }
         });
 
-
         settingsDiv.add(switchListsLabel);
         settingsDiv.add(listsList);
 
@@ -1321,7 +1317,6 @@ public class ToDoPage implements ActionListener {
 
 
         //Opacity for main window
-
         settingsDiv = new JPanel();
         settingsDiv.setLayout(new GridLayout(0,2));
         settingsDiv.setBackground(new Color(24,24,24));
@@ -1381,11 +1376,8 @@ public class ToDoPage implements ActionListener {
         opacityVal.setBorder(createEmptyBorder(0,60,0,60));
         opacityVal.setHorizontalAlignment(JTextField.CENTER);
 
-
         sliderPanel.add(opacityVal);
-
         settingsDiv.add(sliderPanel);
-
         settingsPanel.add(settingsDiv);
 
         //Opacity for Sub-Windows
@@ -1513,7 +1505,6 @@ public class ToDoPage implements ActionListener {
 
         settingsFrame.pack();
         settingsFrame.setVisible(true);
-
     }
 
     private void checkTaskLabelsEnabled(){
