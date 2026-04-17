@@ -40,7 +40,10 @@ public class ListItem {
                             Saved List: List01.tdli ❂
                             Task Numbers Enabled: true ❂
                             Task Labels Enabled: true ❂
-                            Task Dates Enabled: true ❂""");
+                            Task Dates Enabled: true ❂
+                            Run Daily List: false ❂
+                            Daily List Last Updated: ❂
+                            Daily List Contents: ❂""");
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -68,7 +71,7 @@ public class ListItem {
             String settingLine = sb.toString();
 
             listFileName = settingLine.substring(settingLine.indexOf(":")+2,settingLine.indexOf("❂")-1);
-            savedList = new File(dirPath+"/" + listFileName);
+            savedList = new File(dirPath+"/"+listFileName);
 
             return listFileName;
         } catch (IOException e){

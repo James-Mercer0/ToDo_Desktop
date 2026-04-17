@@ -1,9 +1,12 @@
-Last Location: 0,0| Last Size: 629,315 ❂
+Last Location: 0,0| Last Size: 434,304 ❂
 Always On Top: false ❂
 Opacity: 1.0 ❂
-Sub Window Opacity: false ❂
-Move Buttons Enabled: true ❂
+Sub Window Opacity: true ❂
+Move Buttons Enabled: false ❂
 Saved List: List01.tdli ❂
-Task Numbers Enabled: true ❂
-Task Labels Enabled: true ❂
-Task Dates Enabled: true ❂
+Task Numbers Enabled: false ❂
+Task Labels Enabled: false ❂
+Task Dates Enabled: false ❂
+Run Daily List: true ❂
+Daily List Last Updated: 2026/04/17 ❂
+Daily List Contents: 1❒5❒test5❒❒2026/04/17❂2❒2❒test2❒2222❒2026/04/17❂3❒1❒Test1❒desc❒2026/04/17❂✥

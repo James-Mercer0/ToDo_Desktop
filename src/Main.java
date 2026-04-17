@@ -4,6 +4,7 @@ public class Main {
     public static void main(String[] args) {
         ListItem.checkForSettings();
         ListItem.checkForListFile();
+        ToDoPage.updateDailyTaskList();
         new ToDoPage();
     }
 }

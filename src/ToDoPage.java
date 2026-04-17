@@ -1,5 +1,6 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.Timer;
 import javax.swing.border.Border;
 import javax.swing.plaf.basic.BasicComboBoxUI;
 import javax.swing.plaf.basic.BasicComboPopup;
@@ -11,10 +12,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -57,7 +55,7 @@ public class ToDoPage implements ActionListener {
     BufferedImage logo =  setLogo();
 
     //get the last main window location/size from settings
-    String settings = getSettings();
+    static String settings = getSettings();
     int x = parseInt(settings.substring(settings.indexOf(":")+2,settings.indexOf(",")));
     int y = parseInt(settings.substring(settings.indexOf(",")+1,settings.indexOf("|")));
     String sizeSettings = settings.substring(settings.indexOf("|")+1);
@@ -1540,10 +1538,15 @@ public class ToDoPage implements ActionListener {
         settingsFrame.setVisible(true);
     }
 
-    private void checkDailyListEnabled(){
+    private static void checkDailyListEnabled(){
         settings=getSettings();
         String dailyTaskSetting = getSpecificSetting(8,(settings.substring(settings.indexOf("❂")+1)));
         dailyListEnabled = Boolean.parseBoolean(dailyTaskSetting);
+    }
+
+    private static String checkDailyListLastUpdated(){
+        settings=getSettings();
+        return getSpecificSetting(9,(settings.substring(settings.indexOf("❂")+1)));
     }
 
     private void checkTaskLabelsEnabled(){
@@ -2422,6 +2425,43 @@ public class ToDoPage implements ActionListener {
                 settingsFrame.dispose();
                 settingsWindowAlreadyOpen[0] = false;
                 updateDailyListEnabled(true);
+                String currentListContents;
+                String line;
+                try(BufferedReader br = new BufferedReader(new FileReader(ListItem.dirPath+"/"+ListItem.getSavedList()))){
+                    StringBuilder sb = new StringBuilder();
+                    while((line = br.readLine()) != null){
+                        sb.append(line);
+                    }
+                    currentListContents = sb.toString();
+                } catch(IOException e1){
+                    throw new RuntimeException(e1);
+                }
+
+
+                String settings  = getSettings();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+                StringBuilder settingsSb = new StringBuilder();
+                Scanner sc = new Scanner(settings);
+                String line2;
+                while(sc.hasNextLine()){
+                    line2 = sc.nextLine();
+                    if(line2.contains("Daily List Last Updated: ")){
+                        line2 = "Daily List Last Updated: "+LocalDate.now().format(formatter)+" ❂";
+                    }
+                    if(line2.contains("Daily List Contents: ")){
+                        line2 = "Daily List Contents: "+currentListContents+"✥";
+                    }
+                    settingsSb.append(line2).append("\n");
+                }
+
+                sc.close();
+
+                try(BufferedWriter bw = new BufferedWriter(new FileWriter("settings/settings.txt"))){
+                    bw.write(settingsSb.toString());
+                } catch(IOException e1){
+                    throw new RuntimeException(e1);
+                }
+
             }
         }
 
@@ -2433,7 +2473,85 @@ public class ToDoPage implements ActionListener {
                 settingsFrame.dispose();
                 settingsWindowAlreadyOpen[0] = false;
                 updateDailyListEnabled(false);
+
+                String settings  = getSettings();
+                StringBuilder settingsSb = new StringBuilder();
+                Scanner sc = new Scanner(settings);
+                String line2;
+                while(sc.hasNextLine()){
+                    line2 = sc.nextLine();
+                    if(line2.contains("Daily List Last Updated: ")){
+                        line2 = "Daily List Last Updated: ❂";
+                    }
+                    if(line2.contains("Daily List Contents: ")){
+                        line2 = "Daily List Contents: ✥";
+                    }
+                    settingsSb.append(line2).append("\n");
+                }
+
+                sc.close();
+
+                try(BufferedWriter bw = new BufferedWriter(new FileWriter("settings/settings.txt"))){
+                    bw.write(settingsSb.toString());
+                } catch(IOException e1){
+                    throw new RuntimeException(e1);
+                }
             }
+        }
+    }
+
+    public static void updateDailyTaskList(){
+        checkDailyListEnabled();
+
+        if(!dailyListEnabled){
+            return;
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        String currentDate = LocalDate.now().format(formatter);
+        System.out.println(checkDailyListLastUpdated()+", "+currentDate);
+        if(!checkDailyListLastUpdated().equals(currentDate)){
+
+            //Update the Last Updated Time, since we have updated the list:
+            String settingsContents = getSettings();
+            StringBuilder sb = new StringBuilder();
+            String line;
+            Scanner sc = new Scanner(settingsContents);
+            try(BufferedWriter bw = new BufferedWriter(new FileWriter(ListItem.settingsFile))){
+                while(sc.hasNextLine()){
+                    line = sc.nextLine();
+                    if(line.contains("Daily List Last Updated: ")){
+                        line = "Daily List Last Updated: "+currentDate+" ❂";
+                    }
+                    sb.append(line).append("\n");
+                }
+                bw.write(sb.toString());
+            } catch (IOException e1){
+                throw new RuntimeException(e1);
+            }
+
+            sc.close();
+
+            //Copy the saved Daily List to the current List File
+            sc = new Scanner(settingsContents);
+            sb.delete(0,sb.length());
+            String listContents = "";
+            while(sc.hasNextLine()){
+                line = sc.nextLine();
+                if(line.contains("Daily List Contents: ")){
+                    listContents = line.substring(line.indexOf(":")+2,line.indexOf("✥"));
+                }
+            }
+            sc.close();
+
+            try(BufferedWriter bw = new BufferedWriter(new FileWriter(ListItem.dirPath+"/"+ListItem.listFileName))){
+                bw.write(listContents);
+            } catch (IOException e1){
+                throw new RuntimeException(e1);
+            }
+
+
+
         }
     }
 
