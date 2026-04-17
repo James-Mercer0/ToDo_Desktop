@@ -11,7 +11,10 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,7 +24,7 @@ import static javax.swing.BorderFactory.createEmptyBorder;
 
 public class ToDoPage implements ActionListener {
 
-    JFrame toDoFrame;
+    static JFrame toDoFrame;
     JPanel toDoPanel;
     JLabel toDoName;
     JPanel listPanel;
@@ -32,8 +35,10 @@ public class ToDoPage implements ActionListener {
     JButton settingsBtn;
     JPanel topBar;
     JPanel bottomBar;
+    static JFrame editFrame;
+    static JFrame addFrame;
     boolean mouseEntered;
-    JFrame settingsFrame;
+    static JFrame settingsFrame;
     JCheckBox onTopCB;
     boolean onTopBool;
     JCheckBox opacityCB;
@@ -362,7 +367,7 @@ public class ToDoPage implements ActionListener {
                         return;
                     }
 
-                    JFrame editFrame = new JFrame();
+                    editFrame = new JFrame();
 
                     editFrame.setTitle("Edit Task");
                     editFrame.setIconImage(logo);
@@ -732,7 +737,7 @@ public class ToDoPage implements ActionListener {
 
                 //Popout for "Add list Item" window
 
-                JFrame addFrame = new JFrame();
+                addFrame = new JFrame();
                 JPanel addPanel = new JPanel();
 
                 addFrame.setTitle("Add New Task");
@@ -1249,6 +1254,7 @@ public class ToDoPage implements ActionListener {
                 JTextField taskName = (JTextField) newToDo.listPanel.getComponent(7+(2+(i*7)));
                 taskName.setCaretPosition(0);
             }
+            updateDailyTaskList();
         });
 
         settingsDiv.add(switchListsLabel);
@@ -1536,6 +1542,11 @@ public class ToDoPage implements ActionListener {
 
         settingsFrame.pack();
         settingsFrame.setVisible(true);
+    }
+
+    private static String getCurrentDailyList(){
+        settings=getSettings();
+        return getSpecificSetting(10,(settings.substring(settings.indexOf("❂")+1)));
     }
 
     private static void checkDailyListEnabled(){
@@ -2244,6 +2255,10 @@ public class ToDoPage implements ActionListener {
         }
 
         if (e.getSource() == listNameBtn){
+            if(ListItem.getSavedList().equals(getCurrentDailyList())){
+                createDialogWindow("<html><b style=\" color:#c8c8c8; font-size:12px;\">You can't rename a Daily List! Please disable the Daily List before renaming.</b></html>","  Can't Rename Daily List  ", false);
+                return;
+            }
             JFrame listNameFrame = new JFrame();
             JPanel listNamePanel = new JPanel();
 
@@ -2385,6 +2400,8 @@ public class ToDoPage implements ActionListener {
                 //Remove the now redundant file with old name
                 File oldListFile = new File("./listStorage/"+oldList);
 
+                oldListFile.delete();
+
                 //Set new list as current list
                 ListItem.updateSavedList(noSpacesName+".tdli");
                 ListItem.listFileName = ListItem.getSavedList();
@@ -2425,6 +2442,7 @@ public class ToDoPage implements ActionListener {
                 settingsFrame.dispose();
                 settingsWindowAlreadyOpen[0] = false;
                 updateDailyListEnabled(true);
+                updateActiveDailyList(ListItem.getSavedList());
                 String currentListContents;
                 String line;
                 try(BufferedReader br = new BufferedReader(new FileReader(ListItem.dirPath+"/"+ListItem.getSavedList()))){
@@ -2466,7 +2484,7 @@ public class ToDoPage implements ActionListener {
         }
 
         if(e.getSource() == disableDailyListBtn){
-            Object confirmationResult = createDialogWindow("<html><b style=\"color:#c8c8c8; font-size: 12px;\">This will Remove your Daily List along with all saved tasks from your Daily List!</b></html>","Remove Daily List?", true);
+            Object confirmationResult = createDialogWindow("<html><b style=\"color:#c8c8c8; font-size: 12px;\">This list will be reinstated, but tasks will no longer renew! Are you sure?</b></html>","Disable Daily List?", true);
 
             if(confirmationResult.equals(JOptionPane.YES_OPTION)) {
                 dailyListEnabled = false;
@@ -2475,8 +2493,28 @@ public class ToDoPage implements ActionListener {
                 updateDailyListEnabled(false);
 
                 String settings  = getSettings();
-                StringBuilder settingsSb = new StringBuilder();
+
+                //Copy Daily List Contents back to the original List file
+                String line;
                 Scanner sc = new Scanner(settings);
+                String listContents = "";
+                while(sc.hasNextLine()){
+                    line = sc.nextLine();
+                    if(line.contains("Daily List Contents: ")){
+                        listContents = line.substring(line.indexOf(":")+2,line.indexOf("✥"));
+                    }
+                }
+                sc.close();
+
+                try(BufferedWriter bw = new BufferedWriter(new FileWriter(ListItem.dirPath+"/"+getCurrentDailyList()))){
+                    bw.write(listContents);
+                } catch (IOException e1){
+                    throw new RuntimeException(e1);
+                }
+
+                //Clear Daily List Contents from Settings file
+                StringBuilder settingsSb = new StringBuilder();
+                sc = new Scanner(settings);
                 String line2;
                 while(sc.hasNextLine()){
                     line2 = sc.nextLine();
@@ -2486,9 +2524,11 @@ public class ToDoPage implements ActionListener {
                     if(line2.contains("Daily List Contents: ")){
                         line2 = "Daily List Contents: ✥";
                     }
+                    if(line2.contains("Active Daily List: ")){
+                        line2 = "Active Daily List:  ❂";
+                    }
                     settingsSb.append(line2).append("\n");
                 }
-
                 sc.close();
 
                 try(BufferedWriter bw = new BufferedWriter(new FileWriter("settings/settings.txt"))){
@@ -2496,21 +2536,61 @@ public class ToDoPage implements ActionListener {
                 } catch(IOException e1){
                     throw new RuntimeException(e1);
                 }
+                toDoFrame.dispose();
+                new ToDoPage();
             }
         }
     }
 
-    public static void updateDailyTaskList(){
+    LocalDateTime currentDate2 = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+    LocalDateTime currentDate3 = LocalDateTime.now().plusDays(1).withHour(0).withMinute(0).truncatedTo(ChronoUnit.MINUTES);
+
+    public void updateDailyTaskList(){
         checkDailyListEnabled();
 
         if(!dailyListEnabled){
             return;
         }
 
+        if(!ListItem.getSavedList().equals(getCurrentDailyList())){
+            return;
+        }
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         String currentDate = LocalDate.now().format(formatter);
-        System.out.println(checkDailyListLastUpdated()+", "+currentDate);
+
+        java.util.Timer timer = new java.util.Timer();
+
         if(!checkDailyListLastUpdated().equals(currentDate)){
+
+            //Check if user is busy before killing the list
+
+            if(editWindowAlreadyOpen[0] || settingsWindowAlreadyOpen[0] || newItemWindowAlreadyOpen[0]){
+                Object confirmationResult = createDialogWindow("<html><b style=\"color:#c8c8c8; font-size: 12px;\">It's Time for your Daily List to refresh! Are you happy to reload the List Now? \nIf not, We'll try again in 10 mins!</b></html>","Refresh Daily List?", true);
+                if(confirmationResult.equals(JOptionPane.YES_OPTION)) {
+                    if(editWindowAlreadyOpen[0]){
+                        editWindowAlreadyOpen[0] = false;
+                        editFrame.dispose();
+                    }
+                    if(settingsWindowAlreadyOpen[0]){
+                        settingsWindowAlreadyOpen[0] = false;
+                        settingsFrame.dispose();
+                    }
+                    if(newItemWindowAlreadyOpen[0]){
+                        newItemWindowAlreadyOpen[0] = false;
+                        addFrame.dispose();
+                    }
+                } else {
+                    timer.schedule(new TimerTask(){
+                        @Override
+                        public void run() {
+                            updateDailyTaskList();
+                        }
+                    },600000);
+                    return;
+                }
+            }
+
 
             //Update the Last Updated Time, since we have updated the list:
             String settingsContents = getSettings();
@@ -2549,10 +2629,29 @@ public class ToDoPage implements ActionListener {
             } catch (IOException e1){
                 throw new RuntimeException(e1);
             }
-
-
-
+            toDoFrame.dispose();
+            new ToDoPage();
         }
+
+        if(currentDate2.until(currentDate3, ChronoUnit.MILLIS) == 0){
+            timer.schedule(new TimerTask(){
+                @Override
+                public void run() {
+                    currentDate2 = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+                    currentDate3 = LocalDateTime.now().plusDays(1).withHour(0).withMinute(0).truncatedTo(ChronoUnit.MINUTES);
+                    updateDailyTaskList();
+                }
+            },60000);
+            return;
+        }
+
+        timer.schedule(new TimerTask(){
+            @Override
+            public void run() {
+                updateDailyTaskList();
+            }
+        },currentDate2.until(currentDate3, ChronoUnit.MILLIS));
+
     }
 
     private void updateDailyListEnabled(boolean enabled){
@@ -2565,6 +2664,28 @@ public class ToDoPage implements ActionListener {
             throw new RuntimeException(e);
         }
     }
+
+    private void updateActiveDailyList(String activeList){
+        String currentSettings = getSettings();
+        StringBuilder sb = new StringBuilder();
+        Scanner sc = new Scanner(currentSettings);
+        String line;
+        while(sc.hasNextLine()){
+            line= sc.nextLine();
+            if(line.contains("Active Daily List: ")){
+                line = "Active Daily List: "+activeList+" ❂";
+            }
+            sb.append(line).append("\n");
+        }
+        currentSettings = sb.toString();
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter("settings/settings.txt"))){
+            bw.write(currentSettings);
+        } catch(IOException e){
+            throw new RuntimeException(e);
+        }
+    }
+
+
 
     private void updateTaskNumsEnabled(boolean enabled){
         String currentSettings = getSettings();

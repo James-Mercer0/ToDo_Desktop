@@ -43,6 +43,7 @@ public class ListItem {
                             Task Dates Enabled: true ❂
                             Run Daily List: false ❂
                             Daily List Last Updated: ❂
+                            Active Daily List:  ❂
                             Daily List Contents: ❂""");
                 }
             } catch (IOException e) {
