@@ -49,7 +49,9 @@ public class ToDoPage implements ActionListener {
     static boolean taskDatesEnabled;
     JCheckBox moveBtnCB;
     static boolean moveBtnsEnabled;
-
+    JButton dailyListBtn;
+    JButton disableDailyListBtn;
+    static boolean dailyListEnabled;
     JButton newListBtn;
     JButton listNameBtn;
     BufferedImage logo =  setLogo();
@@ -1292,6 +1294,37 @@ public class ToDoPage implements ActionListener {
 
         settingsPanel.add(settingsDiv);
 
+        //Run Daily List:
+        settingsDiv = new JPanel();
+        settingsDiv.setLayout(new GridLayout(0,1));
+        settingsDiv.setBackground(new Color(24,24,24));
+        settingsDiv.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0,0,1,0,new Color(50,50,50)),
+                createEmptyBorder(8,90,8,90)
+        ));
+
+        checkDailyListEnabled();
+
+        JButton currentDailyListBtn;
+
+        if(!dailyListEnabled) {
+            dailyListBtn = new JButton("Run As Daily List");
+            prepBtn(dailyListBtn);
+            dailyListBtn.setBorderPainted(true);
+            dailyListBtn.setBorder(BorderFactory.createLineBorder(new Color(50, 50, 50), 1));
+            currentDailyListBtn = dailyListBtn;
+        } else {
+            disableDailyListBtn = new JButton("Disable Daily List");
+            prepBtn(disableDailyListBtn);
+            disableDailyListBtn.setBorderPainted(true);
+            disableDailyListBtn.setBorder(BorderFactory.createLineBorder(new Color(50, 50, 50), 1));
+            currentDailyListBtn = disableDailyListBtn;
+        }
+
+        settingsDiv.add(currentDailyListBtn);
+
+        settingsPanel.add(settingsDiv);
+
         //Always On Top
         settingsDiv = new JPanel();
         settingsDiv.setLayout(new GridLayout(0,2));
@@ -1505,6 +1538,12 @@ public class ToDoPage implements ActionListener {
 
         settingsFrame.pack();
         settingsFrame.setVisible(true);
+    }
+
+    private void checkDailyListEnabled(){
+        settings=getSettings();
+        String dailyTaskSetting = getSpecificSetting(8,(settings.substring(settings.indexOf("❂")+1)));
+        dailyListEnabled = Boolean.parseBoolean(dailyTaskSetting);
     }
 
     private void checkTaskLabelsEnabled(){
@@ -2373,6 +2412,39 @@ public class ToDoPage implements ActionListener {
             listNameFrame.setLocation((toDoFrame.getX()+(toDoFrame.getWidth()/2)-(listNameFrame.getWidth()/2)), (toDoFrame.getY()+(toDoFrame.getHeight()/2)-(listNameFrame.getHeight()/2)));
 
             listNameFrame.setVisible(true);
+        }
+
+        if(e.getSource() == dailyListBtn){
+            Object confirmationResult = createDialogWindow("<html><b style=\"color:#c8c8c8; font-size: 12px;\">This will Reopen all Current tasks in this list every day at midnight! Are you sure?</b></html>","Create Daily List?", true);
+
+            if(confirmationResult.equals(JOptionPane.YES_OPTION)){
+                dailyListEnabled = true;
+                settingsFrame.dispose();
+                settingsWindowAlreadyOpen[0] = false;
+                updateDailyListEnabled(true);
+            }
+        }
+
+        if(e.getSource() == disableDailyListBtn){
+            Object confirmationResult = createDialogWindow("<html><b style=\"color:#c8c8c8; font-size: 12px;\">This will Remove your Daily List along with all saved tasks from your Daily List!</b></html>","Remove Daily List?", true);
+
+            if(confirmationResult.equals(JOptionPane.YES_OPTION)) {
+                dailyListEnabled = false;
+                settingsFrame.dispose();
+                settingsWindowAlreadyOpen[0] = false;
+                updateDailyListEnabled(false);
+            }
+        }
+    }
+
+    private void updateDailyListEnabled(boolean enabled){
+        String currentSettings = getSettings();
+        currentSettings = currentSettings.replaceFirst("Run Daily List: "+!enabled,"Run Daily List: "+enabled);
+
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter("settings/settings.txt"))){
+            bw.write(currentSettings);
+        } catch(IOException e){
+            throw new RuntimeException(e);
         }
     }
 
