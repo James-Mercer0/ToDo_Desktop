@@ -2631,6 +2631,8 @@ public class ToDoPage implements ActionListener {
             }
             toDoFrame.dispose();
             new ToDoPage();
+            currentDate2 = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+            currentDate3 = LocalDateTime.now().plusDays(1).withHour(0).withMinute(0).truncatedTo(ChronoUnit.MINUTES);
         }
 
         if(currentDate2.until(currentDate3, ChronoUnit.MILLIS) == 0){
