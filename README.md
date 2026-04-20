@@ -9,7 +9,7 @@ This is a personal project of mine, a simple Java applet that allows you to crea
 </p>
 
 <p align="center">
-<img width="300" alt="image" src="https://github.com/user-attachments/assets/873936d8-f639-4046-8309-5bd1e3781124" />
+<img width="300" alt="image" src="https://github.com/user-attachments/assets/df5bce57-24b4-4bce-8b21-801f83d45d90" />
 <img width="358"alt="image" src="https://github.com/user-attachments/assets/a51a6ae2-3a7b-4da0-a66b-eb579004ce96" />
 </p>
 
@@ -20,6 +20,7 @@ Desktop ToDo is a simple task-list application and has several features:
  - Tasks can be re-ordered in your list individually or you can collectively re-order the whole list based on the priority you've set.
  - Access 'Always On Top', Opacity, and Sub-Window Opacity options via the Settings.
  - You can toggle the display of elements such as: Task Information Labels, Task Numbering, Date Added, and the Move Task Buttons.
+ - A Daily List can be enabled to refresh a list's tasks every day at midnight.
 
 I wanted to create an application that I, myself, would enjoy using to track and prioritise tasks in my own daily life. As such, I've been enjoying creating an application with features that I personally will enjoy, in addition to fielding ideas and feedback from others to implement in the project.
 This has been a fun project to practice my Java skills and create something with some utility, whilst maintaining a more simple and sleek style in a world filled with AI and over-complicated tools.
