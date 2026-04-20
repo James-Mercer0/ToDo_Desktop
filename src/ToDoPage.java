@@ -2435,7 +2435,8 @@ public class ToDoPage implements ActionListener {
         }
 
         if(e.getSource() == dailyListBtn){
-            Object confirmationResult = createDialogWindow("<html><b style=\"color:#c8c8c8; font-size: 12px;\">This will Reopen all Current tasks in this list every day at midnight! Are you sure?</b></html>","Create Daily List?", true);
+            Object confirmationResult = createDialogWindow("<html><b style=\"color:#c8c8c8; font-size: 12px;\"><p style=\"text-align: center;\">This will refresh all of the currently open tasks in this list every day at midnight!</p>" +
+                    "<p style=\"text-align: center;\">(Changes to an active Daily List will not be saved) Are you sure?</p></b></html>","Create Daily List?", true);
 
             if(confirmationResult.equals(JOptionPane.YES_OPTION)){
                 dailyListEnabled = true;
